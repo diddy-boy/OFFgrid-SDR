@@ -2,7 +2,7 @@
 
 **A complete radio receiver in a single file. No installation, no internet, no account: plug in an RTL-SDR stick, open the page, and listen.**
 
-OFFgrid-SDR is a full software-defined radio receiver that runs entirely in your web browser from one file. Put it on a USB pen drive with an RTL-SDR stick and an antenna, and you have a working shortwave, FM, airband and VHF/UHF receiver on almost any computer: no software to install, no administrator rights, no drivers to download on site (on most systems), and nothing that ever needs an internet connection.
+OFFgrid-SDR is a full software-defined radio receiver that runs entirely in your web browser from one file. Put the Index.html on a USB pen drive with an RTL-SDR stick and an antenna, and you have a working shortwave, FM, airband and VHF/UHF receiver on almost any computer: no software to install, no administrator rights, no drivers to download on site (on most systems), and nothing that ever needs an internet connection.
 
 ![Main UI](screenshots/main.png)
 
