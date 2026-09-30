@@ -26,6 +26,8 @@ Most SDR software assumes you can download it, install it, and often fetch maps 
 
 ![Main UI](screenshots/fax.png)
 
+![Main UI](screenshots/RDS.png)
+
 ## What you need
 
 | | |
