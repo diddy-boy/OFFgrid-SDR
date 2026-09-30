@@ -123,6 +123,8 @@ AM, **synchronous AM** (SAM, with upper/lower sideband), USB, LSB, CW, narrowban
 
 ---
 
+![Visit count](https://hits.sh/github.com/diddy-boy/OFFgrid-SDR.svg) visits and counting!
+
 ## Credits and licences
 
 OFFgrid-SDR is built on the work of others:
