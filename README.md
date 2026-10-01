@@ -64,7 +64,8 @@ OFFgrid-SDR is **one file**: `index.html`. That's all you need; everything else 
 ### One-time driver setup
 
 - **Windows:** run [Zadig](https://zadig.akeo.ie), choose *Options → List All Devices*, select *Bulk-In, Interface (Interface 0)* (or *RTL2838UHIDIR*), choose **WinUSB** and click **Replace Driver**.
-- **macOS:** usually nothing to do.
+- **macOS:** No configuration needed
+- **Chromebooks:** No Configuration needed
 - **Linux:** stop the TV driver from claiming the stick, and give your user access to it:
   ```sh
   echo 'blacklist dvb_usb_rtl28xxu' | sudo tee /etc/modprobe.d/rtl-sdr-blacklist.conf
