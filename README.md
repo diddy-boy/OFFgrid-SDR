@@ -26,7 +26,7 @@ Most SDR software assumes you can download it, install it, and often fetch maps 
 - **Emergency and resilience kits.** When the internet or the power grid is down, radio still works. The whole receiver fits on a pen drive in a grab bag.
 - **Remote signal monitoring.** Leave it running for hours, record what it hears, and save weather fax charts automatically, all offline.
 - **Locked-down or shared computers.** Schools, libraries, work laptops and Chromebooks often block installing software. OFFgrid-SDR is just a page you open.
-- **Privacy.** Nothing leaves your computer. The page makes no network requests at all; your settings and memories stay in your browser.
+- **Privacy.** Nothing leaves your computer. The page makes no network requests at all; your settings and memories stay in your browser. The one exception is the optional **Identify** menu, which looks up the tuned frequency online, and only when you click it.
 
 ---
 
@@ -92,6 +92,7 @@ Only one program can use the stick at a time, so close SDR#, SDR++, gqrx or rtl_
 - **Airband** (118–137 MHz) in 2 MHz sections, with **8.33 kHz channel steps** and channel names (type 118.505 and you're on the right channel).
 - **Mystery:** famous unexplained HF stations, including **The Buzzer (UVB-76)**, The Pip, The Squeaky Wheel and other Russian military "channel markers".
 - **Any other frequency** from 100 kHz to 1766 MHz: type it in (for example `198k`, `162.025`, `1090M`) and it opens in general coverage mode.
+- Each band remembers its own mode and tuning step, so clicks always land on that band's channels.
 
 ### Modes
 
@@ -106,15 +107,19 @@ AM, **synchronous AM** (SAM, with upper/lower sideband), USB, LSB, CW, narrowban
 ### Listening tools
 
 - **Spectrum and waterfall:** click anywhere to tune, or use the mouse wheel. **Zoom** in up to 256× around the signal, handy for SSB and CW.
-- **Noise reduction**, a **noise blanker** for clicks from electric fences and car ignition, and a **mains-hum filter** (50 or 60 Hz).
-- **Soft squelch** based on signal-to-noise ratio, with smooth opening and closing.
-- **Seek** to the next signal, variable **filter widths**, an **S-meter**, and an **Identify** link to the Signal Identification Wiki.
+- **Panorama:** sweeps the stick across a wider range than it can see at once and stitches the slices together, showing **up to 10 MHz at once**. Choose **Around me** (centred where you're tuned, 2–10 MHz wide) or the HF slices **0.5–10**, **10–20** and **20–28.8 MHz**. Click a signal to tune to it and listen, or click Panorama again to go back to where you were.
+- **Noise reduction**, a **noise blanker** for clicks from electric fences and car ignition, a **mains-hum filter** (50 or 60 Hz), and an **auto notch** that removes steady whistles from AM and SSB.
+- **SSB filter widths** of 1.8 to 2.8 kHz (one click on the filter badge) and a **passband shift** to dodge a neighbouring station.
+- **Squelch** based on signal-to-noise ratio: a clean on/off gate, like a real radio.
+- **Seek** to the next signal, variable **filter widths**, and an **S-meter**.
+- **Scan** your memories: pick any of them, set the squelch, and Scan hops through them, stopping on any with a signal and carrying on 3 seconds after it ends.
+- **Identify** (when online): "What's on this frequency?" searches the web for the tuned frequency, "Ask AI" asks Google's AI Mode what's likely there, given the frequency, mode and time, and "Shortwave radio schedule" (below 30 MHz) shows who is scheduled on that frequency, from [shortwave.live](https://shortwave.live). Nothing is sent until you click.
 - Keeps playing when you switch to another browser tab.
 
 ### Recording and settings
 
 - **Record** to MP3 or WAV.
-- **50 memories**, each remembering frequency, mode and filters.
+- **50 memories**, each remembering frequency, mode and filters, including the SSB width and shift.
 - **Settings backup:** export everything to a small file and import it on another computer, ideal for preparing a kit before it's sent out.
 
 ---
@@ -127,6 +132,7 @@ AM, **synchronous AM** (SAM, with upper/lower sideband), USB, LSB, CW, narrowban
 - **Morse:** the first letter of a transmission may be missed while the decoder locks on, especially at high speeds.
 - **Audio delay:** the sound runs about 0.2 s behind the waterfall. Bluetooth headphones add their own delay on top.
 - **Below about 500 kHz** (longwave), reception is weaker than on medium wave and shortwave.
+- **Panorama** looks at one slice at a time, so short bursts elsewhere in the range can be missed. A 10 MHz sweep takes around half a second, depending on the stick, and there's no audio while it sweeps.
 
 ---
 
@@ -145,7 +151,7 @@ OFFgrid-SDR is built on the work of others:
 - [**Barlow Semi Condensed**](https://github.com/jpt/barlow) and [**Share Tech Mono**](https://fonts.google.com/specimen/Share+Tech+Mono) fonts. SIL Open Font License.
 - [**esbuild**](https://esbuild.github.io), which bundles everything into a single file that runs offline.
 - [**Zadig**](https://zadig.akeo.ie) by Pete Batard, for installing the WinUSB driver on Windows.
-- [**Signal Identification Wiki**](https://www.sigidwiki.com), the community database the Identify button links to.
+- [**Shortwave.Live**](https://shortwave.live), the schedule database the Identify menu's "Shortwave radio schedule" opens.
 - Frequencies for the Mystery stations come from [**Priyom**](https://priyom.org).
 
 The full licence texts are in the `licenses` folder.
