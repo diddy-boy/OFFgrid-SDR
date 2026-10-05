@@ -14,7 +14,7 @@ OFFgrid-SDR is a full software-defined radio receiver that runs entirely in your
 
 ## Why I made this
 
-The humble RTL-SDR stick needed some love. It has always been treated as an add-on: a cheap way into other SDR software, never the star of the show. I decided to change that, and build a receiver made for the RTL-SDR, that anyone can carry on a pen drive and use anywhere.
+The humble RTL-SDR stick neededs some love. It has always been treated as an add-on: a cheap way into other SDR software, never the star of the show. I decided to change that, and build a receiver made for the RTL-SDR, that anyone can carry on a pen drive and use anywhere.
 
 ---
 
