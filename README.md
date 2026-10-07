@@ -46,6 +46,8 @@ Most SDR software assumes you can download it, install it, and often fetch maps 
 
 ![Main UI](screenshots/RDS.png)
 
+![Main UI](screenshots/SSTV.png)
+
 ## What you need
 
 | | |
@@ -121,6 +123,8 @@ The same ten buttons on every band:
 
 ### AUTO
 
+![Main UI](screenshots/AUTO.png)
+
 Switch **AUTO** on, and every time you tune somewhere new OFFgrid-SDR listens for a couple of seconds, works out what the signal is, switches to the right mode and tunes onto it. A banner at the top of the waterfall shows it listening, then what it found and how sure it is.
 
 | Where | What AUTO recognises |
@@ -145,7 +149,13 @@ If nothing is clear, it picks the band's usual mode: the ham band's sideband (LS
 - **Hellschreiber:** the tone paints the letters on a scrolling strip and you read them by eye, just like the original 1930s machines.
 - **Weather fax:** decodes HF radiofax charts line by line, lines them up automatically, and saves them as full-resolution PNG images, including automatic saving of every chart. A station list covers the German, UK and US weather fax services.
 
+![Main UI](screenshots/RTTY.png)
+
+![Main UI](screenshots/Navtex.png)
+
 ### Waterfall replay
+
+![Main UI](screenshots/buffer.png)
 
 Ever heard something interesting a moment too late? Switch on the **waterfall buffer** (15, 30 or 60 seconds), and OFFgrid-SDR keeps the raw radio signal in memory.
 
