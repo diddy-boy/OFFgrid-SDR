@@ -16,6 +16,13 @@ OFFgrid-SDR is a full software-defined radio receiver that runs entirely in your
 
 The humble RTL-SDR stick needs some love. It has always been treated as an add-on: a cheap way into other SDR software, never the star of the show. I decided to change that, and build a receiver made for the RTL-SDR, that anyone can carry on a pen drive and use anywhere.
 
+Ideally I wanted to visually see a whole 10mhz in one go. see a signal and click on it.
+the view then changes to listening at 2Mhz wide bandwidth with waterfall.
+then I can either zoom in or press pause and then highlight a signal in the waterfall and a zoomed in replay section shows
+At that point I can use A/B button to select in more detail and then save the signal.
+so overall in a few steps I have gone from a 10mhz wide view down into possily 10's of hertz signals and with the signal of interest saved for later use.
+10Mhz view ----> 2.04Mhz view ----> 10's of hertz signal, analyse or save it
+
 ---
 
 ## What's new in 1.4
