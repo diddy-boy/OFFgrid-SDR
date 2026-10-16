@@ -14,9 +14,9 @@ OFFgrid-SDR is a full software-defined radio receiver that runs entirely in your
 
 Look good on a Chromebook too in tent mode or tablet mode
 
-![Tent-Mode](screenshots/tent-mode.jpg)
+![Tent-Mode](screenshots/tent-mode.jpeg)
 
-![Tablet-Mode](screenshots/tablet-mode.jpg)
+![Tablet-Mode](screenshots/tablet-mode.jpeg)
 
 ## Why I made this
 
