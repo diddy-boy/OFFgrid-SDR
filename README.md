@@ -94,11 +94,18 @@ Most SDR software assumes you can download it, install it, and often fetch maps 
 
 ---
 
-![Main UI](screenshots/fax.png)
+![Main UI](screenshots/Fax.png)
 
 ![Main UI](screenshots/RDS.png)
 
 ![Main UI](screenshots/SSTV.png)
+
+![Main UI](screenshots/PSK.png)
+
+![Main UI](screenshots/Acars.png)
+
+![Main UI](screenshots/FT8.png)
+
 
 ## What you need
 
