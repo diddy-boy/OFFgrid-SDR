@@ -8,7 +8,7 @@ OFFgrid-SDR is a full software-defined radio receiver that runs entirely in your
 
 ![Weather Fax](screenshots/weather-example.png)
 
-## Demo video
+## Demo video (version 1.1)
 
 [![OFFgrid-SDR demo video](https://img.youtube.com/vi/TMCA4gI8UnE/maxresdefault.jpg)](https://youtu.be/TMCA4gI8UnE)
 
