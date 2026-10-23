@@ -37,38 +37,39 @@ So in a few steps I can go from a 10 MHz wide view down to a signal possibly onl
 
 ---
 
-## What's new in 1.7
+## What's new in 1.8
 
-**AUTO: much smarter**
+**New modes**
 
-- **SSB found and tuned for you:** AUTO finds an SSB voice wherever the dial sits on it (even faint ones), picks LSB or USB, and tunes to the carrier to within a few hertz by lining up the harmonics of the speaker's voice. Clicking an SSB signal on the waterfall does the same fine-tuning by itself.
-- **More modes recognised:** FT8 and FT4 on their frequencies, ACARS on its channels, PSK63 and PSK125 as well as PSK31, and DRM tuned to its centre.
-- **Fewer wrong answers:** fading AM is no longer taken for Morse or SSB, an off-tune voice is no longer taken for PSK, and fast or weak Morse is no longer taken for Hellschreiber.
-- **The AUTO switch** is pressed in while it's on, with a bar moving along its foot while it listens. Switching it off takes effect at once.
+- **WSPR:** radio amateurs' weak beacons, decoded every 2 minutes down to about −28 dB, far below what you can hear. Each shows the callsign, country, distance, bearing and the station's transmitter power (in dBm and watts), with a band list from 2200 m to 2 m. If the stations land away from where they should, OFFgrid-SDR shows how far off your stick is, and **Correct** fixes it.
+- **Time signal:** sets OFFgrid-SDR's clock from the shortwave time stations, with no internet, even if the computer's clock is hours out. CHU (Canada) gives the full date and time in about 15 seconds, WWV and WWVH (USA) at the end of a minute, RWM (Russia) the exact second. **Find a time station** tries them all; a station too weak for its time code still sets the seconds from its ticks; and if none can be heard, **Set by hand** takes the time from a phone. FT8, FT4, WSPR and the clock at the top all use the corrected time.
 
-**New and better decoders**
+**FT8 and FT4**
 
-- **FT4 (new):** FT8's faster sibling, used for contests: decodes every 7.5 seconds.
-- **FT8 and FT4 details:** each decode shows the station's **country** (from its callsign, using a table built into the app, so it works offline) and, with your location set, the **distance from you** in km and miles, and the bearing. A bigger list in columns, with **Expand**, **CQ only**, and **sorting** by time, distance, strength or country.
-- **Your location, offline:** pick your nearest city from 620 built in, type your locator, or let the computer say where it is if it can.
-- **FT8 and FT4 listen 5 kHz wide**, for busy bands.
-- **PSK starts part-way through a transmission:** tune into a QSO already in progress and text appears within a couple of seconds.
-- **RTTY sorts out mark and space by itself:** no more gibberish until you press Reverse.
-- **Mode choices:** FT8 and FT4 stay on the frequency you're on; FAX goes to the top of its station list, ACARS to 131.550 MHz.
+- **Deeper decoding:** the stations found are rebuilt and taken out of the signal, and it decodes again, up to three times, so weaker stations hidden under strong ones come through, as WSJT-X does. On a busy band that's about one extra station in five. They're marked ◆, and a switch turns it off to compare.
+- **Band lists** go straight to the FT8 or FT4 frequency on any band, and the list now lines up properly, with its columns under their headings.
+- **Room for uncalibrated sticks:** FT8, FT4 and WSPR listen from 1.5 kHz below the dial to 4.5 kHz above it, so a stick that's off frequency in either direction keeps the stations in view.
 
-**Tuning, keyboard and display**
+**Propagation**
 
-- **Keyboard shortcuts:** volume, bands, AUTO, pausing the waterfall, and typing a frequency on the number row or number pad from anywhere. The **keyboard button** next to **?** (or **K**) shows them all.
-- **Memory markers:** each memory in view shows as a small tag (M1, M2…) on the spectrum: hover to see it, click to recall it.
-- **Clock** under the frequency in UTC ("08:55Z"); click it for local time.
-- **Power-on lamp test:** like a car's dashboard, every light in the top bar comes on for 2 seconds while the meter sweeps up and back.
-- **Changing band zooms back out** to the full view, wider zoom buttons, and a tidier top bar.
+- **Heard:** who can your station hear? A summary of the last 15 minutes, hour or 3 hours, band by band: stations, countries, the farthest one, which directions each band is open towards, and whether it's rising or fading.
+- **Band survey:** listens to the FT8 frequency on each band from 80 to 10 m in turn, about 5 minutes in all, then comes back, so you can see at a glance which bands are open.
 
-**More reliable**
+**The stick**
 
-- **Switching off and on:** two bugs fixed. The receiver could stop following the tuning after a restart, and on some computers the tuner could miss its gain setting while waking up, leaving only noise.
-- **Decoders can no longer stop for good** after a single broken audio sample, and a clear message appears for sticks whose tuner chip can't be used.
-- **Check for updates** in the help panel: looks on GitHub for a newer version, only when you click it.
+- **Radio library updated** to Jacobo Tarrío's webrtlsdr 3.0.7 and signals 0.10.2, which fix problems found with OFFgrid-SDR: the RF gain is no longer lost when you switch off and on (the cause of weak reception after a restart on some computers), there's no frequency drift after a restart, and a stick that stops sending no longer hangs the radio. OFFgrid-SDR no longer needs its own patched copy.
+- **Power pressed while switching** (off and straight back on) is remembered and done, rather than lost, and the **OVL** back-off works with the window in the background too.
+
+**Demo**
+
+- New stations: WSPR on 14.0956 MHz, the time stations CHU (7.850 MHz), WWV (10 MHz) and RWM (4.996 MHz), and a weak FT8 station on 14.074 MHz hidden under a strong one, which only the deeper decoding finds. The busiest bands run several times faster, so the demo keeps up on slower computers.
+
+### Previously, in 1.7
+
+- **A much smarter AUTO:** finds and tunes SSB voices to within a few hertz, recognises more modes (FT8, FT4, ACARS, PSK63 and PSK125, DRM), and makes fewer wrong guesses.
+- **New and better decoders:** FT4; country, distance and bearing for every FT8 and FT4 station, with 620 built-in cities for setting your location offline; PSK that starts part-way through a transmission; and RTTY that sorts out mark and space by itself.
+- **Keyboard shortcuts**, memory markers on the spectrum, a UTC clock, and the power-on lamp test.
+- **More reliable** switching off and on, decoders that recover from broken audio, and **Check for updates**.
 
 ### Previously, in 1.6
 
@@ -219,7 +220,7 @@ The same eight buttons on every band:
 
 - **FM** is wideband on the FM broadcast band (stereo, RDS) and narrowband everywhere else (repeaters, PMR446, marine).
 - **SAM** is synchronous AM, which stops fading distortion. **SAM-U and SAM-L** (under More) use just one sideband, to dodge a neighbouring station splattering into the other side: a feature usually found only on specialist receivers.
-- **More ▾** holds SAM-U and SAM-L, the decoders (RTTY, PSK, NAVTEX, DSC, FT8, FT4, ACARS, weather fax, SSTV, Hellschreiber) and explicit Wide or Narrow FM.
+- **More ▾** holds SAM-U and SAM-L, the decoders (RTTY, PSK, NAVTEX, DSC, FT8, FT4, WSPR, time signal, ACARS, weather fax, SSTV, Hellschreiber) and explicit Wide or Narrow FM.
 - Modes that don't fit where you're tuned are **greyed out**, with the reason in the tooltip, so the row never changes shape.
 
 ### AUTO
@@ -248,11 +249,16 @@ If nothing is clear, it picks the band's usual mode: the ham band's sideband (LS
 - **RTTY:** radioteletype from weather and news stations and radio amateurs. It finds the shift (170, 425, 450 or 850 Hz), the speed (45.45, 50 or 75 baud), and which way round mark and space are, by itself. Reverse still works by hand.
 - **NAVTEX:** maritime safety and weather messages on 518 kHz, 490 kHz and 4209.5 kHz, with each message's station, subject and number. Damaged characters are repaired from their second copy.
 - **DSC (Digital Selective Calling):** ships' distress, urgency, safety and routine calls on the HF DSC frequencies, listed with who called whom (MMSI numbers). Distress calls are shown in red.
-- **FT8 and FT4:** decode everyone in the passband (5 kHz wide) every 15 seconds (FT8) or 7.5 seconds (FT4), and list them with the time, strength, timing, audio frequency and message. They correct the computer's clock from the stations they hear, so they work offline. Choosing FT8 or FT4 stays on the frequency you're on.
+- **FT8 and FT4:** decode everyone in the passband (6 kHz wide, from 1.5 kHz below the dial) every 15 seconds (FT8) or 7.5 seconds (FT4), and list them with the time, strength, timing, audio frequency and message. They correct the computer's clock from the stations they hear, so they work offline. Choosing FT8 or FT4 stays on the frequency you're on.
   - Each decode shows the station's **country**, worked out from its callsign using a table of 269 countries and areas built into the app: nothing is looked up online.
   - With your location set, it also shows the **distance from you** in km and miles, and the bearing. Set your location in *Settings → Decoders → your station*: pick your nearest city from 620 built in, type your Maidenhead locator, or let the computer say where it is (that needs a GPS, or an internet connection). The first time you use FT8 or FT4, OFFgrid-SDR asks the computer once; if it can't say, nothing is set.
   - Hover over a line for the continent, what the message is (a CQ call, a reply, a signal report, RR73…) and the grid square. CQ calls are shown in yellow, and calls to your own callsign (if you set one) are highlighted.
   - **Expand** makes the list bigger, **CQ only** shows just the stations calling, and clicking a column title sorts by time, distance, strength or country (click it again to go back to the newest first). **Copy** includes the country and distance.
+  - **Deeper decoding** takes the stations it has found out of the signal and decodes again, up to three times, so weaker stations hidden under strong ones come through. They're marked ◆.
+  - A **band list** at the top of the box goes straight to the FT8 or FT4 frequency on any band.
+- **WSPR:** weak-signal beacons from radio amateurs, decoded every 2 minutes down to about −28 dB, in the same list as FT8 with each station's transmitter power. The whole passband is searched, so an uncalibrated stick still finds them, and if they land away from where they should, OFFgrid-SDR offers to correct the stick.
+- **Time signal:** sets OFFgrid-SDR's clock from CHU (3.330, 7.850, 14.670 MHz), WWV and WWVH (2.5 to 25 MHz) or RWM (4.996, 9.996, 14.996 MHz): the full time from CHU or WWV, the exact second from any station's ticks. **Find a time station** tries them all; **Set by hand** takes the time from a phone if none can be heard.
+- **Heard and band survey:** the **Heard** button in the FT8 box sums up who you can hear, band by band (stations, countries, the farthest, the directions each band is open towards, rising or fading), and **Survey bands** checks every band from 80 to 10 m in about 5 minutes.
 - **ACARS:** aircraft text messages on the airband, decoded and listed. Choosing ACARS away from an ACARS channel tunes to 131.550 MHz.
 - **SSTV (slow-scan TV):** pictures in the Martin, Scottie and PD formats, drawn line by line as they arrive and saved as PNG. On shortwave, in USB (14.230 MHz) or LSB on 40 and 80 m (7.171 MHz), chosen by itself, and on VHF (the ISS on 145.800 MHz during its SSTV events).
 - **PSK:** keyboard-to-keyboard ham text. Decodes PSK31, PSK63 and PSK125, finds the speed by itself, and starts within a couple of seconds even part-way through a transmission. Click a signal to snap onto it.
@@ -339,11 +345,14 @@ While paused, the **mouse wheel** scrolls back through the whole buffer, not jus
 - **Waterfall replay** uses memory: 2 bytes per sample, about 123 MB for 30 seconds at 2.048 MS/s (246 MB for 60 seconds), which is why it's off by default. On phones and computers with 4 GB or less, the longer buffers are greyed out. A selection can't cross a retune.
 - **Older and slower computers:** a typical laptop or desktop runs everything smoothly. On a budget or older one, use **Low-power mode** (in testing it removed all audio gaps on a computer four times slower than normal). A very old or very cheap machine may struggle even then.
 - **AUTO** judges a couple of seconds of signal, so it can be wrong, especially on very weak signals. If something sounds wrong, choose the mode yourself. On SSB it gets within a few hertz of the carrier; use **← →** for the last touch if a voice sounds slightly high or low.
-- **FT8 and FT4:** these decoders reach a few dB less deep into the noise than WSJT-X. The clock correction can't detect a computer clock wrong by whole 15-second slots, so the times shown could then be off by a multiple of 15 s. Countries are the country of licence: a few special-event prefixes and some portable operations abroad may show the home country, or nothing. Distances are approximate (a 4-character locator square is about 100 × 200 km).
+- **FT8 and FT4:** these decoders still reach a little less deep into the noise than WSJT-X on a single weak station. On their own, FT8 stations can only correct the clock to within their 15-second slots: a clock out by more than about 7 seconds is put right by a time signal (or set by hand), not by FT8.
+- **WSPR** needs the clock right to within a few seconds. After a week or so away from the internet, a computer's clock can drift further than that: a quick time-signal check puts it right.
+- **Time signals:** the UK's MSF (60 kHz) and Germany's DCF77 (77.5 kHz) are below the sticks' range. OFFgrid-SDR corrects its own clock, but a web page can't change the computer's clock itself.
 - **AI voice cleaner:** built for speech, so it quietens or silences music (choose a lighter strength), and it can't separate two voices. It adds about 10 ms of delay.
 - **Smart notch:** a long held musical note can look like a whine; right-click its line to remove that notch.
 - **DRM** digital broadcasts are recognised but can't be decoded: their audio codecs aren't available in browsers and are tied up in licensing.
 - **DSC calls** last only about 6 seconds, so weak or fading ones can be missed. Unreadable digits are shown as ??, never as wrong numbers.
+- **Audio extensions** (equalisers and the like) work with OFFgrid-SDR, but if you open it as a file, Chrome needs you to allow each one first: go to `chrome://extensions`, click **Details** on the extension, and turn on **Allow access to file URLs**.
 - **Nooelec and other direct-sampling sticks:** on shortwave the signal bypasses the tuner, so the RF gain slider has no effect there (it's greyed out, with an explanation). The RTL-SDR Blog V4 isn't affected.
 - **Background tabs:** if the browser's memory saver puts the tab fully to sleep, everything stops, sound included. Tell the browser to keep OFFgrid-SDR active (in Chrome: Settings → Performance → Memory Saver → "Always keep these sites active").
 
@@ -355,7 +364,7 @@ While paused, the **mouse wheel** scrolls back through the whole buffer, not jus
 
 OFFgrid-SDR is built on the work of others:
 
-- [**@jtarrio/webrtlsdr**](https://github.com/jtarrio/webrtlsdr) by Jacobo Tarrío: the WebUSB driver for the RTL2832U and its tuners, including the RTL-SDR Blog V4's HF upconverter. Apache License 2.0. Several of OFFgrid-SDR's fixes to it have since been taken into the original.
+- [**@jtarrio/webrtlsdr**](https://github.com/jtarrio/webrtlsdr) by Jacobo Tarrío: the WebUSB driver for the RTL2832U and its tuners, including the RTL-SDR Blog V4's HF upconverter. Apache License 2.0. Several of OFFgrid-SDR's fixes to it have since been taken into the original. Version 3.0.7 includes fixes for problems found with OFFgrid-SDR: many thanks to Jacobo for his help.
 - [**@jtarrio/signals**](https://github.com/jtarrio/signals) by Jacobo Tarrío: the signal processing, including the FFT, filters, and the FM, AM, SAM (with its selectable sidebands), SSB and CW demodulators. Apache License 2.0.
 - **Google Radio Receiver**, the original Chrome app these libraries grew from.
 - [**Osmocom rtl-sdr**](https://osmocom.org/projects/rtl-sdr), for working out how to use these USB TV sticks as software-defined radios.
@@ -371,6 +380,9 @@ OFFgrid-SDR is built on the work of others:
 - Frequencies for the Mystery stations come from [**Priyom**](https://priyom.org).
 - Callsign countries follow the **ITU's allocation of callsign prefixes** to countries.
 - PSK31 and its Varicode alphabet were created by **Peter Martinez, G3PLX**.
+- **WSPR** was created by **Joe Taylor, K1JT**. OFFgrid-SDR's WSPR decoder follows the published protocol, and was checked against the encoder in [**WsprryPi**](https://github.com/JamesP6000/WsprryPi).
+- The time-code formats are published by the **National Research Council Canada** (CHU) and **NIST** (WWV and WWVH); the WWV bit layout follows the [**NTP project**](https://www.ntp.org)'s WWV driver.
+- Taking decoded FT8 stations out of the signal to find weaker ones follows the method of [**WSJT-X**](https://wsjt.sourceforge.io) by Joe Taylor, K1JT, and its developers.
 
 The full licence texts are in the `licenses` folder.
 
