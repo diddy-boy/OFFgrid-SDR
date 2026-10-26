@@ -160,8 +160,6 @@ OFFgrid-SDR is **one file**: `index.html`. That's all you need; everything else 
 
 **No stick yet?** Open `index.html?demo` for **demo mode**: simulated stations that show off every feature, including FM stereo with RDS, fading shortwave, SSB, Morse, a weather fax chart, RTTY and NAVTEX bulletins, a DSC distress call, SSTV test cards, PSK31 and PSK63, FT8, FT4 and WSPR, the time stations CHU, WWV and RWM, ACARS, APRS, ships on AIS, Hellschreiber, a DRM broadcast, a whistle-and-hum station for the smart notch, and the famous "Buzzer". Press Power on, then pick a station from the Demo stations list.
 
-**Testing a release:** with `selftest.js` beside `index.html`, opening `index.html?demo&selftest` runs a self-test of 64 checks across every mode and decoder, in about 15 minutes. Nothing it does is saved.
-
 ### One-time driver setup
 
 - **Windows:** run [Zadig](https://zadig.akeo.ie), choose *Options → List All Devices*, select *Bulk-In, Interface (Interface 0)* (or *RTL2838UHIDIR*), choose **WinUSB** and click **Replace Driver**.
