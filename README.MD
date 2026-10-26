@@ -63,6 +63,8 @@ Both show only error-free messages, checked with their CRC.
 - **Each stick keeps its own frequency correction:** plug a calibrated stick in again and its correction comes back; a different stick starts at 0 ppm.
 - **The FM band for your country,** chosen from your location: 87.5–108 MHz for most of the world, 87.9–107.9 MHz in 200 kHz steps in the USA, Canada and Mexico, 76–95 MHz in Japan, 76–108 MHz in Brazil and Chile, and 65.8–108 MHz in Russia and some neighbouring countries.
 
+small fix for the Ham It Up Converter in version 1.9.1 that was not applying the offset correctly
+
 **Fixes**
 
 - AUTO no longer mistakes a broadcast station deep in a fade for Hellschreiber.
