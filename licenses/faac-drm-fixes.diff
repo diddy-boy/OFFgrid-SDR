@@ -1,0 +1,140 @@
+FAAC DRM fixes (OFFgrid-SDR, October 2026), against FAAC 17da360 (the last version with DRM support, before
+"Remove Digital Radio Mondiale (DRM) support", 72ee46a). With these, FAAC's DRM output (960-sample ER-AAC with HCR
+and VCB11) decodes correctly in both FAAD2 and Fraunhofer FDK AAC: every codeword as coded, audio correlation 0.999.
+1. frame.c: the DRM rate loop re-ran the quantiser without resetting each band's scalefactor (sf +=): 162 became 325.
+2. huff2.c: VCB11 codebooks were chosen from the escape sequence's coded bit pattern, not the largest value.
+3. bitstream.c: PutBitHcr() used PutBit(), which clears and overwrites whole bytes (it is for writing in order);
+   HCR writes out of order, so it wiped neighbouring codewords. Now it sets or clears exactly its own bits.
+4. bitstream.c: after presorting, only the sorted codewords are counted (the empty ones of zero bands are left out).
+Also: use long blocks only (SHORTCTL_NOSHORT): FAAC's HCR presorting for short blocks is unfinished (its own TODO).
+
+diff --git a/libfaac/bitstream.c b/libfaac/bitstream.c
+index 82973a7..27d330a 100644
+--- a/libfaac/bitstream.c
++++ b/libfaac/bitstream.c
+@@ -573,6 +573,9 @@ static int WriteICS(CoderInfo *coderInfo,
+     }
+ 
+ #ifdef DRM
+     /* Write the 8-bit global_gain */
+     if (writeFlag)
+         PutBit(bitStream, coderInfo->global_gain, LEN_GLOB_GAIN);
+@@ -979,8 +982,18 @@ static int PutBitHcr(BitStream *bitStream,
+                      unsigned long data,
+                      int numBit)
+ { /* data can be written at an arbitrary position in the bitstream */
+-    bitStream->currentBit = curpos;
+-    return PutBit(bitStream, data, numBit);
++    /* OFFgrid-SDR fix: PutBit() is for writing in order: it clears a byte as it starts it and overwrites the last
++       partial byte. HCR writes out of order (each segment's start, then its end, jumping about), so every write wiped
++       the neighbouring bits of codewords already placed. Here exactly these bits are set or cleared, nothing else */
++    int i;
++    for (i = 0; i < numBit; i++) {
++        unsigned long p = curpos + i;
++        unsigned char m = (unsigned char)(0x80 >> (p & 7));
++        if ((data >> (numBit - 1 - i)) & 1) bitStream->data[p >> 3] |= m; else bitStream->data[p >> 3] &= (unsigned char)~m;
++    }
++    bitStream->currentBit = curpos + numBit;
++    bitStream->numBit = bitStream->currentBit;
++    return 0;
+ }
+ 
+ static int rewind_word(int W, int len)
+@@ -995,6 +1008,7 @@ static int rewind_word(int W, int len)
+     return tmp_W;
+ }
+ 
+ static int WriteReorderedSpectralData(CoderInfo *coder,
+                                       BitStream *bitStream,
+                                       int writeFlag)
+@@ -1136,6 +1150,10 @@ static int WriteReorderedSpectralData(CoderInfo *coder,
+                 }
+             }
+         }
++        /* OFFgrid-SDR fix: the codewords of all-zero / intensity bands (empty, codebook 0) aren't in the presort list,
++           so fewer codewords come out sorted than went in. Everything below used the old count: the leftover slots
++           held stale, unsorted copies of real codewords, which were placed again over the real data */
++        num_cw = cw_cnt;
+ 
+         /* init segments */
+         accsegmsize = 0;
+@@ -1156,8 +1174,10 @@ static int WriteReorderedSpectralData(CoderInfo *coder,
+             accsegmsize += cursegmsize;
+         }
+ 
+         /* store current bit position */
+         startbitpos = bitStream->currentBit;
++        { long b; for (b = startbitpos; b < startbitpos + coder->iLenReordSpData; b++) bitStream->data[b >> 3] &= (unsigned char)~(0x80 >> (b & 7)); }   /* (fix: a clean area) */
+ 
+         /* write write priority codewords (PCWs) and nonPCWs ---------------- */
+         if (segmcnt > 0)
+@@ -1208,8 +1228,8 @@ static int WriteReorderedSpectralData(CoderInfo *coder,
+                                 /* write complete data, no partitioning */
+                                 if (is_backwards) {
+                                     /* write data in reversed bit-order */
+-                                    PutBitHcr(bitStream, startbitpos + segment[segment_index].right - coder->s[cur_cw_part].len + 1,
+-                                        rewind_word(coder->s[cur_cw_part].data, coder->s[cur_cw_part].len), coder->s[cur_cw_part].len);
+ 
+                                     segment[segment_index].right -= coder->s[cur_cw_part].len;
+                                 } else {
+@@ -1235,8 +1255,8 @@ static int WriteReorderedSpectralData(CoderInfo *coder,
+ 
+                                 if (is_backwards) {
+                                     /* write data in reversed bit-order */
+-                                    PutBitHcr(bitStream, startbitpos + segment[segment_index].right - tmplen + 1,
+-                                        rewind_word(tmp_data, tmplen), tmplen);
+ 
+                                     segment[segment_index].right -= tmplen;
+                                 } else {
+@@ -1262,6 +1282,7 @@ static int WriteReorderedSpectralData(CoderInfo *coder,
+ 
+         /* set parameter for bit stream to current correct position */
+         bitStream->currentBit = startbitpos + coder->iLenReordSpData;
++        { long e = bitStream->currentBit; if (e & 7) bitStream->data[e >> 3] &= (unsigned char)(0xFF << (8 - (e & 7))); }   /* (fix: nothing stale after it) */
+         bitStream->numBit = bitStream->currentBit;
+     }
+ 
+diff --git a/libfaac/frame.c b/libfaac/frame.c
+index 84d30f8..4a05ea7 100644
+--- a/libfaac/frame.c
++++ b/libfaac/frame.c
+@@ -581,6 +581,11 @@ int FAACAPI faacEncEncode(faacEncHandle hpEncoder,
+     diff = 1; /* to enter while loop */
+     hEncoder->aacquantCfg.quality = 120; /* init quality setting */
+     while (diff > 0) { /* if too many bits, do it again */
++    /* OFFgrid-SDR fix: start each pass afresh. The quantiser adds each band's offset to its scalefactor (sf +=),
++       relying on AACstereo() having set it to 0 and the band's codebook to HCB_NONE; it was only run once, before
++       this loop, so every repeat pass added another offset (162 became 325...): far too loud, out of range */
++    AACstereo(coderInfo, channelInfo, hEncoder->freqBuff, numChannels,
++              (faac_real)hEncoder->aacquantCfg.quality/DEFQUAL, jointmode);
+ #endif
+     for (channel = 0; channel < numChannels; channel++) {
+         BlocQuant(&coderInfo[channel], hEncoder->freqBuff[channel],
+diff --git a/libfaac/huff2.c b/libfaac/huff2.c
+index abc1b2d..56ec5cd 100644
+--- a/libfaac/huff2.c
++++ b/libfaac/huff2.c
+@@ -321,8 +321,10 @@ static int huffcode(int *qs /* quantized spectrum */,
+                     coder->num_data_cw[coder->cur_cw]++;
+                     drmbits += blen;
+ 
+-                    if (maxesc < data)
+-                        maxesc = data;
++                    /* OFFgrid-SDR fix: VCB11 (table 157) is chosen by the largest absolute value in the section, not
++                       by the escape sequence's coded bit pattern (data), which can be far smaller (16 is coded as 0) */
++                    if (maxesc < abs(qp[0]))
++                        maxesc = abs(qp[0]);
+ #endif
+                 }
+                 bits += blen;
+@@ -339,8 +341,8 @@ static int huffcode(int *qs /* quantized spectrum */,
+                     coder->num_data_cw[coder->cur_cw]++;
+                     drmbits += blen;
+ 
+-                    if (maxesc < data)
+-                        maxesc = data;
++                    if (maxesc < abs(qp[1]))                 /* (as above: the value, not its escape pattern) */
++                        maxesc = abs(qp[1]);
+ #endif
+                 }
+                 bits += blen;
