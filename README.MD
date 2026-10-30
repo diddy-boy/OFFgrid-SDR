@@ -29,6 +29,9 @@ The humble RTL-SDR stick needs some love. It has always been treated as an add-o
 ## What's new in 2.0
 
 - **DRM digital radio, with sound.** DRM is digital broadcasting on long, medium and short wave: a flat block about 10 kHz wide on the waterfall, with FM-like sound when it's received well. Tune to its centre and choose **DRM** (under More), or let **AUTO** find it. The DRM box shows the station's **name**, language and audio type, the signal's settings and its **quality**, then plays the **sound** (AAC, including SBR and parametric stereo) about 5 seconds behind the signal, as on any DRM receiver.
+
+![DRM mode](screenshots/DRM.png)
+
   - It finds the robustness mode (A to D) and bandwidth by itself, copes with tuning off centre, mirrored signals and interference on part of the channel, and was tested on real broadcasts in modes A, B and C and off air.
   - When a station can't be played, it **says why**: too weak (16-QAM needs about 10 dB, 64-QAM about 16), or using **xHE-AAC**, unequal protection or hierarchical modulation, which aren't decoded yet. The name and settings are still shown.
   - The **waterfall replay** reads a DRM station's name from a selection, and the **demo** has a real DRM station, "OFFgrid DRM" on 6.095 MHz, playing an original jingle.
