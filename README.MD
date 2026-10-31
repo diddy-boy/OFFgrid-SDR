@@ -202,6 +202,10 @@ Switch on the **waterfall buffer** (15, 30 or 60 seconds), press **⏸**, and dr
 
 ![Visit count](https://hits.sh/github.com/diddy-boy/OFFgrid-SDR.svg) visits and counting!
 
+## Support
+
+OFFgrid-SDR is free. If it's useful to you, you can [**buy me a coffee**](https://buymeacoffee.com/billynomates1974). ☕
+
 ## Credits and licences
 
 OFFgrid-SDR is built on the work of others:
@@ -235,8 +239,6 @@ OFFgrid-SDR is built on the work of others:
 
 ---
 
-## Support
 
-OFFgrid-SDR is free. If it's useful to you, you can [**buy me a coffee**](https://buymeacoffee.com/billynomates1974). ☕
 
 73!
