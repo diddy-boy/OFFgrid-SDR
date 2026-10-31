@@ -32,7 +32,7 @@ The humble RTL-SDR stick needs some love. It has always been treated as an add-o
 
 ![DRM mode](screenshots/DRM.png)
 
-[![OFFgrid-SDR DRM video](https://youtu.be/TMCA4gI8UnE)https://youtu.be/fl4mmtktke4?si=DlAOWYaeuBXb0FtE]
+[![OFFgrid-SDR DRM video](https://img.youtube.com/vi/TMCA4gI8UnE/maxresdefault.jpg)]https://youtu.be/fl4mmtktke4?si=DlAOWYaeuBXb0FtE)
 
   - It finds the robustness mode (A to D) and bandwidth by itself, copes with tuning off centre, mirrored signals and interference on part of the channel, and was tested on real broadcasts in modes A, B and C and off air.
   - When a station can't be played, it **says why**: too weak (16-QAM needs about 10 dB, 64-QAM about 16), or using **xHE-AAC**, unequal protection or hierarchical modulation, which aren't decoded yet. The name and settings are still shown.
