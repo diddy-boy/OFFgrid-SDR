@@ -32,6 +32,7 @@ The humble RTL-SDR stick needs some love. It has always been treated as an add-o
 
 ![DRM mode](screenshots/DRM.png)
 
+Right mouse click to watch a DRM demo in a new page
 [![OFFgrid-SDR DRM video](https://img.youtube.com/vi/fl4mmtktke4/hqdefault.jpg)](https://youtu.be/fl4mmtktke4)
 
   - It finds the robustness mode (A to D) and bandwidth by itself, copes with tuning off centre, mirrored signals and interference on part of the channel, and was tested on real broadcasts in modes A, B and C and off air.
