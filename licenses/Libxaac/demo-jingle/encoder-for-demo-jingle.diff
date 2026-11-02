@@ -1,0 +1,71 @@
+--- encoder/ixheaace_api.c	2026-10-30 11:40:20.521519970 +0000
++++ /tmp/xe/api_lowrate.c	2026-11-01 19:24:58.731096861 +0000
+@@ -669,9 +669,9 @@
+     if (pstr_input_config->harmonic_sbr != 1) {
+       pstr_input_config->hq_esbr = 0;
+     }
+-    if (pstr_input_config->i_bitrate != 64000 && pstr_input_config->i_bitrate != 96000) {
+-      pstr_input_config->i_bitrate = USAC_BITRATE_DEFAULT_VALUE;
+-    }
++    /* (OFFgrid-SDR, for making the demo's jingle only: DRM's low bit rates allowed; this release forced any other
++       rate than 64 or 96 kbit/s to 96) */
++    if (pstr_input_config->i_bitrate <= 0) pstr_input_config->i_bitrate = USAC_BITRATE_DEFAULT_VALUE;
+     {
+       if (pstr_input_config->i_bitrate < MINIMUM_BITRATE * pstr_input_config->i_channels) {
+         pstr_input_config->i_bitrate = MINIMUM_BITRATE * pstr_input_config->i_channels;
+@@ -999,7 +999,7 @@
+                    (pstr_usac_config->ccfl * 1000));
+     }
+     pstr_usac_config->use_delay_adjustment = pstr_input_config->use_delay_adjustment;
+-    if (pstr_usac_config->random_access_interval) {
++    if (pstr_usac_config->random_access_interval > 0) {   /* (OFFgrid-SDR: the default, -1, meant on) */
+       pstr_usac_config->preroll_flag = 1;
+     }
+     if (pstr_usac_config->sbr_enable == 1) {
+@@ -3890,6 +3890,9 @@
+         pstr_api_struct->pstr_state->str_usac_enc_data.usac_independency_flag = 0;
+       }
+     }
++    /* (OFFgrid-SDR, for the demo's DRM jingle: every frame independent, as DRM broadcasters send them, so a receiver
++       can start on any frame) */
++    pstr_api_struct->pstr_state->str_usac_enc_data.usac_independency_flag = 1;
+ 
+     {
+       error = iusace_process(pstr_api_struct);
+--- encoder/iusace_enc_main.c	2026-10-30 11:40:20.521519970 +0000
++++ /tmp/xe/enc_main_drm.c	2026-11-01 19:24:18.584656930 +0000
+@@ -618,14 +618,8 @@
+       p_audio_specific_config->channel_configuration = ptr_usac_config->channels;
+     }
+   }
+-  ia_usac_enc_element_config_struct *pstr_usac_elem_config =
+-      &(pstr_asc_usac_config->str_usac_element_config[pstr_asc_usac_config->num_elements]);
+-  pstr_asc_usac_config->usac_element_type[pstr_asc_usac_config->num_elements] = ID_USAC_EXT;
+-  pstr_usac_elem_config->usac_ext_ele_type = ID_EXT_ELE_AUDIOPREROLL;
+-  pstr_usac_elem_config->usac_ext_ele_dflt_len_present = 0;
+-  pstr_usac_elem_config->usac_ext_ele_payload_present = 0;
+-  pstr_usac_elem_config->usac_ext_ele_cfg_len = 0;
+-  pstr_asc_usac_config->num_elements++;
++  /* (OFFgrid-SDR, for the demo's DRM jingle: no audio pre-roll element; DRM's configuration has one audio element only) */
++  ia_usac_enc_element_config_struct *pstr_usac_elem_config;
+   // DRC Config
+   if (ptr_usac_config->use_drc_element) {
+     ptr_usac_config->str_drc_cfg.str_uni_drc_config.str_channel_layout.base_ch_count =
+@@ -805,7 +799,7 @@
+     usac_data->channel_elem_type[idx] = pstr_asc_usac_config->usac_element_type[elem_idx];
+   }
+ 
+-  if (ptr_usac_config->use_fill_element) {
++  if (0 && ptr_usac_config->use_fill_element) {   /* (OFFgrid-SDR: no fill element either) */
+     ia_usac_enc_element_config_struct *pstr_usac_elem_config =
+         &(pstr_asc_usac_config->str_usac_element_config[pstr_asc_usac_config->num_elements]);
+     pstr_asc_usac_config->usac_element_type[pstr_asc_usac_config->num_elements] = ID_USAC_EXT;
+@@ -1435,7 +1429,7 @@
+                                           pstr_it_bit_buff_temp, check_num_bits);
+   }
+ 
+-  if (ptr_usac_config->use_fill_element) {
++  if (0 && ptr_usac_config->use_fill_element) {   /* (OFFgrid-SDR: no fill element either) */
+     WORD32 full_elem_num_bits = 0;
+     padding_bits = ptr_usac_data->min_bits_needed - num_bits;
+     full_elem_num_bits = iusace_write_fill_ele(pstr_it_bit_buff, padding_bits);
