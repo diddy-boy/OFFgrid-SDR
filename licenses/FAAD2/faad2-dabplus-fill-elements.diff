@@ -1,0 +1,54 @@
+--- a/libfaad/syntax.c	2026-11-02 00:26:00.661999632 +0000
++++ b/libfaad/syntax.c	2026-11-02 00:26:00.665556322 +0000
+@@ -98,11 +98,11 @@
+ #ifdef DRM
+ static int8_t DRM_aac_scalable_main_header(NeAACDecStruct *hDecoder, ic_stream *ics1, ic_stream *ics2,
+                                            bitfile *ld, uint8_t this_layer_stereo);
+-#else
++#endif
++/* OFFgrid-SDR: also declared in DRM builds, which decode DAB+ (plain AAC with fill elements) as well */
+ static uint16_t extension_payload(bitfile *ld, drc_info *drc, uint16_t count);
+ static uint8_t dynamic_range_info(bitfile *ld, drc_info *drc);
+ static uint8_t excluded_channels(bitfile *ld, drc_info *drc);
+-#endif
+ 
+ 
+ /* Table 4.4.1 */
+@@ -1179,7 +1179,15 @@
+ #endif
+         } else {
+ #endif
+-#ifndef DRM
++#ifdef DRM
++            /* OFFgrid-SDR: DRM forbids standard extension payloads, but only DRM streams should be refused them:
++               a DRM-enabled build also decodes DAB+ and other plain AAC, whose fill elements (padding, DRC) are normal */
++            if (hDecoder->object_type == DRM_ER_LC)
++            {
++                (void)drc;
++                return 30;
++            }
++#endif
+             while (count > 0)
+             {
+                 uint16_t payload_bytes = extension_payload(ld, drc, count);
+@@ -1189,10 +1197,6 @@
+                     count = 0;
+                 }
+             }
+-#else
+-            (void)drc;
+-            return 30;
+-#endif
+ #ifdef SBR_DEC
+         }
+ #endif
+@@ -2240,7 +2244,8 @@
+     return 0;
+ }
+ 
+-#ifndef DRM
++/* OFFgrid-SDR: compiled in DRM builds too (see fill_element) */
++#if 1
+ /* Table 4.4.30 */
+ static uint16_t extension_payload(bitfile *ld, drc_info *drc, uint16_t count)
+ {

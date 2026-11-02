@@ -6,9 +6,11 @@
 #   sudo apt-get install clang-18 lld-18 wasi-libc libclang-rt-18-dev-wasm32
 # (A 1 MB stack: the default 64 kB overflows in FAAD2's parametric stereo decoding.)
 # Run in this folder:  sh build.sh
-# The result should have SHA-256 93bb7da6a6ebe83de762c1d3afec96f3c564e54598462846f19aa178092d1778 (245,488 bytes).
+# The result should have SHA-256 1e54e377563c4f316306b4498c5b607c18efe21c72767b1135c3a206f818a7e5 (248,181 bytes).
 set -e
 rm -rf faad2-a335040 obj && tar xzf faad2-a335040-source.tar.gz && mkdir obj
+# OFFgrid-SDR's one change to FAAD2 (see README.md): fill elements parsed in DRM-enabled builds, for DAB+
+(cd faad2-a335040 && patch -p1 < ../faad2-dabplus-fill-elements.diff)
 cd faad2-a335040
 W="--target=wasm32-wasi -isystem /usr/include/wasm32-wasi"
 D="-DHAVE_INTTYPES_H=1 -DHAVE_MEMCPY=1 -DHAVE_STRING_H=1 -DHAVE_STRINGS_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_LRINTF=1 -DPACKAGE_VERSION=\"2.11-wasm\" -DAPPLY_DRC -DDRM_SUPPORT"
@@ -17,7 +19,7 @@ for f in libfaad/*.c; do
 done
 cd ..
 wasm-ld-18 --no-entry --gc-sections --strip-all -z stack-size=1048576 \
-  --export=NeAACDecOpen --export=NeAACDecInitDRM --export=NeAACDecDecode --export=NeAACDecClose --export=NeAACDecGetErrorMessage \
+  --export=NeAACDecOpen --export=NeAACDecInitDRM --export=NeAACDecInit2 --export=NeAACDecDecode --export=NeAACDecClose --export=NeAACDecGetErrorMessage \
   --export=malloc --export=free \
   -L/usr/lib/wasm32-wasi obj/*.o -lc -lm /usr/lib/llvm-18/lib/clang/18/lib/wasi/libclang_rt.builtins-wasm32.a \
   -o faad_drm.wasm
