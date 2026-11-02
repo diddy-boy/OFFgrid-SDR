@@ -26,6 +26,8 @@ The humble RTL-SDR stick needs some love. It has always been treated as an add-o
 
 ## What's new in 2.1
 
+![DAB mode](screenshots/DAB.png)
+
 - **DAB and DAB+ digital radio, with sound.** DAB is digital radio on VHF Band III (174–240 MHz): each channel carries a **multiplex** of several stations, a flat block 1.5 MHz wide on the waterfall. Choose a channel in the band chips' new **DAB** group (5A to 13F), or tune anywhere in a multiplex with **AUTO** on. The box bottom left shows the multiplex's **name** and its **stations**: click one to listen.
   - Both kinds play: **DAB+** (HE-AAC, through FAAD2) and the original **DAB** (MP2), still used by many stations (11 of the BBC's 14 national stations, for example).
   - If you don't choose a station, one starts by itself after a few seconds: **your last station on that multiplex**, or else the first in the list.
