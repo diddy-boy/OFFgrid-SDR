@@ -4,7 +4,7 @@
 # Needs: clang-18 and wasm-ld-18 (LLVM 18), wasi-libc, libclang_rt.builtins for wasm32. On Ubuntu 24.04:
 #   apt install clang-18 lld-18 wasi-libc libclang-rt-18-dev-wasm32
 # Run in this folder:  sh build.sh       Result: mp2.wasm, and its SHA-256, which should be
-#   3bc29a2763adf00a7a55de542627613f6942b98b8a63b1062d79f09ede6889ed (25,035 bytes)
+#   7dc975ba49cb94dc6a96e683447ae264ce9371b8c441812fce91465c0953a664 (25,100 bytes)
 set -e
 W="--target=wasm32-wasi -isystem /usr/include/wasm32-wasi"
 clang-18 $W -Oz -w -c mp2_glue.c -o mp2_glue.o

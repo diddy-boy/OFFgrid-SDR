@@ -1,0 +1,70 @@
+--- pl_mpeg.h.orig	2026-11-09 00:31:07.868804850 +0000
++++ /mnt/user-data/outputs/release-2.2/licenses/pl_mpeg/pl_mpeg.h	2026-11-09 00:31:07.140449761 +0000
+@@ -3984,7 +3984,7 @@
+ 	for (i = self->buffer->bit_index >> 3; i < self->buffer->length-1; i++) {
+ 		if (
+ 			self->buffer->bytes[i] == 0xFF &&
+-			(self->buffer->bytes[i+1] & 0xFE) == 0xFC
++			(self->buffer->bytes[i+1] & 0xF6) == 0xF4     // OFFgrid-SDR: Layer II, MPEG-1 (0xFC/FD) or MPEG-2 (0xF4/F5), as kjmp2 1.1
+ 		) {
+ 			self->buffer->bit_index = ((i+1) << 3) + 3;
+ 			return TRUE;
+@@ -4018,8 +4018,10 @@
+ 	self->layer = plm_buffer_read(self->buffer, 2);
+ 	int hasCRC = !plm_buffer_read(self->buffer, 1);
+ 
++	// OFFgrid-SDR: MPEG-2's half sample rates (16, 22.05, 24 kHz) accepted too, as kjmp2 1.1 does: DAB uses 24 kHz for
++	// many speech stations. (The tables for them were already here; only this check kept them out.)
+ 	if (
+-		self->version != PLM_AUDIO_MPEG_1 ||
++		(self->version != PLM_AUDIO_MPEG_1 && self->version != PLM_AUDIO_MPEG_2) ||
+ 		self->layer != PLM_AUDIO_LAYER_II
+ 	) {
+ 		return 0;
+@@ -4034,6 +4036,10 @@
+ 	if (samplerate_index == 3) {
+ 		return 0;
+ 	}
++	if (self->version == PLM_AUDIO_MPEG_2) {    // OFFgrid-SDR: the MPEG-2 halves of the rate tables
++		bitrate_index += 14;
++		samplerate_index += 4;
++	}
+ 
+ 	int padding = plm_buffer_read(self->buffer, 1);
+ 	plm_buffer_skip(self->buffer, 1); // f_private
+@@ -4045,7 +4051,10 @@
+ 		self->has_header && (
+ 			self->bitrate_index != bitrate_index ||
+ 			self->samplerate_index != samplerate_index ||
+-			self->mode != mode
++			// OFFgrid-SDR: stereo, joint stereo and dual channel count as the same here: encoders switch frames between
++			// them as the audio needs (TwoLAME's "joint stereo" writes most frames as plain stereo), and every frame after
++			// the first was being thrown away. A change between mono and two channels still means a false sync.
++			(self->mode == PLM_AUDIO_MODE_MONO) != (mode == PLM_AUDIO_MODE_MONO)
+ 		)
+ 	) {
+ 		return 0;
+@@ -4084,11 +4093,18 @@
+ 	int tab3 = 0;
+ 	int sblimit = 0;
+ 	
+-	int tab1 = (self->mode == PLM_AUDIO_MODE_MONO) ? 0 : 1;
+-	int tab2 = PLM_AUDIO_QUANT_LUT_STEP_1[tab1][self->bitrate_index];
+-	tab3 = QUANT_LUT_STEP_2[tab2][self->samplerate_index];
+-	sblimit = tab3 & 63;
+-	tab3 >>= 6;
++	if (self->samplerate_index >= 4) {
++		// OFFgrid-SDR: MPEG-2 half sample rate: one allocation table for every bit rate (ISO 13818-3 B.1), 30 subbands
++		tab3 = 2;
++		sblimit = 30;
++	}
++	else {
++		int tab1 = (self->mode == PLM_AUDIO_MODE_MONO) ? 0 : 1;
++		int tab2 = PLM_AUDIO_QUANT_LUT_STEP_1[tab1][self->bitrate_index];
++		tab3 = QUANT_LUT_STEP_2[tab2][self->samplerate_index];
++		sblimit = tab3 & 63;
++		tab3 >>= 6;
++	}
+ 
+ 	if (self->bound > sblimit) {
+ 		self->bound = sblimit;
