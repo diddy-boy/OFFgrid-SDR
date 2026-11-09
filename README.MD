@@ -24,19 +24,24 @@ The humble RTL-SDR stick needs some love. It has always been treated as an add-o
 
 ---
 
-## What's new in 2.1
+## What's new in 2.2
 
 ![DAB mode](screenshots/DAB.png)
 
-- **DAB and DAB+ digital radio, with sound.** DAB is digital radio on VHF Band III (174–240 MHz): each channel carries a **multiplex** of several stations, a flat block 1.5 MHz wide on the waterfall. Choose a channel in the band chips' new **DAB** group (5A to 13F), or tune anywhere in a multiplex with **AUTO** on. The box bottom left shows the multiplex's **name** and its **stations**: click one to listen.
-  - Both kinds play: **DAB+** (HE-AAC, through FAAD2) and the original **DAB** (MP2), still used by many stations (11 of the BBC's 14 national stations, for example).
-  - If you don't choose a station, one starts by itself after a few seconds: **your last station on that multiplex**, or else the first in the list.
-  - For the station playing, the box shows its **format, bit rate and channels** (for example "DAB+ · HE-AAC v2 · 32 kbit/s · stereo (parametric)"), and the **signal in dB**, as for DRM. When the sound can't be played, it **says why**: DAB's sound needs about 8 dB, while the station list comes through down to about 3 dB.
-  - **AUTO** recognises a multiplex anywhere inside its block, moves to the channel's exact centre and switches to DAB; if none is there, it goes back to narrowband FM and says so.
-  - Tested off air on BBC National DAB (12B) with an RTL-SDR stick, on both a DAB+ station and an MP2 one.
-- **DRM in xHE-AAC, with sound:** the newer codec more and more DRM stations are moving to now plays too (mono and stereo, with SBR and MPEG Surround parametric stereo), through **libxaac**, the decoder Android uses.
-- **The demo:** a DAB multiplex, "OFFgrid DAB" on 12A (223.936 MHz), with the jingle in DAB+ and in MP2; a second DRM station, "OFFgrid xHE", in xHE-AAC; and both DRM stations moved to the quieter 25 m band (11.700 and 11.750 MHz).
-- DRM stations that carry a data service beside their programme now show the programme's language, steadily.
+- **VDL2 decoding** (requested on GitHub): aircraft datalink, VDL Mode 2, the digital successor to ACARS, at 136.6–137 MHz. Every VDL2 channel in view is decoded **at once**, chosen from your locator (in Europe 136.675, 136.725, 136.775, 136.825, 136.875 and 136.975 MHz). ACARS messages in full (registration, flight, label, text), the rest summarised; each aircraft's **country** from its address (built in, so it works offline); channel buttons with counts to filter the list, and **Messages only** to hide acknowledgements. Checked frame for frame against dumpvdl2 on a real recording. Under More → Aircraft, and recognised by AUTO.
+- **Full screen / kiosk mode** (requested on GitHub): the button at the right of the top bar, or the **F** key.
+- **Five band tabs: FM · DAB · MW · SW · Air.** DAB and airband have their own tabs, each opening your last channel there; SW keeps Broadcast, Ham and Mystery. On a narrow panel (a laptop or a tablet held sideways), the tabs wrap onto two rows.
+- **DAB station text and programme types:** "now playing" and programme information under the playing station's details, with its programme type (News, Pop Music, Rock Music…).
+- **DAB station logos**, from the multiplex's own picture service (SPI), as the BBC sends them: shown top right of the DAB box, and **kept**, so they appear at once on later visits. A first visit collects every station's logo within a few minutes, whichever station is playing. Hover over the multiplex's name to see how many have arrived, or whether the multiplex sends any at all (many UK commercial multiplexes don't: their radios fetch logos online).
+- **DAB SlideShow:** pictures a station sends with its sound (common in mainland Europe) show in the logo's place: the latest one if there's no logo, or each new one for 10 seconds before the logo returns.
+- **DRM station text and pictures:** the station's text message, and its SlideShow picture.
+- **More DAB stations play.** A test matrix checked every combination the DAB standard allows: all 96 protection profiles, 51 kinds of MP2 (48 and 24 kHz, every bit rate and mode) and 16 kinds of DAB+ (AAC-LC, HE-AAC and HE-AAC v2, 32 and 48 kHz, 24 to 192 kbit/s). Now playing too: **24 kHz MP2 stations** (on Sound Digital, Times Radio, Fix Radio and both Premier stations were silent), **joint-stereo MP2** from encoders that switch modes frame by frame, the highest MP2 bit rates (320 and 384 kbit/s), and EEP 2-A at 8 kbit/s. Accented station names now show correctly ("RTS Première+").
+- **DAB fixes:** a DAB+ station could go silent until retuned (also in 2.1); the receiver now re-locks by itself if its lock goes stale and rides through brief dips; damaged MP2 frames are dropped rather than played; the audio filters no longer apply to DAB (as with DRM); the waterfall's regular dip on DAB is gone.
+- **Faster, especially on slower computers:** much less work in the DAB and DRM receivers (with no change to what they decode), no wasted demodulation in either mode, and a display that no longer makes the browser redo its layout every frame. On a five-year-old Lenovo Chromebook: AM from 38% to 24% of a processor core, DAB+ from about 60% to under 50%, and MP2 DAB's peaks from 110% to about 60%. **Hover over the CPU figure** to see where the time goes; the diagnostics log has the same breakdown.
+- **The More menu, grouped by kind:** Voice, Digital radio, Aircraft, Ships, Ham digital, Pictures and Time signals.
+- **Selecting further back in the paused waterfall:** drag a box towards the bottom edge and the waterfall scrolls back in time by itself; the box stays with the signal. **↑ ↓** move through the paused history, and a scroll bar on the right shows where you are.
+- **108–118 MHz** (aircraft navigation) now opens in AM, in 50 kHz steps.
+- **The demo:** station text, logos and a SlideShow on "OFFgrid DAB" (12A), text and the OFFgrid-SDR logo on both DRM stations, and VDL2 aircraft on three channels.
 
 ![DRM mode](screenshots/DRM.png)
 
@@ -49,6 +54,7 @@ Right mouse click to watch a DRM demo in a new page
 
 ### Earlier versions
 
+- **2.1:** **DAB and DAB+** digital radio with sound, its stations, formats and signal, recognised by AUTO; **DRM in xHE-AAC** with sound; a DAB multiplex and an xHE-AAC station in the demo.
 - **2.0:** **DRM** digital radio with sound (AAC, with SBR and parametric stereo), its name, settings and signal quality, recognised by AUTO; **6 m and 4 m**; a wider status line; fixes to the waterfall replay, RTTY's automatic reverse and noise reduction; and **OFFgrid-SDR became free software under the GNU GPL**.
 
 - **1.9:** **APRS** and **AIS** (ships on both marine channels at once); a **first-time setup** that sets your location, calibrates the stick and sets the clock from a time station; **Clock details** and a clock that learns your computer's drift; WSPR that corrects a clock a minute out; **HF upconverters** such as the Nooelec [Ham It Up](https://www.nooelec.com/store/ham-it-up.html); each stick keeping its own correction; and the FM band for your country. **1.9.1** fixed the Ham It Up converter's offset not being applied correctly.
@@ -121,9 +127,9 @@ Only one program can use the stick at a time, so close SDR#, SDR++, gqrx or rtl_
 
 - **FM broadcast** in stereo with RDS (the band follows your country); **medium wave**; and **shortwave** with a button for every broadcast band, 120 m to 11 m.
 - **Amateur bands:** 160 m to 10 m, **6 m**, **4 m** (where allocated), **2 m** and **70 cm**.
-- **PMR446** channel by channel, and **airband** with 8.33 kHz channel steps and channel names.
+- **PMR446** channel by channel, and **airband** (its own **Air** tab) with 8.33 kHz channel steps and channel names.
 - **Mystery:** famous unexplained stations such as **The Buzzer (UVB-76)** and The Pip.
-- **DAB:** every Band III channel, 5A to 13F, each opening in DAB mode on the multiplex.
+- **DAB** (its own tab): every Band III channel, 5A to 13F, each opening in DAB mode on the multiplex.
 - **Any frequency** from 100 kHz to 1766 MHz: type it in (`198k`, `162.025`, `1090M`).
 - Each band remembers your last frequency, step and RF gain.
 
@@ -146,8 +152,8 @@ Switch **AUTO** on, and wherever you tune it listens for a couple of seconds, wo
 
 ### Decoders
 
-- **DAB and DAB+:** the multiplex's name and stations, to pick from; the sound of either kind (DAB+ in HE-AAC, DAB in MP2), with each station's format, bit rate and channels, and the signal in dB.
-- **DRM:** digital radio with sound (AAC and xHE-AAC), the station's name, language, settings and signal quality.
+- **DAB and DAB+:** the multiplex's name and stations, to pick from; the sound of either kind (DAB+ in HE-AAC, DAB in MP2, at any bit rate), with each station's format, bit rate, channels and programme type, its "now playing" text, its logo or SlideShow pictures where the multiplex sends them, and the signal in dB.
+- **DRM:** digital radio with sound (AAC and xHE-AAC), the station's name, language, text message, SlideShow pictures, settings and signal quality.
 - **RDS** on FM: station name, programme type, RadioText and clock.
 - **Morse (CW)**, 4 to 60 words per minute, and **RTTY**, finding the shift, speed and mark/space by itself.
 - **NAVTEX** maritime safety messages, and **DSC** ships' calls (distress in red).
@@ -155,6 +161,7 @@ Switch **AUTO** on, and wherever you tune it listens for a couple of seconds, wo
 - **WSPR** beacons down to about −28 dB, correcting a clock a minute or so out.
 - **Time signal** from CHU, WWV, WWVH or RWM, with **Find a time station**, **Set by hand** and **Clock details**; **Heard** and **Band survey** for who you can hear and which bands are open.
 - **APRS** positions, weather and messages, and **AIS** ships on both channels at once, each with distance and bearing.
+- **VDL2** aircraft datalink (VDL Mode 2): every channel in view at once, ACARS messages in full, the rest summarised, each aircraft's country.
 - **ACARS** aircraft messages, **SSTV** pictures (Martin, Scottie, PD), **PSK31/63/125**, **Hellschreiber**, and **weather fax** charts saved as PNG.
 
 ### Screenshots
@@ -194,7 +201,7 @@ Switch on the **waterfall buffer** (15, 30 or 60 seconds), press **⏸**, and dr
 - **Browsers:** WebUSB is only in Chromium-based browsers (Chrome, Edge, Opera…); Firefox and Safari can run demo mode only. **One program at a time** can use the stick.
 - **Tuners:** R820T, R820T2 or R828D sticks only; older E4000, FC0012, FC0013 and FC2580 sticks won't work.
 - **DRM** needs a good signal (about 10 dB for 16-QAM, 16 dB for 64-QAM); below that, the settings are read but not the name or sound. The few stations using unequal protection or hierarchical modulation aren't decoded yet.
-- **DAB** needs a good signal: about 8 dB for the sound, while the station list comes through down to about 3 dB. An outdoor or loft VHF aerial helps a great deal. DAB mode runs the stick at 2.048 MHz, centred on the multiplex; DAB's text, slideshows and data services aren't shown.
+- **DAB** needs a good signal: about 8 dB for the sound, while the station list comes through down to about 3 dB. An outdoor or loft VHF aerial helps a great deal. DAB mode runs the stick at 2.048 MHz, centred on the multiplex; Station logos and SlideShow pictures appear only where the multiplex broadcasts them, and other DAB data services aren't shown.
 - **RTL-SDR Blog V4 near 28.8 MHz:** the stick's own 28.8 MHz clock shows as a strong spike there, so signals nearby (the top of 10 m, and CB around 27 MHz) can be affected. It stays with the antenna disconnected: it comes from the stick, not the band.
 - **Waterfall replay** uses memory (about 123 MB for 30 seconds), so it's off by default, and a selection can't cross a retune.
 - **AUTO** judges a couple of seconds of signal, so it can be wrong on very weak signals: choose the mode yourself if something sounds wrong.
@@ -223,12 +230,14 @@ OFFgrid-SDR is built on the work of others:
 - [**RTL-SDR Blog**](https://www.rtl-sdr.com), for the V4 hardware and their open-source driver work.
 - [**FAAD2**](https://github.com/knik0/faad2) by M. Bakker, Nero AG, Ahead Software AG and contributors: the AAC decoder that plays DRM's and DAB+'s sound, built in with its DRM support and one small change of OFFgrid-SDR's, so that it also decodes DAB+ (whose fill elements a DRM-enabled build refused). GPL 2 or later. Its exact source, the change and the build script are in the `licenses/faad2` folder.
 - [**libxaac**](https://github.com/ittiam-systems/libxaac) by Ittiam Systems, part of the Android Open Source Project: the xHE-AAC decoder that plays DRM stations using xHE-AAC, built in unmodified with OFFgrid-SDR's small wrapper. Apache License 2.0. Its exact source and build script are in the `licenses/libxaac` folder.
-- [**pl_mpeg**](https://github.com/phoboslab/pl_mpeg) by Dominic Szablewski, whose MP2 decoder (based on kjmp2 by Martin J. Fiedler) plays the original DAB's sound, built in unmodified with OFFgrid-SDR's small wrapper. MIT License. Its source and build script are in the `licenses/pl_mpeg` folder.
+- [**pl_mpeg**](https://github.com/phoboslab/pl_mpeg) by Dominic Szablewski, whose MP2 decoder (based on kjmp2 by Martin J. Fiedler) plays the original DAB's sound, built in with three small changes for DAB (MPEG-2's 24 kHz frames accepted, as kjmp2 1.1 does, with their frame sync; and joint and plain stereo frames treated alike), with OFFgrid-SDR's small wrapper. MIT License. Its modified source, the changes, and the build script are in the `licenses/pl_mpeg` folder.
 - [**welle.io**](https://github.com/AlbrechtL/welle.io) by Albrecht Lohofener and contributors, the open-source DAB receiver: OFFgrid-SDR's DAB receiver uses its tables, from the DAB standard (ETSI EN 300 401), and follows its methods. GPL 2 or later.
 - [**Dream**](https://github.com/Drm-tools/dream), the open-source DRM receiver by Volker Fischer (Technische Universität Darmstadt) and contributors: OFFgrid-SDR's DRM receiver uses Dream's tables and follows its methods, from the DRM standard (ETSI ES 201 980). GPL 2 or later.
 - The demo's DRM jingle is an original tune written for OFFgrid-SDR, encoded once with [**FAAC**](https://github.com/knik0/faac)'s DRM encoder, with four fixes made for it and offered back to the FAAC project; its xHE-AAC and DAB+ versions with libxaac's encoder, and its MP2 version with [FFmpeg](https://ffmpeg.org). None of these encoders is in OFFgrid-SDR: only what they made.
 - [**ft8_lib**](https://github.com/kgoba/ft8_lib) by Kārlis Goba: the FT8 and FT4 protocol tables, error correction, message formats and decoding method that OFFgrid-SDR's FT8 and FT4 decoders follow. MIT License. FT8 and FT4 themselves were created by **Joe Taylor, K1JT**, and **Steve Franke, K9AN** ([WSJT-X](https://wsjt.sourceforge.io)).
 - [**acarsdec**](https://github.com/TLeconte/acarsdec) by Thierry Leconte, whose method of demodulating ACARS (MSK) OFFgrid-SDR's own ACARS decoder follows.
+- [**dumpvdl2**](https://github.com/szpajder/dumpvdl2) by Tomasz Lemiech, and its [**libacars**](https://github.com/szpajder/libacars): OFFgrid-SDR's own VDL2 decoder follows the VDL Mode 2 standard (ICAO Annex 10, ETSI EN 301 841), with dumpvdl2 as the reference it was checked against, frame for frame, on a real recording. No dumpvdl2 code is used.
+- Aircraft countries follow **ICAO's allocation of 24-bit aircraft addresses** (Annex 10, Volume III), as listed by [**tar1090**](https://github.com/wiedehopf/tar1090); the table is built in, so it works offline.
 - [**lamejs**](https://github.com/zhuker/lamejs), the JavaScript port of the LAME MP3 encoder. LGPL.
 - [**RNNoise**](https://github.com/xiph/rnnoise) by Jean-Marc Valin (Mozilla and the Xiph.Org Foundation), the neural network behind the AI voice cleaner (BSD licence), in the WebAssembly build [**@jitsi/rnnoise-wasm**](https://github.com/jitsi/rnnoise-wasm) by Jitsi (Apache License 2.0).
 - [**Barlow Semi Condensed**](https://github.com/jpt/barlow) and [**Share Tech Mono**](https://fonts.google.com/specimen/Share+Tech+Mono) fonts. SIL Open Font License.
