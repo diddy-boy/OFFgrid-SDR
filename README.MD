@@ -28,8 +28,8 @@ The humble RTL-SDR stick needs some love. It has always been treated as an add-o
 
 ![DAB mode](screenshots/DAB.png)
 
-- **VDL2 decoding** (requested on GitHub): aircraft datalink, VDL Mode 2, the digital successor to ACARS, at 136.6–137 MHz. Every VDL2 channel in view is decoded **at once**, chosen from your locator (in Europe 136.675, 136.725, 136.775, 136.825, 136.875 and 136.975 MHz). ACARS messages in full (registration, flight, label, text), the rest summarised; each aircraft's **country** from its address (built in, so it works offline); channel buttons with counts to filter the list, and **Messages only** to hide acknowledgements. Checked frame for frame against dumpvdl2 on a real recording. Under More → Aircraft, and recognised by AUTO.
-- **Full screen / kiosk mode** (requested on GitHub): the button at the right of the top bar, or the **F** key.
+- **VDL2 decoding** (requested feature): aircraft datalink, VDL Mode 2, the digital successor to ACARS, at 136.6–137 MHz. Every VDL2 channel in view is decoded **at once**, chosen from your locator (in Europe 136.675, 136.725, 136.775, 136.825, 136.875 and 136.975 MHz). ACARS messages in full (registration, flight, label, text), the rest summarised; each aircraft's **country** from its address (built in, so it works offline); channel buttons with counts to filter the list, and **Messages only** to hide acknowledgements. Checked frame for frame against dumpvdl2 on a real recording. Under More → Aircraft, and recognised by AUTO.
+- **Full screen / kiosk mode** (requested feature): the button at the right of the top bar, or the **F** key. Should work for android devices.
 - **Five band tabs: FM · DAB · MW · SW · Air.** DAB and airband have their own tabs, each opening your last channel there; SW keeps Broadcast, Ham and Mystery. On a narrow panel (a laptop or a tablet held sideways), the tabs wrap onto two rows.
 - **DAB station text and programme types:** "now playing" and programme information under the playing station's details, with its programme type (News, Pop Music, Rock Music…).
 - **DAB station logos**, from the multiplex's own picture service (SPI), as the BBC sends them: shown top right of the DAB box, and **kept**, so they appear at once on later visits. A first visit collects every station's logo within a few minutes, whichever station is playing. Hover over the multiplex's name to see how many have arrived, or whether the multiplex sends any at all (many UK commercial multiplexes don't: their radios fetch logos online).
@@ -48,9 +48,7 @@ The humble RTL-SDR stick needs some love. It has always been treated as an add-o
 Right mouse click to watch a DRM demo in a new page
 [![OFFgrid-SDR DRM video](https://img.youtube.com/vi/fl4mmtktke4/hqdefault.jpg)](https://youtu.be/fl4mmtktke4)
 
-<!-- New screenshot: add this file to the screenshots folder, then remove the comment marks around this line.
 ![DAB](screenshots/DAB.png)
--->
 
 ### Earlier versions
 
