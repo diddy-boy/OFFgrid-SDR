@@ -84,7 +84,7 @@ Right mouse click to watch a DRM demo in a new page
 - **Locked-down or shared computers:** schools, libraries, work laptops and Chromebooks: it's just a page you open.
 - **Privacy:** nothing leaves your computer. The page makes no network requests of its own, except two optional buttons when you click them: **Identify** (looks up the tuned frequency online) and **Check for updates** (looks on GitHub).
 - **Fully offline, FT8 included:** the clock is set from time stations and the stations heard; countries come from a built-in table, and your location from 620 built-in cities.
-- **Demo mode** for teaching in ham radio classes, clubs and meetups.
+- **Demo mode** (append ?demo to the index.html) for teaching in ham radio classes, clubs and meetups.
 
 ## What you need
 
