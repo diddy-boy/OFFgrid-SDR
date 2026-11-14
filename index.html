@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>OFFgrid-SDR</title>
-<meta name="offgrid-version" content="2.2"><meta name="offgrid-date" content="2026-11-08"><!-- the version: change it here for a release (Check for updates reads this line from GitHub) -->
+<meta name="offgrid-version" content="2.3"><meta name="offgrid-date" content="2026-11-14"><!-- the version: change it here for a release (Check for updates reads this line from GitHub) -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231b1a18'/%3E%3Cg fill='none' stroke='%23ffb000' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M32 25 23 58M32 25 41 58M26.5 45h11M25 52h14'/%3E%3Cpath d='M24.5 13.5a10.5 10.5 0 0 0 0 15M39.5 13.5a10.5 10.5 0 0 1 0 15' opacity='.85'/%3E%3Cpath d='M17.5 7a20 20 0 0 0 0 28M46.5 7a20 20 0 0 1 0 28' opacity='.55'/%3E%3C/g%3E%3Ccircle cx='32' cy='21' r='4.5' fill='%23ffb000'/%3E%3C/svg%3E">
 <!-- Fully self-contained: fonts (SIL OFL 1.1), radio libraries (Apache 2.0), FT8 (MIT), RNNoise (BSD / Apache 2.0), LAME (LGPL), FAAD2 (GPL 2 or later), libxaac (Apache 2.0) and pl_mpeg's MP2 decoder (MIT) are embedded below. No network access needed. -->
 <style>
@@ -19,7 +19,7 @@
   :root{
     --chassis:#1b1a18; --plate:#24221e; --plate-hi:#2e2b26; --edge:#3b372f; --glass:#0b0a08; --scope:#05070a;
     --vfd:#ffb000; --vfd-dim:#6d4f06; --vfd-ghost:#2a2005;
-    --ink:#dcd4c6; --ink-dim:#8f877b; --red:#e0502a; --green:#79b765;
+    --ink:#dcd4c6; --ink-dim:#8f877b; --red:#e0502a; --warn:#ff9a76; --green:#79b765;
     --ui:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
     --digits:"Share Tech Mono","Courier New",ui-monospace,monospace;
     box-sizing:border-box;
@@ -217,6 +217,15 @@
   .dablogobig img{max-width:min(80vw, 600px); max-height:80vh; border-radius:10px; box-shadow:0 10px 40px #000a; background:#fff1;}
   #drmBox .cwhead{display:flex; align-items:baseline; gap:6px; min-width:0;} #drmBox #drmState{flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   #drmBox.logos .cwhead, #drmBox.logos #drmName{padding-right:86px;} #drmBox.logos #drmName{min-height:54px;}
+  .jlpanel{position:fixed; z-index:70; left:50%; top:50%; transform:translate(-50%,-50%); width:min(92vw, 620px); max-height:min(82vh, 640px); display:flex; flex-direction:column;
+    background:var(--panel, #15171c); color:var(--ink, #e6e6e6); border:1px solid var(--line, #333); border-radius:10px; box-shadow:0 12px 40px #000a;}
+  .jlpanel[hidden]{display:none;} .jlhead{display:flex; align-items:center; gap:8px; padding:8px 10px; border-bottom:1px solid var(--line, #333);}
+  .jlhead #jlTitle{flex:1; font-weight:600; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .jlbody{overflow-y:auto; padding:10px 14px; line-height:1.45; user-select:text; -webkit-user-select:text;}
+  .jlbody p{margin:0 0 .7em;} .jlbody .jlitem{display:block; width:100%; text-align:left; font:inherit; color:inherit; background:transparent; border:0; border-bottom:1px solid var(--line, #3335); padding:7px 2px; cursor:pointer;}
+  .jlbody .jlitem:hover{color:var(--accent, #f0a020);} .jlbody .jlitem.dim{opacity:.5; cursor:default;} .jlbody table{border-collapse:collapse; width:100%;}
+  .jlbody .jlother{margin:14px 0 2px; font-size:.78rem; color:var(--ink-dim, #999); text-transform:uppercase; letter-spacing:.04em;}
+  .jlbody td{padding:4px 8px 4px 0; vertical-align:top; border-bottom:1px solid var(--line, #3335);} .jlinfo{padding:6px 12px; font-size:.75rem; color:var(--ink-dim, #999); border-top:1px solid var(--line, #333);}
   #drmNow{display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; line-height:1.3em; color:var(--accent, #f0a020); font-style:italic;}
   #dabNow{display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; min-height:2.6em; line-height:1.3em; color:var(--accent, #f0a020); font-style:italic;}
   #dabSound{display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; min-height:2.6em; line-height:1.3em;}
@@ -258,6 +267,17 @@
   @media (max-width:900px){ .ft8row{grid-template-columns:3.8rem 2.1rem 2.5rem 2.8rem minmax(7.7rem, 1fr) minmax(4.7rem, 6.9rem) 3.4rem 3.4rem;} .ft8row > :nth-child(9){display:none;} }
   @media (max-width:640px){ .ft8row{grid-template-columns:3.8rem 2.1rem minmax(6.9rem, 1fr) minmax(4.3rem, 6rem);} .ft8row > :nth-child(3), .ft8row > :nth-child(4), .ft8row > :nth-child(7), .ft8row > :nth-child(8), .ft8row > :nth-child(9), .ft8group{display:none;} }
   .acarslist{max-height:9.5em; overflow-y:auto; user-select:text; -webkit-user-select:text; font-size:.86rem; line-height:1.3;}
+  .devchoose{margin:0 0 12px; padding:8px 10px; border:1px solid var(--line, #333); border-radius:8px;} .devchoose label{display:block; margin:3px 0; cursor:pointer;}
+  .devchoose .sdrcrow{display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:6px 0 2px 22px;} .devchoose input[type=text]{flex:1; min-width:180px;}
+  .devchoose .sdrcants{margin:6px 0 0 22px;} .devchoose .antrow{display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:3px 0;} .devchoose .antrow > span:first-child{min-width:130px;}
+  .devchoose .antcust input, .devchoose .antx input{width:70px;} .devchoose .antx{display:block; margin-top:4px;}
+  .devchoose .devres{margin:4px 0 0 22px; font-size:.8rem;} .devchoose .devres.ok{color:#5c5;} .devchoose .devres.bad{color:var(--warn);} .devchoose .devhint{margin:4px 0 0 22px; font-size:.75rem; color:var(--ink-dim, #999);}
+  body.netmode #dsBadge, body.netmode #hfBadge, body.netmode #biasBadge{display:none;}
+  .rtopl{display:inline-flex; align-items:center; gap:6px; min-width:0;} .rtopl #bandName{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .srcpop{position:fixed; z-index:90; max-width:min(92vw, 460px); padding:8px 10px; border-radius:8px; border:1px solid var(--line, #444); background:var(--panel, #15171c); color:var(--ink, #e6e6e6);
+    font-size:.78rem; line-height:1.45; white-space:pre-line; box-shadow:0 8px 24px #0009; pointer-events:none;} .srcpop[hidden]{display:none;}
+  #noiseBox.filtersoff > :not(.nhead){opacity:.4; pointer-events:none;} .noffnote{color:var(--accent, #f0a020);}
+  .badge.netbadge{cursor:help; flex:none; font-size:.62rem; padding:0 4px; line-height:1.35;} .badge.netbadge.on.rtl{} .badge.netbadge.on{color:#5c5; border-color:#5c5; text-shadow:none;} .badge.netbadge.wait{color:#eb4; border-color:#eb4; text-shadow:none;} .badge.netbadge.lost{color:#e66; border-color:#e66; text-shadow:none;}
   .vdlchips{display:flex; flex-wrap:wrap; gap:4px; margin:4px 0 6px;} .vdlchips button{font:inherit; font-size:11px; padding:2px 7px; border-radius:10px; border:1px solid var(--line, #444); background:transparent; color:inherit; cursor:pointer;}
   .vdlchips button.lit{background:var(--accent, #f0a020); color:#000; border-color:transparent;} .vdlchips button .n{opacity:.7; margin-left:3px;}
   .acmsg{padding:3px 0; border-bottom:1px solid var(--edge);}
@@ -783,7 +803,7 @@
     <button id="powerBtn" class="tb-power">Power on</button>
     <section class="readout">
       <div class="tb-freq" aria-live="polite">
-        <div class="rtop"><span id="bandName">FM broadcast</span><span id="rangeText"></span></div>
+        <div class="rtop"><span class="rtopl"><span class="badge netbadge" id="srcBadge" tabindex="0" role="button" aria-label="What OFFgrid-SDR is listening with: hover or tap for details">RTL</span><span id="bandName">FM broadcast</span></span><span id="rangeText"></span></div>
         <div class="freq" id="freqWrap" title="Click to type a frequency. Scroll to step." tabindex="0" role="button" aria-label="Frequency. Click to enter a new one.">
         <span id="freqShow"><span id="freqDisplay">--.--</span><span class="unit" id="freqUnit">MHz</span></span>
         <input id="freqEdit" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" hidden aria-label="Enter frequency">
@@ -950,9 +970,14 @@
         <div class="drmline dabnow" id="dabNow"></div>
         <div class="drmline" id="dabSound"></div>
       </div>
+<div id="jlPanel" class="jlpanel" hidden role="dialog" aria-label="Journaline news pages">
+  <div class="jlhead"><button class="cwbtn" id="jlBack" title="Back to the previous page">‹ Back</button><span id="jlTitle"></span><button class="cwbtn" id="jlClose" title="Close (Esc)">✕</button></div>
+  <div class="jlbody" id="jlBody"></div>
+  <div class="jlinfo" id="jlInfo"></div>
+</div>
       <div class="rdsbox cwbox drmbox" id="drmBox" hidden>
         <img id="drmSlide" class="dablogo" alt="The station's picture" title="The station's picture (its SlideShow): click for a larger one" hidden>
-        <div class="rdsmeta cwhead"><span class="cwtag">DRM</span><span id="drmState">listening…</span></div>
+        <div class="rdsmeta cwhead"><span class="cwtag">DRM</span><span id="drmState">listening…</span><button class="cwbtn" id="drmNews" hidden title="This station's Journaline news pages: menus, articles and lists, sent with its sound">News</button></div>
         <div class="drmname" id="drmName"></div>
         <div class="drmline" id="drmAudio"></div>
         <div class="drmline dabnow" id="drmNow" hidden></div>
@@ -1118,7 +1143,7 @@
       <label class="check"><input type="checkbox" id="gainAuto"> Automatic gain (AGC)</label>
       <small class="gainnote" id="gainNote" hidden>RF gain isn't used in direct sampling (HF on this stick: the signal bypasses the tuner, whose gain the slider sets). Automatic gain still works; for less or more signal, use an attenuator or a better antenna. Sticks with an HF upconverter, like the RTL-SDR Blog V4, have working RF gain on HF.</small>
       <div class="noise" id="noiseBox">
-        <div class="nhead">Noise filters <small>(MW and SW, saved in memories)</small></div>
+        <div class="nhead">Noise filters <small>(MW and SW, saved in memories)</small> <small class="noffnote" id="noiseOff" hidden>· not used in DAB, DRM or wideband FM</small></div>
         <div class="nrow"><span class="nlab" title="Reduces steady background hiss. Higher levels remove more, but can sound watery.">Reduction</span>
           <div class="seg" id="nrSeg" role="group" aria-label="Noise reduction level">
             <button data-nr="0">Off</button><button data-nr="1">Low</button><button data-nr="2">Med</button><button data-nr="3">High</button>
@@ -1178,6 +1203,7 @@
       <div class="settabs" role="tablist" aria-orientation="vertical" aria-label="Settings sections"><button type="button" role="tab" id="setTab-device" data-tab="device" aria-controls="setPane-device" aria-selected="true">Device</button><button type="button" role="tab" id="setTab-display" data-tab="display" aria-controls="setPane-display" aria-selected="false" tabindex="-1">Display & tuning</button><button type="button" role="tab" id="setTab-audio" data-tab="audio" aria-controls="setPane-audio" aria-selected="false" tabindex="-1">Audio & recording</button><button type="button" role="tab" id="setTab-decoders" data-tab="decoders" aria-controls="setPane-decoders" aria-selected="false" tabindex="-1">Decoders</button><button type="button" role="tab" id="setTab-cal" data-tab="cal" aria-controls="setPane-cal" aria-selected="false" tabindex="-1">Calibration</button><button type="button" role="tab" id="setTab-backup" data-tab="backup" aria-controls="setPane-backup" aria-selected="false" tabindex="-1">Backup</button></div>
       <div class="setpanes">
       <div class="setpane" role="tabpanel" id="setPane-device" data-pane="device" aria-labelledby="setTab-device"><h3>Device</h3>
+<div class="devchoose" id="setDevice"></div>
         <label class="check lpcheck"><input type="checkbox" id="lpChk"> <b>Low-power mode</b>: for older or slower computers</label>
         <small class="lpnote">Halves the samples the stick sends (1.024 MS/s, a narrower view) and draws the spectrum and waterfall half as often. Everything else keeps working. Off by default.</small>
         <label class="field">Sample rate (visible bandwidth)
@@ -1199,6 +1225,7 @@
           <small>With a converter in front of the stick, 5 MHz arrives at the stick on 130 MHz: this keeps every frequency shown the real one. <b>Auto</b> uses it below 65 MHz (MW, shortwave, HF) and tunes straight through above (FM, airband, VHF); its switch is a physical one, so OFFgrid-SDR reminds you which way to set it. The oscillator is 125 MHz on current Ham It Ups (100 MHz on older ones; 120 MHz on a SpyVerter). SDR# and SDR++ call this a frequency shift of −125 MHz: it's the same thing, and either can be typed here. A standard one can be a few kHz out: Frequency calibration on a time station corrects the stick and the converter together.</small></div>
         <div class="field">Bias-tee (antenna power)
           <label class="check"><input type="checkbox" id="biasChk"> Supply DC power on the antenna port</label>
+          <small id="biasNet" hidden>With an SDRplay RSP, OFFgrid-SDR can't switch the bias-tee or see it: SDRconnect's WebSocket API (1.0.3) has no bias-tee control. For a powered antenna, use its own bias-tee injector, or SDRconnect's ordinary program with the bias-tee on.</small>
           <small>For LNAs and active antennas made to be powered this way (RTL-SDR Blog V3 and V4: 4.5 V). Leave it off otherwise: some antennas short DC to ground, and powering them can damage the stick or the antenna. The red BIAS light shows when it's on.</small></div>
         <div class="field">DC spike
           <label class="check"><input type="checkbox" id="dcChk"> Remove the centre DC spike</label>
@@ -1330,6 +1357,7 @@
   <div class="subody">
     <ol class="susteps"><li data-s="1">Location</li><li data-s="2">RTL stick and clock</li><li data-s="3">Results</li></ol>
     <section data-step="1">
+      <div class="devchoose" id="suDevice"></div>
       <p>This setup tells OFFgrid-SDR <b>where you are</b>, <b>corrects your stick's frequency</b> (some sticks are tens of ppm out) and <b>sets an accurate clock</b> from a shortwave time station, with no internet needed. FT8, FT4 and WSPR only decode when the clock is right to within a second or two. If your computer is online its clock is probably fine already, and you can skip all of this. The stick can also be calibrated at any time with the Calibrate button in Settings → Calibration.</p>
       <p class="suhint">You can skip any step, or the whole setup. OFFgrid-SDR then uses your computer's own clock as it is (FT8 still fine-tunes the seconds from the stations it hears) and the stick without a correction. You can run this again any time: Settings → Calibration → Run setup again.</p>
       <p><b>Where are you?</b> This gives the distance and direction to the stations you hear, sets the FM band for your country (it is 76–95 MHz in Japan, for example), and helps choose time stations for the time of day. It stays on this computer.</p>
@@ -1370,6 +1398,21 @@
     <div class="updrow"><button class="cwbtn" id="updBtn">Check for updates</button>
       <span id="updMsg">Looks on GitHub for a newer version. Only when you click: nothing is sent otherwise.</span></div>
     <div class="updlink">Project page: <a href="https://github.com/diddy-boy/OFFgrid-SDR" target="_blank" rel="noopener">github.com/diddy-boy/OFFgrid-SDR</a> (new versions, the README and the offline guide)</div>
+    <h3>New in 2.3</h3>
+    <ul>
+      <li><b>SDRplay RSPs, through SDRconnect</b> (requested feature): OFFgrid-SDR can use an RSP on SDRconnect (1.0.6 or later, with its WebSocket API switched on; on a computer without a screen, SDRconnect's headless program, not "--server"), on another computer on your network or this one (127.0.0.1). Choose it when you first open OFFgrid-SDR ("Select device to connect to"), or in Settings → Device: enter the PC name or IP address, press Test, then Power on. The last 5 addresses that worked are offered; the RF gain slider sets the RSP's front-end (LNA) gain, higher for more as usual, with full gain only in its last tenth (it overloads easily), and Auto picks the middle setting for each band (the IF gain is left to SDRconnect's AGC); OVL shows SDRconnect's own overload; a lost connection is retried by itself. An RSP with several antennas (RSPdx, RSPduo) switches them by frequency: by default A from 30 MHz up, B below, C not used, each changeable (including a custom range); an RSPduo uses one tuner. The bias-tee can't be controlled from OFFgrid-SDR: SDRconnect's WebSocket API (version 1.0.3, in SDRconnect 1.0.10) has no bias-tee control, and its headless program no bias-tee option. For a powered antenna (an active loop such as the MLA-30+, say), use the antenna's own bias-tee injector, or SDRconnect's ordinary program with the bias-tee switched on. (An optional SDRconnect profile can be applied when connecting, for other settings.) Panorama isn't available through SDRconnect (it sweeps faster than a network connection can follow). It needs no USB, so it works in any browser; the stream needs about 8 MB/s, so a wired link or good Wi-Fi. The full guide is SDRconnect.md, beside the README on GitHub.</li>
+      <li><b>What you're listening with,</b> before the band name: RTL (a USB stick), NET (SDRconnect: green keeping up, amber connecting or falling behind, red lost) or DEMO. Hover over it, or tap it, for the details: for NET, the network speed against what's needed, the buffer, gaps, the device and its settings.</li>
+      <li><b>Plain messages when the stick can't tune,</b> including when the HF upconverter setting is switched on without an upconverter fitted.</li>
+      <li><b>Resting when switched off:</b> the display no longer redraws 60 times a second while the radio is off (it's woken by the mouse, touch or keyboard), and the waterfall stays still, its time marks too.</li>
+      <li><b>Journaline</b> news pages on DRM: when a station sends them (All India Radio does), a News button appears in the DRM box: menus, articles and lists, kept as they arrive. The demo's 11.700 MHz station has a few to try.</li>
+      <li><b>DRM through fades:</b> a fade no longer stops the sound to rebuffer: it's bridged silently and comes straight back (faded in). Frames in a fade are decoded a second and third time, the layers helping one another: on a fading recording of TDF on 5.990 MHz, 36% fewer dropouts. And a drifting signal (an upconverter warming up) is followed through each window.</li>
+      <li><b>Sharper DAB logos</b> on high-resolution screens (the stored large logo, scaled down).</li>
+      <li><b>The screen stays on</b> while the radio is powered on (for tablets used as a radio); it's released when you power off.</li>
+      <li><b>A lighter noise blanker:</b> 40% less work, exactly the same result.</li>
+      <li><b>The noise blanker and hum filter in CW and the digital modes</b> (FT8, FT4, WSPR, RTTY and the rest) on MW and SW: switching from USB to FT8 no longer brings the clicks and hum back. Noise reduction, the notch and the AI cleaner stay with voice.</li>
+      <li><b>A clean DAB waterfall:</b> no more dark lines across it every few seconds (each line now spans more than DAB's short null symbol).</li>
+      <li><b>Backups checked as they're loaded:</b> a damaged or tampered backup can no longer upset the page; anything malformed is simply left out.</li>
+    </ul>
     <h3>New in 2.2</h3>
     <ul>
       <li><b>Five band tabs: FM · DAB · MW · SW · Air.</b> DAB and Airband have their own tabs (each opens your last channel there); SW keeps Broadcast, Ham and Mystery, and always returns to your last shortwave frequency. On a narrow panel the tabs wrap onto two rows.</li>
@@ -1574,7 +1617,8 @@
       <li><b>Setup</b>: Settings → Calibration → <b>Run setup again</b> goes through your location, the stick's calibration and the clock in one go, as on the first run. <b>Clock details</b> (there, or in the Time signal box) shows how far your computer's clock is out and how fast it drifts.</li>
       <li><b>Time signal</b> (More): sets the clock from the time stations CHU (3.330, 7.850, 14.670 MHz), WWV / WWVH (2.5 to 25 MHz) and RWM (4.996, 9.996, 14.996 MHz): the full time from CHU or WWV, the seconds from any station's ticks. FT8, FT4, WSPR and the clock at the top use it. <b>Find a time station</b> tries every frequency; <b>Set by hand</b> takes the time from a phone if none can be heard. (MSF and DCF77 are below the sticks' range.)</li>
       <li><b>DRM</b> (More): digital radio on long, medium and short wave, a flat block about 10 kHz wide. Tune to its centre (or let AUTO find it): the DRM box shows the station's name, language and audio type, the signal's settings, and plays the sound after about 5 seconds (DRM spreads each moment over up to 2 seconds so that it survives fading). AAC and xHE-AAC stations play, with SBR and parametric stereo. The station's text message shows under its details, and its SlideShow picture, if it sends one, top right (click for full size).</li>
-      <li><b>VDL2</b> (More → Aircraft): aircraft datalink at 136.6–137 MHz, every channel in view decoded at once; the bursts are short and often too weak to see on the waterfall, but they're decoded. The buttons along the top filter by channel; "Messages only" hides acknowledgements.</li>
+      <li><b>An SDRplay RSP, through SDRconnect:</b> SDRplay's SDRconnect (1.0.6 or later; 1.0.10 still reports its API as 1.0.3) must already be running on the RSP's computer, with its WebSocket API on port 5454: on Linux or a Raspberry Pi, <code>/opt/SDRconnect/SDRconnect_headless</code> (it can be started at boot as a service: see SDRconnect.md, beside the README on GitHub); in SDRconnect's ordinary program, switch the WebSocket server on in its settings. Allow port 5454 through that computer's firewall. Then Settings → Device → SDRconnect, the address, Test, Power on; the NET badge shows the connection. An RSP1A or RSP1B needs nothing more; an RSPdx switches antennas by frequency (A from 30 MHz up, B below, by default, changeable in Settings → Device once it's running); an RSPduo uses one tuner. No bias-tee control (use the antenna's own injector) and no Panorama through SDRconnect. The RF gain slider sets the RSP's front-end (LNA) gain, with full gain only in its last tenth (it overloads easily); the IF gain is left to SDRconnect's AGC; Auto picks the middle setting for each band. On a 1 GB Pi, use Raspberry Pi OS Lite: with a desktop it runs short of memory and DAB cuts out.</li>
+<li><b>VDL2</b> (More → Aircraft): aircraft datalink at 136.6–137 MHz, every channel in view decoded at once; the bursts are short and often too weak to see on the waterfall, but they're decoded. The buttons along the top filter by channel; "Messages only" hides acknowledgements.</li>
       <li><b>DAB</b> (the DAB tab): digital radio on VHF, 174–240 MHz. Choose a channel (5A to 13F), or tune anywhere in a multiplex with AUTO on. The DAB box lists the multiplex's stations: click one to listen (DAB+ and the original DAB, at any bit rate). It shows each station's format, programme type and "now playing" text, and its logo or SlideShow picture top right, where the multiplex sends one: hover over the multiplex's name to see which.</li>
       <li><b>AIS</b> (More): ships' names, positions, courses and destinations, on both marine channels at once. Each vessel shows once, updated as it's heard, with its distance and bearing; hover for its details (MMSI, flag, call sign, size, ETA). Works best near the coast or a big river, with the antenna up high.</li>
       <li><b>APRS</b> (More): radio amateurs' positions (cars, walkers, balloons), weather stations, messages and status reports, sent as short data bursts on one VHF frequency per region (144.800 MHz in Europe). Choosing APRS goes to the one for your location; the list in the box has the others. Each station shows with its distance and bearing, speed and heading, and weather in metric units; hover for its exact position and the digipeaters it came through.</li>
@@ -1986,8 +2030,9 @@ class DabRx {
     let [at, gbest] = this.guardScan(this.next - 48, this.next + 48);
     // (a poor frame: up to 3 in a row, the receiver coasts on the expected timing rather than searching from scratch, so
     //  a brief dip in the signal costs at most those frames, not the lock, and DAB+ keeps its super frames' alignment)
+    (this.gHist ||= []).push(+gbest.toFixed(2)); if (this.gHist.length > 8) this.gHist.shift();      // (the last frames' guard correlation, for the log)
     if (gbest < 0.25) { this.poorRun = (this.poorRun || 0) + 1;
-      if (this.poorRun > 3) { this.locked = false; this.poorRun = 0; this.lostCount = (this.lostCount || 0) + 1;
+      if (this.poorRun > 3) { this.locked = false; this.poorRun = 0; this.lostCount = (this.lostCount || 0) + 1; this.lostWhy = { guard: this.gHist.slice(), coasted: this.coasted || 0, frames: this.frames || 0 };
         // (the lock really lost: frames will be missed while it's found again, so the chosen station's time interleaver is
         //  cleared of stale data and DAB+'s super frame alignment searched for afresh at once, rather than assumed)
         if (this.sel) { this.sel.il.fill(null); this.sel.ilCount = 0; this.sel.cifs = []; this.sel.sfSynced = false; this.sel.misses = 0; }
@@ -2553,7 +2598,7 @@ self.onmessage = async e => {
     if (sid !== null) self.postMessage({ logo: { ens: dabRx.ens.id, sid, name: l.name, w: l.w, h: l.h, mime: l.mime, bytes: l.bytes } }, [l.bytes.buffer]); }
   let pcm = null; if (parts.length) { pcm = new Float32Array(parts.reduce((t, p) => t + p.length, 0)); let o = 0; for (const p of parts) { pcm.set(p, o); o += p.length; } }
   const now = performance.now(), msg = { pcm, rate, workMs: now - t0, sel: dabRx.sel ? { sid: dabRx.sel.sid, format: dabRx.sel.format, kbps: dabRx.sel.kbps, sfOk, sfBad, units, unitsBad, audio: fmt, mp2: mp2info, label } : null,
-    quality: { locked: dabRx.locked, frames: dabRx.frames, spi: !!dabRx.spi, listDone: !!dabRx.ficLight, fibsOk: dabRx.fibsOk, fibs: dabRx.fibs, lock: dabRx.lockQ || 0, snr: dabRx.snrDb, lost: dabRx.lostCount || 0, resyncs: dabRx.sfResyncs || 0, faad: !!faadMod, mp2: !!mp2Mod, aac: !!aacDec, ausSeen: (dabRx.ausSeen || 0) } };
+    quality: { locked: dabRx.locked, frames: dabRx.frames, spi: !!dabRx.spi, listDone: !!dabRx.ficLight, fibsOk: dabRx.fibsOk, fibs: dabRx.fibs, lock: dabRx.lockQ || 0, snr: dabRx.snrDb, lost: dabRx.lostCount || 0, lostWhy: dabRx.lostWhy || null, resyncs: dabRx.sfResyncs || 0, faad: !!faadMod, mp2: !!mp2Mod, aac: !!aacDec, ausSeen: (dabRx.ausSeen || 0) } };
   if (now - lastInfo > 1000) { lastInfo = now; msg.ens = dabRx.ens; msg.stations = dabRx.stations(); }     // (the list, once a second)
   self.postMessage(msg, pcm ? [pcm.buffer] : []);
 };
@@ -2676,7 +2721,11 @@ function drmMscFrames(r, winStart, after = -Infinity) {      // (after: multiple
     // second pass decodes every level again knowing all the others, so each bit is a choice between just two points
     // instead of four or eight. Level 0, the hardest at first, gains most. (One pass for now: see below)
     const known = Array.from({ length: nl }, () => new Uint8Array(2 * NMUX)), have = new Array(nl).fill(false), decs = new Array(nl);
-    const passes = 1;      // (a second pass is supported, but measured on DeutschlandRadio it lost frames and took longer than real time)
+    // (from 2.3: further passes ONLY for a frame in trouble: after the first, each level's decision is re-encoded and
+    //  compared with the bits received; a clean frame hardly disagrees at levels 1 and 2 (RTL: 0.1% at most), a frame
+    //  in a fade does (TDF: 6% median at level 1). Then two more passes: on the fading TDF recording 315 -> 367 frames,
+    //  SNR's 118 -> 141, and none lost on any recording; clean frames cost what they did)
+    let passes = 1; const dis = new Array(nl).fill(0);
     for (let pass = 0; pass < passes; pass++) for (let lv = 0; lv < nl; lv++) {
       const y = new Float64Array(2 * NMUX);
       for (let p = 0; p < 2 * NMUX; p++) {
@@ -2690,6 +2739,8 @@ function drmMscFrames(r, winStart, after = -Infinity) {      // (after: multiple
       }
       decs[lv] = drmViterbi(y, pats[lv]);
       const c = drmEncode(decs[lv], pats[lv]); for (let p = 0; p < 2 * NMUX; p++) known[lv][p] = ils[lv] ? c[ils[lv][p]] : c[p]; have[lv] = true;
+      if (pass === 0) { let d = 0, t = 0; for (let p = 0; p < 2 * NMUX; p++) { const yy = ils[lv] ? y[ils[lv][p]] : y[p]; if (yy === 0) continue; t++; if ((yy < 0 ? 1 : 0) !== known[lv][p]) d++; } dis[lv] = t ? d / t : 0;
+        if (lv === nl - 1 && nl > 1 && globalThis.drmIterOk !== false && (dis[0] > 0.15 || (nl > 1 && dis[1] > 0.04) || (nl > 2 && dis[2] > 0.015))) passes = 3; }     // (clean frames: DeutschlandRadio ~11% / 3% / <1%)
     }
     const bitsAll = []; for (let lv = 0; lv < nl; lv++) for (const b of decs[lv]) bitsAll.push(b);
     const pr = drmPrbs(bitsAll.length), by = new Uint8Array(lenBytes), nAll = bitsAll.length >> 3, all = new Uint8Array(nAll);
@@ -2907,12 +2958,38 @@ class DrmRx {
     if (best.metric < 0.4) { out.state = "no DRM signal"; return (this.result = out); }
     const mode = best.mode, [Tu, Tg, L] = DRM_MODES[mode], Ts = Tu + Tg, tb = DRM_T[mode], mi = DRM_MI[mode];
     const fo = -best.ph * 48000 / (2 * Math.PI * Tu);
-    // 2. each symbol's carriers, the fine frequency taken out
+    // 2. each symbol's carriers, the fine frequency taken out. (From 2.3: FOLLOWED through the window: each symbol's guard
+    //  interval measured (smoothed over +-4 symbols), its phase unwrapped from the window's own estimate, and a straight
+    //  line fitted, weighted by strength; then followed with a continuous phase. A drifting transmitter or stick (an
+    //  upconverter's oscillator, warming up) no longer spoils a window; a steady signal gives a flat line. If the line
+    //  disagrees with the window's estimate at its start, the window's single value is used, as before)
     const dft = this.dft[Tu] ??= new DrmDft(Tu), nsym = Math.floor((n - best.start - Ts) / Ts), c0 = Tu / 2;
+    let fA = fo, fB = 0, fLocal = null;
+    if (nsym > 8) {
+      const gcr = new Float64Array(nsym), gci = new Float64Array(nsym);
+      for (let s = 0; s < nsym; s++) { const g0 = best.start + s * Ts; let sr2 = 0, si2 = 0;
+        for (let j = 0; j < Tg; j++) { const i = g0 + j; sr2 += re[i] * re[i + Tu] + im[i] * im[i + Tu]; si2 += im[i] * re[i + Tu] - re[i] * im[i + Tu]; }
+        gcr[s] = sr2; gci[s] = si2; }
+      const W = 4, step = 48000 / Tu, fsym = new Float64Array(nsym), wsym = new Float64Array(nsym); let prevF = fo, sw = 0, sx = 0, sy = 0, sxx = 0, sxy = 0;
+      for (let s = 0; s < nsym; s++) { let ar = 0, ai = 0; for (let k = Math.max(0, s - W); k <= Math.min(nsym - 1, s + W); k++) { ar += gcr[k]; ai += gci[k]; }
+        let f = -Math.atan2(ai, ar) * 48000 / (2 * Math.PI * Tu); while (f - prevF > step / 2) f -= step; while (f - prevF < -step / 2) f += step; prevF = f;
+        const w = Math.hypot(ar, ai); fsym[s] = f; wsym[s] = w; sw += w; sx += w * s; sy += w * f; sxx += w * s * s; sxy += w * s * f; }
+      const den = sw * sxx - sx * sx, d = den > 0 ? (sw * sxy - sx * sy) / den : 0, a0 = sw > 0 ? (sy - d * sx) / sw : fo;
+      if (Number.isFinite(d) && Number.isFinite(a0) && Math.abs(a0 - fo) < step / 4) { fA = a0; fB = d;
+        // (a jump rather than a drift: the measurements stray from the line. Then the smoothed per-symbol values are
+        //  followed directly, which takes a step as it comes, the phase carried on from symbol to symbol)
+        let r2 = 0; for (let s = 0; s < nsym; s++) r2 += wsym[s] * (fsym[s] - (a0 + d * s)) ** 2;
+        if (sw > 0 && Math.sqrt(r2 / sw) > step / 10) fLocal = fsym; }
+      out.drift = +(fB * 48000 / Ts).toFixed(2);         // (Hz a second, for the diagnostics)
+    }
     const Sr = [], Si = [], tr = new Float64Array(Tu), ti = new Float64Array(Tu), xr = new Float64Array(Tu), xi = new Float64Array(Tu);
+    let th = 0;      // (the followed phase at each symbol's start, for the per-symbol case)
     for (let s = 0; s < nsym; s++) {
       const a = best.start + s * Ts + Tg;
-      for (let j = 0; j < Tu; j++) { const ph = -2 * Math.PI * fo * (a + j) / 48000, c = Math.cos(ph), sn = Math.sin(ph); xr[j] = re[a + j] * c - im[a + j] * sn; xi[j] = re[a + j] * sn + im[a + j] * c; }
+      if (fLocal) { const f = fLocal[s];
+        for (let j = 0; j < Tu; j++) { const ph = th - 2 * Math.PI * f * (Tg + j) / 48000, c = Math.cos(ph), sn = Math.sin(ph); xr[j] = re[a + j] * c - im[a + j] * sn; xi[j] = re[a + j] * sn + im[a + j] * c; }
+        th -= 2 * Math.PI * f * Ts / 48000; }
+      else for (let j = 0; j < Tu; j++) { const u = a + j - best.start, ph = -2 * Math.PI * (fA * u + fB * u * u / (2 * Ts)) / 48000, c = Math.cos(ph), sn = Math.sin(ph); xr[j] = re[a + j] * c - im[a + j] * sn; xi[j] = re[a + j] * sn + im[a + j] * c; }
       dft.run(xr, xi, 0, tr, ti);
       const r = new Float64Array(Tu), i = new Float64Array(Tu); for (let k = 0; k < Tu; k++) { const kk = (k + c0) % Tu; r[k] = tr[kk]; i[k] = ti[kk]; }     // (carrier k at index c0 + k)
       Sr.push(r); Si.push(i);
@@ -3086,7 +3163,7 @@ class DrmRx {
 
 // ---- the worker. First message: FAAD2 (gzip, base64). Then each message is a window at 48 kHz (re, im, and t0, its
 // start in the stream): the reply is what could be read, and the sound of any multiplex frames not decoded before
-let faad = null, faadKey = "", lastId = -Infinity, faadMem = null, drmGood = null, drmWin = 0;
+let faad = null, faadKey = "", lastId = -Infinity, faadMem = null, drmGood = null, drmWin = 0, drmFrameLen = 0;
 const drmTxt = { buf: [], segs: new Map(), toggle: -1, label: null, station: null };
 // ---- the SlideShow (pictures): a packet-mode data stream (ES 201 980 6.6.1: a 1-byte header (first, last, packet ID, a
 // padding indicator, continuity), the data, a CRC-16), carrying MSC data groups (as DAB's) with MOT in header mode
@@ -3122,8 +3199,62 @@ class DrmSlides {
     if (ctype === 2 && (csub === 1 || csub === 3)) this.ready.push({ name, mime: csub === 3 ? "image/png" : "image/jpeg", bytes: b });
   }
 }
+// ---- Journaline (from 2.3): text news pages (ETSI TS 102 979; as Fraunhofer's reference decoder in Dream, GPL-2+). A
+// packet-mode stream (as the SlideShow's) of MSC data groups (type 0, CRC), each an NML object: a 3-byte header (object
+// ID; type 3 bits: 1 menu, 2 plain text, 3 title only, 4 list; static; compressed; revision), then, if compressed, 0x08
+// and a RAW deflate body (the browser's own DecompressionStream). Inside: 0x01 + the title; then a plain text's 0x03 +
+// text, a menu's 0x02 + a 2-byte link + text each, or a list's 0x04 (a new row) / 0x05 (the next column) + text. A text
+// runs to the next byte below 0x10; data sections (0x1a/0x1b + length) are skipped; within text, 0x10 is a line break,
+// 0x12/0x13 emphasis, 0x1c/0x1d skip the next byte. Each object is posted when new or revised
+class DrmJournaline {
+  constructor(app) { this.app = app; this.cur = null; this.seen = new Map(); this.packets = 0; }
+  frame(st) { const P = this.app.packetLen + 3;
+    for (let p = 0; p + P <= st.length; p += P) { const pk = st.subarray(p, p + P);
+      if (drmTextCrc(pk, P - 2) !== ((pk[P - 2] << 8) | pk[P - 1])) { this.cur = null; continue; } this.packets++;
+      const h = pk[0], first = h >> 7, last = (h >> 6) & 1, pid = (h >> 4) & 3, ppi = (h >> 3) & 1; if (pid !== this.app.packetId) continue;
+      let d = pk.subarray(1, P - 2); if (ppi) d = d.subarray(1, 1 + d[0]);
+      if (first) this.cur = []; if (this.cur) { for (const b of d) this.cur.push(b); if (this.cur.length > 8000) this.cur = null; }
+      if (last && this.cur) { const g = Uint8Array.from(this.cur); this.cur = null; this.group(g); } } }
+  group(g) {
+    if (g.length < 6) return; const ext = g[0] >> 7, crcF = (g[0] >> 6) & 1, segF = (g[0] >> 5) & 1, uaF = (g[0] >> 4) & 1, type = g[0] & 15;
+    if (type !== 0 || (crcF && drmTextCrc(g, g.length - 2) !== ((g[g.length - 2] << 8) | g[g.length - 1]))) return;
+    let q = 2 + (ext ? 2 : 0) + (segF ? 2 : 0); if (uaF) q += 1 + (g[q] & 15);
+    const b = g.subarray(q, g.length - (crcF ? 2 : 0)); if (b.length < 4) return;
+    const id = (b[0] << 8) | b[1], ot = b[2] >> 5, comp = (b[2] >> 3) & 1, rev = b[2] & 7, key = id + ":" + rev + ":" + b.length;
+    if (ot < 1 || ot > 4 || this.seen.get(id) === key) return; this.seen.set(id, key);
+    const done = body => { try { const o = drmNmlParse(id, ot, body); if (o) self.postMessage({ jl: o }); } catch { this.seen.delete(id); } };
+    if (!comp) { done(b.subarray(3)); return; }
+    if (b[3] !== 0x08 || typeof DecompressionStream !== "function") { this.seen.delete(id); return; }
+    new Response(new Blob([b.subarray(4)]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer()
+      .then(u => done(new Uint8Array(u)), () => this.seen.delete(id));
+  }
+}
+function drmNmlParse(id, ot, p) {
+  let i = 0; const text = () => { const out = []; let emph = false;
+    while (i < p.length) { const c = p[i];
+      if (c === 0x1a || c === 0x1b) { i += 3 + (p[i + 1] || 0); continue; }
+      if (c < 0x10) break;
+      if (c === 0x10) out.push(10); else if (c === 0x12) { if (!emph) { out.push(0x01); emph = true; } } else if (c === 0x13) { if (emph) { out.push(0x02); emph = false; } }
+      else if (c === 0x1c || c === 0x1d) i++; else if (c >= 0x20) out.push(c);
+      i++; }
+    if (emph) out.push(0x02);
+    return new TextDecoder("utf-8").decode(Uint8Array.from(out)).replace(/\u0001/g, "\u2063*").replace(/\u0002/g, "*\u2063"); };   // (emphasis marked *…*, invisibly bracketed)
+  if (p[i] !== 0x01) return null; i++; const o = { id, type: ["", "menu", "text", "title", "list"][ot], title: text().trim(), items: [] };
+  if (ot === 2) { if (p[i] === 0x03) { i++; o.text = text().trim(); } }
+  else if (ot === 1) while (i + 3 <= p.length && p[i] === 0x02) { const link = (p[i + 1] << 8) | p[i + 2]; i += 3; o.items.push({ link, text: text().trim() }); }
+  else if (ot === 4) { let row = null; while (i < p.length && (p[i] === 0x04 || p[i] === 0x05)) { const nr = p[i] === 0x04; i++; const t = text().trim();
+      if (nr || !row) { row = [t]; o.items.push(row); } else row.push(t); } }
+  return o;
+}
 function drmTextCrc(b, n) { let c = 0xffff; for (let i = 0; i < n; i++) { c ^= b[i] << 8; for (let j = 0; j < 8; j++) c = c & 0x8000 ? ((c << 1) ^ 0x1021) & 0xffff : (c << 1) & 0xffff; } return c ^ 0xffff; }
-let drmSl = null, drmSlKey = "";
+let drmSl = null, drmSlKey = "", drmJl = null, drmJlKey = "";
+function drmJlFeed(r, all) {
+  const app = (r.dataApps || []).find(a => a.packet && a.domain === 1 && a.app === 0x44a); if (!app || !r.mux || !all) return;
+  const key = (r.label || "") + ":" + app.stream + ":" + app.packetId; if (key !== drmJlKey) { drmJlKey = key; drmJl = new DrmJournaline(app); self.postMessage({ jlReset: r.label || "" }); }
+  let off = 0; for (let s = 0; s < r.mux.streams.length; s++) off += r.mux.streams[s][0];
+  for (let s = 0; s < app.stream; s++) off += r.mux.streams[s][1];
+  const n = r.mux.streams[app.stream] ? r.mux.streams[app.stream][1] : 0; if (n) drmJl.frame(all.subarray(off, off + n));
+}
 function drmSlideFeed(r, all) {
   const app = (r.dataApps || []).find(a => a.packet && a.domain === 1 && a.app === 2); if (!app || !r.mux || !all) return;
   const key = (r.label || "") + ":" + app.stream + ":" + app.packetId; if (key !== drmSlKey) { drmSlKey = key; drmSl = new DrmSlides(app); }
@@ -3201,33 +3332,33 @@ self.onmessage = async e => {
       // a gap in the multiplex frame numbers starts it afresh, so no frame is stitched from two places
       const lenBytes = r.mux.streams[0][0] + r.mux.streams[0][1], sfs = lenBytes - (r.audio.text ? 4 : 0), parts = [];
       for (const { id, bytes, all } of drmMscFrames(r, d.t0, lastId)) {
-        if (id <= lastId) continue; if (id !== lastId + 1) xst = {}; lastId = id; drmTextFeed(r, bytes); drmSlideFeed(r, all);
+        if (id <= lastId) continue; if (id !== lastId + 1) xst = {}; lastId = id; drmTextFeed(r, bytes); drmSlideFeed(r, all); drmJlFeed(r, all);
         for (const fr of drmXheFrames(xst, bytes, sfs)) {
           if (!xa) { try { xaacOpen(); } catch (e) { xa = null; } if (!xa) { bad++; continue; } }
           let n = -9;
           try { if (fr.length <= 16384) { new Uint8Array(xa.x.memory.buffer).set(fr, xa.buf); n = xa.x.xaac_decode(xa.h, xa.buf, fr.length, xa.pp); } } catch (e) { n = -9; }
-          if (n < 0) { bad++; try { xaacOpen(); } catch (e) { xa = null; } continue; }
+          if (n < 0) { bad++; if (drmFrameLen) parts.push(new Float32Array(drmFrameLen)); try { xaacOpen(); } catch (e) { xa = null; } continue; }     // (a lost frame: its length in silence, so the timeline stays exact)
           if (n === 0) continue;
           const ch = xa.x.xaac_channels(xa.h) || 1, at = new DataView(xa.x.memory.buffer).getUint32(xa.pp, true), s16 = new Int16Array(xa.x.memory.buffer, at, n);
           prate = xa.x.xaac_rate(xa.h); good++;
           const f = new Float32Array(2 * (n / ch));      // (always as stereo pairs)
           for (let k = 0, j = 0; k < n; k += ch, j += 2) { f[j] = s16[k] / 32768; f[j + 1] = s16[ch > 1 ? k + 1 : k] / 32768; }
-          parts.push(f);
+          parts.push(f); drmFrameLen = f.length;
         }
       }
       if (parts.length) { pcm = new Float32Array(parts.reduce((t, p) => t + p.length, 0)); let o = 0; for (const p of parts) { pcm.set(p, o); o += p.length; } }
     } else if (faad && r.audio && r.mux && !r.unsupported && r.audio.codec === "AAC") {
       faadFor(r.audio); const lenBytes = r.mux.streams[0][0] + r.mux.streams[0][1], parts = [], X = faad.x;
       for (const { id, bytes, all } of drmMscFrames(r, d.t0, lastId)) {
-        if (id <= lastId) continue; lastId = id; drmTextFeed(r, bytes); drmSlideFeed(r, all);
+        if (id <= lastId) continue; lastId = id; drmTextFeed(r, bytes); drmSlideFeed(r, all); drmJlFeed(r, all);
         for (const a of drmAacFrames(bytes, r.audio, lenBytes)) {
           new Uint8Array(X.memory.buffer).set([a.crc], faad.buf); new Uint8Array(X.memory.buffer).set(a.bytes, faad.buf + 1);
           const o = X.NeAACDecDecode(faad.h, faad.info, faad.buf, a.bytes.length + 1), mb = new Uint8Array(X.memory.buffer), dvw = new DataView(X.memory.buffer);
-          if (mb[faad.info + 9] || !o) { bad++; continue; }
+          if (mb[faad.info + 9] || !o) { bad++; if (drmFrameLen) parts.push(new Float32Array(drmFrameLen)); continue; }     // (a lost frame: its length in silence)
           const n = dvw.getUint32(faad.info + 4, true), ch = mb[faad.info + 8]; prate = dvw.getUint32(faad.info + 12, true); good++;
           const s16 = new Int16Array(X.memory.buffer, o, n), f = new Float32Array(2 * (n / ch));      // (always as stereo pairs)
           for (let k = 0, j = 0; k < n; k += ch, j += 2) { f[j] = s16[k] / 32768; f[j + 1] = s16[ch > 1 ? k + 1 : k] / 32768; }
-          parts.push(f);
+          parts.push(f); drmFrameLen = f.length;
         }
       }
       if (parts.length) { pcm = new Float32Array(parts.reduce((t, p) => t + p.length, 0)); let o = 0; for (const p of parts) { pcm.set(p, o); o += p.length; } }
@@ -3237,6 +3368,7 @@ self.onmessage = async e => {
   r.audioGood = good; r.audioBad = bad;
   r.workMs = performance.now() - tw0; r.wasmMB = (faad ? faad.x.memory.buffer.byteLength / 1048576 : 0) + (xa ? xa.x.memory.buffer.byteLength / 1048576 : 0);      // (its work, for the page's CPU figure)
   if (r && r.text === undefined && drmTxt.label !== null && r.label === drmTxt.station) r.text = drmTxt.label;
+  globalThis.drmIterOk = !(r.workMs > 900);      // (the extra decoding passes only while the worker keeps up comfortably: under 0.9 s of each 1.2 s window)
   if (pcm) self.postMessage({ r, pcm, rate: prate }, [pcm.buffer]); else self.postMessage({ r });
 };
 </script>
@@ -6012,13 +6144,29 @@ function drmDemoSignal(opt = {}) {
       const body = pad ? [d.length, ...d, ...new Array(PL - 1 - d.length).fill(0)] : d, h = (first ? 0x80 : 0) | (last ? 0x40 : 0) | (0 << 4) | (pad ? 0x08 : 0) | (ci++ & 7);
       const q = [h, ...body]; const c = crc16(q, q.length); pk.push(Uint8Array.from([...q, c >> 8, c & 255])); }
     slidePk = pk;
+    // (from 2.3: Journaline pages too, in the same stream as packet ID 1: a menu, an article, a table and some tips, built
+    //  to the standard (ETSI TS 102 979), uncompressed, as it allows: each an NML object in an MSC data group with a CRC)
+    const U = t => Array.from(new TextEncoder().encode(t)), jlHdr = (id, type) => [id >> 8, id & 255, (type << 5) | 0x10];
+    const objs = [
+      [...jlHdr(0x0000, 1), 0x01, ...U("OFFgrid-SDR demo news"), 0x02, 0x01, 0x01, ...U("About Journaline"), 0x02, 0x01, 0x02, ...U("The demo's DRM stations"), 0x02, 0x01, 0x03, ...U("Off-grid listening tips")],
+      [...jlHdr(0x0101, 2), 0x01, ...U("Journaline: news pages with the sound"), 0x03, ...U("Journaline sends pages of text alongside a DRM station's sound: menus, articles and lists, rather like teletext. OFFgrid-SDR collects them as they arrive; open them with the "), 0x12, ...U("News"), 0x13, ...U(" button."), 0x10, ...U("These pages come from OFFgrid-SDR's demo, built to the standard. On air, All India Radio is Journaline's best-known user.")],
+      [...jlHdr(0x0102, 4), 0x01, ...U("The demo's DRM stations"), 0x04, 0x12, ...U("Frequency"), 0x13, 0x05, 0x12, ...U("Station"), 0x13, 0x04, ...U("11.700 MHz"), 0x05, ...U("OFFgrid DRM (AAC)"), 0x04, ...U("11.750 MHz"), 0x05, ...U("OFFgrid xHE (xHE-AAC)")],
+      [...jlHdr(0x0103, 2), 0x01, ...U("Off-grid listening tips"), 0x03, ...U("A long wire and a good earth often beat a short active antenna on shortwave."), 0x10, ...U("DRM spreads each moment over 2 seconds of signal, so short fades pass unheard; deep ones are bridged by the next good window.")],
+    ];
+    const jpk = []; let jci = 0;
+    for (const o of objs) { const g0 = [0x40, 0, ...o], c0 = crc16(g0, g0.length), g = [...g0, c0 >> 8, c0 & 255];
+      for (let i = 0; i < g.length; i += PL) { const d = g.slice(i, i + PL), first = i === 0, last = i + PL >= g.length, pad = d.length < PL;
+        const body = pad ? [d.length, ...d, ...new Array(PL - 1 - d.length).fill(0)] : d, h = (first ? 0x80 : 0) | (last ? 0x40 : 0) | (1 << 4) | (pad ? 0x08 : 0) | (jci++ & 7);
+        const q = [h, ...body]; const c = crc16(q, q.length); jpk.push(Uint8Array.from([...q, c >> 8, c & 255])); } }
+    if (!xhe) slidePk = slidePk.concat(jpk);      // (the AAC station only: the xHE-AAC station's description has no room for a second entry)
   }
   // the SDC: the multiplex description (type 0), the label (type 1), the audio settings (type 9: AAC, mono, 24 kHz)
   const N = sdcPos.length, M = T.punct[4][0] * Math.floor((2 * N - 12) / T.punct[4][1]), useful = 20 + 8 * Math.floor((M - 20) / 8), sb = new Array(M).fill(0);
   { let p = 4; const put = (v, n) => { bits(v, n).forEach(x => { sb[p++] = x; }); }, label = new TextEncoder().encode(stationLabel);
     if (!ex) { put(3, 7); put(0, 1); put(0, 4); put(0, 2); put(0, 2); put(0, 12); put(lenBytes, 12); }                     // type 0: one stream, part B only
     else { put(6, 7); put(0, 1); put(0, 4); put(0, 2); put(1, 2); put(0, 12); put(lenAudio, 12); put(0, 12); put(lenData, 12);   // type 0: the audio and the SlideShow, protection level 1
-      put(4, 7); put(0, 1); put(5, 4); put(1, 2); put(1, 2); put(1, 1); put(1, 1); put(0, 2); put(1, 4); put(PL, 8); put(0, 5); put(2, 11); }   // type 5: stream 1, packet mode, DAB's SlideShow
+      put(4, 7); put(0, 1); put(5, 4); put(1, 2); put(1, 2); put(1, 1); put(1, 1); put(0, 2); put(1, 4); put(PL, 8); put(0, 5); put(2, 11);
+      if (!xhe) { put(4, 7); put(0, 1); put(5, 4); put(2, 2); put(1, 2); put(1, 1); put(1, 1); put(1, 2); put(1, 4); put(PL, 8); put(0, 5); put(0x44a, 11); } }   // (type 5 again: Journaline, packet ID 1, the same stream)   // type 5: stream 1, packet mode, DAB's SlideShow
     put(label.length, 7); put(0, 1); put(1, 4); put(0, 4); label.forEach(c => put(c, 8));                                   // type 1: the label
     if (!xhe) { put(2, 7); put(0, 1); put(9, 4); put(0, 4); put(0, 2); put(0, 1); put(0, 2); put(3, 3); put(ex ? 1 : 0, 1); put(0, 7); }   // type 9: AAC, no SBR, mono, 24 kHz (and text, with the extras)
     else { put(2 + xhe.config.length, 7); put(0, 1); put(9, 4); put(0, 4); put(3, 2); put(0, 1); put(0, 2); put(4, 3); put(ex ? 1 : 0, 1); put(0, 7);   // type 9: xHE-AAC, mono, 24 kHz (text, with the extras),
@@ -6155,7 +6303,8 @@ function dabGot(m) {
   // (into the diagnostics log: the receiver losing its place, DAB+ losing its super frames' alignment; with the page's
   //  own "samples lost" warnings beside them, a slow computer's interruptions can be told from a weak signal's)
   if (m.quality) { const q = m.quality, p = dab.quality;
-    if (p && q.lost > (p.lost || 0)) diagEv("dab lock lost", { times: q.lost, snr: Number.isFinite(q.snr) ? +q.snr.toFixed(1) : null, cpu: el.cpuVal.textContent });
+    if (p && q.lost > (p.lost || 0)) diagEv("dab lock lost", { times: q.lost, snr: Number.isFinite(q.snr) ? +q.snr.toFixed(1) : null, cpu: el.cpuVal.textContent,
+      guard: q.lostWhy ? q.lostWhy.guard.join(" ") : null, coasted: q.lostWhy ? q.lostWhy.coasted : null, src: state.source, buf: state.source === "sdrconnect" ? Math.round((sdrc.w - sdrc.r) / (sdrc.want.rate || 2048000) * 1000) : null });
     if (p && q.resyncs > (p.resyncs || 0)) diagEv("dab superframe resync", { times: q.resyncs, snr: Number.isFinite(q.snr) ? +q.snr.toFixed(1) : null });
     dab.quality = q; }
   dabAutoCheck();
@@ -6249,7 +6398,37 @@ function drmAutoCheck(r) {
     setStatus("AUTO: no DRM signal here after all, so back to AM"); autoBanner("AUTO: not DRM after all: back to AM", "found");
   } else if (r.facOk || r.metric >= 0.4) drm.autoAt = 0;          // (a real DRM signal: confirmed)
 }
+// ---- Journaline (from 2.3): the station's news pages, kept per station; the reader opens at the main menu (object 0)
+function jlRender() {
+  const P = el.jlPanel; if (P.hidden) return; const st = drm.jlStack || [0], id = st[st.length - 1], o = drm.jl && drm.jl.get(id);
+  el.jlBack.disabled = st.length < 2; el.jlTitle.textContent = o ? o.title : "Journaline"; const B = el.jlBody; B.textContent = "";
+  const rich = (parent, txt) => { for (const part of String(txt).split(/\u2063\*|\*\u2063/).map((t, i) => [t, i % 2 === 1])) { if (!part[0]) continue; const sp = document.createElement(part[1] ? "b" : "span"); sp.textContent = part[0]; parent.append(sp); } };
+  if (!o) { const p = document.createElement("p"); p.textContent = "This page hasn't been received yet: the station sends its pages in turn, so it should arrive shortly."; B.append(p); }
+  else if (o.type === "menu") for (const it of o.items) { const b = document.createElement("button"); b.type = "button"; const have = drm.jl.has(it.link); b.className = "jlitem" + (have ? "" : " dim");
+    rich(b, (it.text || "(untitled)") + (have ? "" : "  (not received yet)")); if (have) b.onclick = () => { drm.jlStack = [...st, it.link]; jlRender(); }; B.append(b); }
+  // (on the main menu: any page received that no received menu links to yet (its own menu not here yet), so nothing that
+  //  has arrived is out of reach)
+  if (o && st.length === 1) { const linked = new Set([id]); for (const x of drm.jl.values()) if (x.type === "menu") for (const it of x.items) linked.add(it.link);
+    const orphans = [...drm.jl.values()].filter(x => !linked.has(x.id));
+    if (orphans.length) { const h = document.createElement("p"); h.className = "jlother"; h.textContent = "Other pages received"; B.append(h);
+      for (const x of orphans) { const b = document.createElement("button"); b.type = "button"; b.className = "jlitem"; rich(b, x.title || "(untitled)"); b.onclick = () => { drm.jlStack = [...st, x.id]; jlRender(); }; B.append(b); } } }
+  if (!o) { }
+  else if (o.type === "text") for (const para of String(o.text || "").split(/\n+/)) { if (!para.trim()) continue; const p = document.createElement("p"); rich(p, para); B.append(p); }
+  else if (o.type === "list") { const t = document.createElement("table"); for (const row of o.items) { const tr = document.createElement("tr"); for (const c of row) { const td = document.createElement("td"); rich(td, c); tr.append(td); } t.append(tr); } B.append(t); }
+  el.jlInfo.textContent = `${drm.jlFor || "This station"} · ${drm.jl ? drm.jl.size : 0} page${drm.jl && drm.jl.size === 1 ? "" : "s"} received · Journaline`;
+}
+function drmNewsBtn() { const n = drm.jl ? drm.jl.size : 0; el.drmNews.hidden = !n; el.drmNews.textContent = n ? `News (${n})` : "News"; }
+function jlOpen() { drm.jlStack = [drm.jl && drm.jl.has(0) ? 0 : (drm.jl ? [...drm.jl.keys()][0] : 0)]; el.jlPanel.hidden = false; jlRender(); }
+// (wired once the page has set up its elements: this code comes before that in the file)
+setTimeout(() => {
+  el.jlClose.onclick = () => { el.jlPanel.hidden = true; }; el.jlBack.onclick = () => { if ((drm.jlStack || []).length > 1) { drm.jlStack.pop(); jlRender(); } };
+  el.drmNews.onclick = () => el.jlPanel.hidden ? jlOpen() : (el.jlPanel.hidden = true);
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !el.jlPanel.hidden) { el.jlPanel.hidden = true; e.stopPropagation(); } }, true);
+}, 0);
 function drmGot(msg) {
+  // (Journaline's pages come as messages of their own, whenever one is decompressed: kept, and nothing else touched)
+  if (msg.jlReset !== undefined) { drm.jl = new Map(); drm.jlFor = msg.jlReset; jlRender(); drmNewsBtn(); return; }
+  if (msg.jl) { (drm.jl ||= new Map()).set(msg.jl.id, msg.jl); diagEv("drm journaline", { id: msg.jl.id, type: msg.jl.type, title: String(msg.jl.title).slice(0, 60) }); jlRender(); drmNewsBtn(); return; }
   const r = msg.r || msg;
   perf.work += r.workMs || 0; perfAdd("DRM decoder (background)", r.workMs || 0); if (r.wasmMB) drm.wasmMB = r.wasmMB;      // (the worker's share, for the CPU figure)
   drm.busy = false; if (drm.sentFreq !== curFreq()) return;           // (tuned away meanwhile)
@@ -7882,6 +8061,354 @@ let demoGen = null;
     };
     RT.prototype.__flushOnRetune = true;
   } }
+// ---- SDRconnect (from 2.3): an SDRplay RSP through SDRconnect's WebSocket API (SDRplay's spec 1.0.3), on the network.
+// Built as the demo is: a "fake RTL" device whose samples come from a generator, here filled from SDRconnect's IQ
+// stream; when the radio asks for another centre frequency or sample rate, SDRconnect is told (set_property), and
+// samples are dropped until it confirms the retune, so nothing from the old frequency leaks through. Only SDRconnect's
+// WebSocket API is used, never SDRplay's driver: its versions don't matter here. All of it is in this one section.
+const sdrc = { ws: null, status: "off", url: "", props: {}, I: new Float32Array(1 << 21), Q: new Float32Array(1 << 21), w: 0, r: 0,
+  want: { center: null, rate: null }, waiting: false, bytes: 0, under: 0, dropped: 0, want_on: false, err: "" };
+const SDRC_MASK = (1 << 21) - 1;
+function sdrcUrl(a) { a = String(a || "").trim(); if (!a) return ""; if (!/^wss?:\/\//i.test(a)) a = "ws://" + a; if (!/^wss?:\/\/(\[[^\]]+\]|[^/:]+):\d+/i.test(a)) a = a.replace(/^(wss?:\/\/(\[[^\]]+\]|[^/:]+))/i, "$1:5454"); return a; }
+// (the last 5 addresses that connected, most recent first, offered in the address fields through one shared list;
+//  only addresses that worked, so typing mistakes never collect there)
+function sdrcRemember(addr) { const a = String(addr || "").trim(); if (!a) return;
+  const k = sdrcUrl(a).toLowerCase();      // (compared by the address each stands for: "127.0.0.1" and "127.0.0.1:5454" are one)
+  state.sdrcHistory = [a, ...(state.sdrcHistory || []).filter(x => sdrcUrl(x).toLowerCase() !== k)].slice(0, 5); saveState(); sdrcHistRender(); }
+function sdrcHistRender() { let dl = document.getElementById("sdrcHist"); if (!dl) { dl = document.createElement("datalist"); dl.id = "sdrcHist"; document.body.append(dl); }
+  dl.textContent = ""; for (const a of state.sdrcHistory || []) { const o = document.createElement("option"); o.value = a; dl.append(o); } }
+function sdrcSend(type, prop, val) { if (sdrc.ws && sdrc.ws.readyState === 1) sdrc.ws.send(JSON.stringify({ event_type: type, property: prop || "", value: String(val ?? "") })); }
+function sdrcConnect(addr, timeoutMs = 5000) {
+  return new Promise(resolve => {
+    const url = sdrcUrl(addr); if (!url) { resolve({ ok: false, error: "No address: enter the PC name or IP address of the computer running SDRconnect" }); return; }
+    try { sdrc.ws && sdrc.ws.close(); } catch { }
+    let done = false; const finish = r => { if (done) return; done = true; clearTimeout(to); resolve(r); };
+    let ws; try { ws = new WebSocket(url); } catch (e) { finish({ ok: false, error: `That address isn't usable (${url})` }); return; }
+    sdrc.ws = ws; sdrc.url = url; sdrc.status = "connecting"; sdrc.props = {}; ws.binaryType = "arraybuffer";
+    const to = setTimeout(() => { finish({ ok: false, error: `No answer from SDRconnect at ${url}: is it running, with its WebSocket API switched on, and port ${url.split(":").pop()} allowed through the firewall?` }); try { ws.close(); } catch { } }, timeoutMs);
+    ws.onopen = () => { for (const p of ["api_version", "valid_devices", "active_device", "valid_antennas", "active_antenna", "lna_state_min", "lna_state_max", "lna_state", "device_sample_rate", "device_center_frequency", "overload", "can_control", "started"]) sdrcSend("get_property", p); };
+    // (port 50000 is SDRconnect's OWN server ("SDRconnect --server", for its desktop and web clients, in SDRplay's private
+    //  protocol): it answers, then drops us. OFFgrid-SDR needs the WebSocket API instead: said plainly)
+    const p50k = /:50000(\/|$)/.test(url);
+    ws.onerror = () => finish({ ok: false, error: p50k ? `Port 50000 is SDRconnect's own server (for SDRplay's desktop and web clients), which OFFgrid-SDR can't use. It needs SDRconnect's WebSocket API, on port 5454: switch WebSocket on in SDRconnect's Settings, or on a computer without a screen run SDRconnect's headless program (from version 1.0.7) instead of "--server", then use the address without :50000` : `Couldn't connect to ${url}: check the address, and that SDRconnect is running there with its WebSocket API switched on (port 5454)` });
+    ws.onclose = () => { if (sdrc.ws !== ws) return; const was = sdrc.status; sdrc.status = "off"; finish({ ok: false, error: `The connection to ${url} closed` });
+      if (was === "connected" && !sdrc.closing) { diagEv("sdrconnect", { state: "lost", url }); sdrcLost(); } };
+    ws.onmessage = e => {
+      if (typeof e.data === "string") { let m; try { m = JSON.parse(e.data); } catch { return; }
+        if ((m.event_type === "get_property_response" || m.event_type === "property_changed") && m.property && (!m.device || m.device === "primary")) {
+          sdrc.props[m.property] = m.value;
+          if (sdrc.probe && /bias|notch|agc|if_g|ifgr|gain_red|if_gain/i.test(m.property)) sdrc.probe[m.property] = m.value;      // (an answer to the probe, below)
+          if (m.property === "started" && sdrc.startLog) sdrc.startLog.push(`${((performance.now() - sdrc.startT0) / 1000).toFixed(1)}s:${m.value}${m.event_type === "property_changed" ? "*" : ""}`);
+          // (a retune confirmed: within 5 kHz, as SDRconnect may round to its tuning step; an exact match was asked for
+          //  before, and in the field a band change then waited for ever: no spectrum, no sound)
+          if (m.property === "device_center_frequency" && sdrc.want.center && Math.abs(+m.value - sdrc.want.center) <= 5000) sdrc.loErr = +m.value - sdrc.want.center;   // (tuned near, not exactly: corrected below)
+          if (m.property === "device_center_frequency" && sdrc.waiting && Math.abs(+m.value - sdrc.want.center) <= 5000) { sdrcRangeWait();
+            if (Math.round(+m.value) !== Math.round(sdrc.want.center)) diagEv("sdrconnect", { state: "tuned near", asked: Math.round(sdrc.want.center), actual: +m.value });
+            sdrcSend("get_property", "lna_state_min"); sdrcSend("get_property", "lna_state_max"); sdrcSend("get_property", "lna_state"); }      // (the LNA range varies by band)
+          if ((m.property === "lna_state_max" || m.property === "lna_state_min") && running) sdrcGain();
+          if (m.property === "lna_state_max" && sdrc.rangePending) sdrcRangeDone();
+          if (/^(valid_devices|active_device|valid_antennas|active_antenna|api_version)$/.test(m.property)) setTimeout(devChooserSync, 0);
+          if (m.property === "active_antenna" && m.event_type === "property_changed") diagEv("sdrconnect", { state: "antenna now", name: m.value, freq: curFreq() });
+          // (another program controlling the RSP: SDRconnect may refuse our tuning: said plainly, once per connection)
+          if (m.property === "can_control" && m.value === "false" && !sdrc.ctlWarned && /^true$/i.test(String(sdrc.props.started ?? ""))) { sdrc.ctlWarned = true; diagEv("sdrconnect", { state: "no control" });
+            setStatus("Another program is controlling this RSP through SDRconnect: OFFgrid-SDR can listen, but may not be able to tune it", true); }
+          if (m.property === "can_control" && m.value === "true") sdrc.ctlWarned = false;
+          if (m.property === "device_sample_rate" && sdrc.want.rate && Math.abs(+m.value - sdrc.want.rate) > 1 && sdrc.rateNoted !== m.value) { sdrc.rateNoted = m.value;
+            diagEv("sdrconnect", { state: "rate differs", asked: sdrc.want.rate, actual: +m.value }); }
+          if (m.property === "api_version") { sdrc.status = "connected"; diagEv("sdrconnect", { state: "connected", url, api: m.value });
+            sdrcRemember(addr);
+            // (what SDRconnect reports about the device, in the diagnostics log, once its replies are in)
+            setTimeout(() => { const P = sdrc.props; diagEv("sdrconnect details", { device: P.active_device, devices: P.valid_devices, antennas: P.valid_antennas, antenna: P.active_antenna,
+              lna: `${P.lna_state_min}-${P.lna_state_max}`, rate: P.device_sample_rate, api: P.api_version, canControl: P.can_control }); }, 400);
+            setTimeout(() => finish({ ok: true, api: m.value, device: sdrc.props.active_device || "", url }), 250); }     // (a moment for the other replies, the device's name among them)
+          sdrcRender(); }
+        return; }
+      const d = e.data; if (!(d instanceof ArrayBuffer) || d.byteLength < 6) return; const type = new DataView(d).getUint16(0, true); if (type !== 2) return;
+      const s16 = new Int16Array(d, 2, (d.byteLength - 2) >> 1); sdrc.bytes += d.byteLength; if (sdrc.waiting) return;
+      if (sdrc.settleUntil && performance.now() < sdrc.settleUntil) return;      // (the RSP settling after a gain change)
+      let w = sdrc.w; const I = sdrc.I, Q = sdrc.Q;
+      for (let i = 0; i + 1 < s16.length; i += 2) { const k = w & SDRC_MASK; I[k] = s16[i] / 32768; Q[k] = s16[i + 1] / 32768; w++; }
+      sdrc.w = w; if (w - sdrc.r > SDRC_MASK) { sdrc.r = w - (SDRC_MASK >> 1); sdrc.dropped++; }
+    };
+  });
+}
+// (the generator the radio pulls from: retunes passed on; samples handed over; the latency kept under 0.4 s)
+function sdrcGen(first, rate, center, I, Q) {
+  if (rate !== sdrc.want.rate) { sdrc.want.rate = rate; diagEv("sdrconnect", { state: "rate set", rate }); sdrcSend("set_property", "device_sample_rate", rate); sdrc.r = sdrc.w; sdrc.frac = 0;
+    setTimeout(() => sdrcSend("get_property", "device_sample_rate"), 600); }      // (read back: SDRconnect may run at another rate)
+  if (Math.round(center) !== Math.round(sdrc.want.center ?? -1)) { if (sdrc.want.center != null) diagEv("sdrconnect", { state: "retune", center: Math.round(center) });
+    // (from 2.3: SDRconnect already on that frequency (after a reconnection, say) doesn't confirm an unchanged one: the 1.5 s
+    //  wait discarded samples for nothing, and DAB lost its lock after it. Then no wait and nothing discarded)
+    const already = Math.abs(+(sdrc.props.device_center_frequency ?? NaN) - center) <= 5000;
+    sdrc.want.center = center; sdrc.loErr = already ? +sdrc.props.device_center_frequency - center : 0;
+    if (!already) { sdrc.waiting = true; sdrc.r = sdrc.w; sdrc.primed = false; }
+    sdrcSend("set_property", "device_center_frequency", Math.round(center));
+    // (no confirmation within 1.5 s: carry on anyway, logging what SDRconnect says it's tuned to, rather than waiting for ever)
+    clearTimeout(sdrc.waitTo); sdrc.waitTo = setTimeout(() => { if (sdrc.waiting && !sdrc.rangePending && Math.round(sdrc.want.center) === Math.round(center)) { sdrcRangeWait();
+      diagEv("sdrconnect", { state: "retune unconfirmed", asked: Math.round(center), reported: sdrc.props.device_center_frequency }); sdrcSend("get_property", "device_center_frequency"); } }, 1500);
+    sdrcGain();      // (the gain with the frequency, at once, not after the retune is confirmed)
+    const ant = sdrcAntFor(curFreq()); if (ant && ant !== sdrc.props.active_antenna) { sdrcSend("set_property", "active_antenna", ant); diagEv("sdrconnect", { state: "antenna", name: ant, freq: curFreq() }); } }   // (the antenna for this frequency)
+  // (a small jitter reserve, as streaming players keep: samples are handed over only once 0.1 s has built up; if the
+  //  network falls behind and it runs dry, a clean silent block, then re-primed before resuming, rather than the signal
+  //  chopped into fragments padded with zeros)
+  const n = I.length; let avail = sdrc.w - sdrc.r;
+  if (avail > rate * 0.4) { sdrc.r = sdrc.w - Math.round(rate * 0.15); avail = sdrc.w - sdrc.r; sdrc.dropped++; }
+  if (!sdrc.primed && avail >= rate * 0.1) sdrc.primed = true;
+  if (!sdrc.primed || avail < n) { I.fill(0); Q.fill(0); if (sdrc.primed && !sdrc.waiting) { sdrc.under += n; sdrc.primed = false; sdrc.dry = (sdrc.dry || 0) + 1; sdrc.lastDryAt = performance.now(); (sdrc.dryTimes ||= []).push(sdrc.lastDryAt); } return; }
+  // (SDRconnect running at another rate than asked (it reports its own): resampled to the radio's rate, by linear
+  //  interpolation, so the frequencies and the timing stay right; the same rate: copied straight)
+  const devRate = +(sdrc.props.device_sample_rate || rate), step = devRate > 0 && Math.abs(devRate - rate) > 1 ? devRate / rate : 1;
+  if (step === 1) { let r = sdrc.r; for (let i = 0; i < n; i++) { const k = r & SDRC_MASK; I[i] = sdrc.I[k]; Q[i] = sdrc.Q[k]; r++; } sdrc.r = r; sdrcShift(I, Q, rate); }
+  else { if (sdrc.w - sdrc.r < Math.ceil(n * step) + 2) { I.fill(0); Q.fill(0); if (!sdrc.waiting) { sdrc.under += n; sdrc.primed = false; sdrc.dry = (sdrc.dry || 0) + 1; sdrc.lastDryAt = performance.now(); (sdrc.dryTimes ||= []).push(sdrc.lastDryAt); } return; }
+    // (fewer samples than the device's (2.0 MHz to 1.024, say): a short low-pass ([1,2,1]/4) first, so stations outside
+    //  the narrower view don't fold back into it)
+    const lp = step > 1.3, A = sdrc.I, B = sdrc.Q, at = (X, k) => lp ? 0.25 * X[(k - 1) & SDRC_MASK] + 0.5 * X[k & SDRC_MASK] + 0.25 * X[(k + 1) & SDRC_MASK] : X[k & SDRC_MASK];
+    let r = sdrc.r, f = sdrc.frac || 0; for (let i = 0; i < n; i++) { const a0 = at(A, r), a1 = at(A, r + 1), b0 = at(B, r), b1 = at(B, r + 1); I[i] = a0 + (a1 - a0) * f; Q[i] = b0 + (b1 - b0) * f;
+      f += step; const adv = Math.floor(f); r += adv; f -= adv; } sdrc.r = r; sdrc.frac = f; sdrcShift(I, Q, rate); }
+}
+// (starting the device carefully, in order: a freshly started SDRconnect, the headless one especially, may not have
+//  opened the RSP yet, and asking it for IQ, or retuning it, before then crashed SDRplay's experimental headless program
+//  in the field. So: is it running? if not, select the device and start it streaming, and wait until SDRconnect says it
+//  is; only then the IQ stream (the rate and frequency follow, from the radio). Each step in the diagnostics log)
+async function sdrcStart() {
+  const isOn = () => /^true$/i.test(String(sdrc.props.started ?? ""));
+  const wait = (cond, ms) => new Promise(res => { const t0 = performance.now(); let ask = 0; const tick = () => { if (cond()) return res(true); if (performance.now() - t0 > ms || sdrc.status !== "connected") return res(false);
+      if (++ask % 5 === 0) sdrcSend("get_property", "started"); setTimeout(tick, 200); }; tick(); });
+  await wait(() => sdrc.props.started !== undefined, 1500);
+  diagEv("sdrconnect", { state: "starting", started: sdrc.props.started, device: sdrc.props.active_device });
+  if (!isOn()) {
+    const dev = sdrc.props.active_device || String(sdrc.props.valid_devices || "").split(",")[0].trim();
+    if (!dev) { setStatus("SDRconnect has no device to use: is the RSP plugged in to that computer?", true); diagEv("sdrconnect", { state: "no device" }); return false; }
+    setStatus(`Starting ${dev} on SDRconnect…`);
+    // (selected only if it isn't the active device already: selecting it again may make SDRconnect reopen it)
+    if (sdrc.props.active_device !== dev) { sdrcSend("selected_device_name", "", dev); diagEv("sdrconnect", { state: "select device", device: dev }); await new Promise(r => setTimeout(r, 500)); }
+    else diagEv("sdrconnect", { state: "device already selected", device: dev });
+    sdrcSend("device_stream_enable", "", "true"); diagEv("sdrconnect", { state: "device stream enable" });
+    sdrc.startLog = []; sdrc.startT0 = performance.now();          // (each "started" reply while waiting, for the diagnostics log)
+    const ok = await wait(isOn, 15000);
+    diagEv("sdrconnect", { state: "start replies", replies: (sdrc.startLog || []).slice(0, 40).join(" ") || "none" }); sdrc.startLog = null;
+    if (!ok) { setStatus(`SDRconnect didn't start ${dev}: check it on that computer (is the RSP in use by another program?)`, true); diagEv("sdrconnect", { state: "device didn't start" }); return false; }
+    diagEv("sdrconnect", { state: "device running" });
+  }
+  setTimeout(() => { for (const p of ["can_control", "device_sample_rate", "active_device", "valid_antennas", "lna_state_min", "lna_state_max"]) sdrcSend("get_property", p); }, 300);   // (asked again, now it runs)
+  // (from 2.3: properties beyond SDRplay's published specification 1.0.3, which newer SDRconnect versions MAY have: only
+  //  ASKED about, never set, and any answers logged, to find out from a real SDRconnect whether the bias-tee or the
+  //  notches can be controlled. A property that doesn't exist simply gets no answer)
+  sdrc.probe = {}; const probe = ["device_bias_t_enabled", "bias_t_enabled", "bias_t_enable", "biast_enable", "device_bias_t", "rf_notch_enabled", "rf_notch_enable", "dab_notch_enabled", "dab_notch_enable", "device_rf_notch_enabled", "device_dab_notch_enabled", "am_notch_enabled",
+    "if_gain_reduction", "if_gr", "gain_reduction", "if_gain", "ifgr", "agc_enable", "agc_enabled", "if_agc", "agc", "agc_mode", "agc_setpoint", "rf_gain_reduction", "device_if_gain", "device_agc"];
+  setTimeout(() => { for (const p of probe) sdrcSend("get_property", p); }, 600);
+  setTimeout(() => diagEv("sdrconnect", { state: "probe", answered: Object.keys(sdrc.probe).length ? JSON.stringify(sdrc.probe) : "none", asked: probe.join(",") }), 3000);
+  // (a device profile saved in SDRconnect (for example with the bias-tee on, which the API can't switch), applied now the
+  //  RSP runs; then OFFgrid-SDR's own tuning, gain and antenna are sent again, so the profile can't undo them)
+  const prof = String(state.sdrcProfile || "").trim();
+  if (prof) { sdrcSend("apply_device_profile", "", prof); diagEv("sdrconnect", { state: "profile applied", profile: prof }); await new Promise(r => setTimeout(r, 600));
+    sdrc.want = { center: null, rate: null }; sdrc.lnaSent = null; for (const p of ["lna_state", "active_antenna", "device_sample_rate"]) sdrcSend("get_property", p); }
+  sdrcSend("get_property", "agc_enable"); setTimeout(sdrcAgcRestore, 500);      // (the IF AGC's state, for the NET panel; back on after the test)
+  sdrcSend("iq_stream_enable", "", "true"); diagEv("sdrconnect", { state: "iq stream enable" }); return true;
+}
+// (an orderly stop, leaving SDRconnect as it was found: the IQ stream off, then the device stopped, waiting until
+//  SDRconnect says it has (3 s at most), then the connection closed cleanly. Power on waits for this to finish, so a
+//  quick off-and-on (a sample-rate change) can't overlap a stop with a start)
+async function sdrcStop() {
+  const ws = sdrc.ws; if (!ws || ws.readyState !== 1) return;
+  sdrc.retrying = false; sdrc.closing = true; diagEv("sdrconnect", { state: "stopping" });
+  sdrcSend("iq_stream_enable", "", "false"); await new Promise(r => setTimeout(r, 150));
+  sdrcSend("device_stream_enable", "", "false");
+  const t0 = performance.now(); while (performance.now() - t0 < 3000 && /^true$/i.test(String(sdrc.props.started ?? "")) && ws.readyState === 1) { sdrcSend("get_property", "started"); await new Promise(r => setTimeout(r, 300)); }
+  diagEv("sdrconnect", { state: "stopped", started: sdrc.props.started, ms: Math.round(performance.now() - t0) });
+  try { ws.close(1000, "OFFgrid-SDR powered off"); } catch { } sdrc.status = "off"; sdrc.closing = false; sdrcRender();
+}
+// (the tab closing or reloading: the same goodbye, as far as the browser lets a page finish)
+window.addEventListener("pagehide", () => { if (sdrc.ws && sdrc.ws.readyState === 1) { sdrcSend("iq_stream_enable", "", "false"); sdrcSend("device_stream_enable", "", "false"); try { sdrc.ws.close(1000, "page closed"); } catch { } } });
+// (SDRconnect tuned NEAR the centre asked for (rounded to its step: 2.5 kHz off was seen): a signal then sits loErr
+//  lower in the samples than OFFgrid-SDR expects, so the samples are shifted up by loErr, continuously in phase, and
+//  every station shows at its true frequency)
+function sdrcShift(I, Q, rate) { const d = sdrc.loErr || 0; if (!d) return; const w = 2 * Math.PI * d / rate, c = Math.cos(w), s = Math.sin(w); let pr = sdrc.shR ?? 1, pi = sdrc.shI ?? 0;
+  for (let i = 0; i < I.length; i++) { const x = I[i], y = Q[i]; I[i] = x * pr - y * pi; Q[i] = x * pi + y * pr; const t = pr * c - pi * s; pi = pr * s + pi * c; pr = t; }
+  const m = Math.hypot(pr, pi) || 1; sdrc.shR = pr / m; sdrc.shI = pi / m; }
+// (antennas by frequency (from 2.3): for an RSP with several, each antenna has a range: below the crossover, from it
+//  up, a custom range (which wins over the others), or not used. Defaults when a device is first seen: the first
+//  antenna (A) from 30 MHz up, the second (B) below, the rest not used. Kept per device)
+function sdrcAntList() { return String(sdrc.props.valid_antennas || "").split(",").map(x => x.trim()).filter(Boolean); }
+function sdrcAntRules() { const dev = sdrc.props.active_device || "?", ants = sdrcAntList(); if (ants.length < 2) return null;
+  const all = (state.sdrcAntRules ||= {}); let r = all[dev];
+  // (the defaults by each antenna's LETTER (A from 30 MHz up, B below, others not used), whatever order SDRconnect lists
+  //  them in: in the field, by position, an RSPdx listed in another order had them swapped (shortwave on the VHF antenna).
+  //  Names without a letter (an RSPduo's tuners) fall back to the order. Rules still as the old defaults made them (not
+  //  changed by the user) are redone; once the user changes one, theirs are kept)
+  const letter = a => { const m = String(a).match(/(?:^|\b)(?:antenna|ant)?\s*([A-C])\s*$/i) || String(a).match(/\bantenna\s*([A-C])\b/i); return m ? m[1].toUpperCase() : null; };
+  const defaults = () => { const map = {}, lettered = ants.every(a => letter(a)); ants.forEach((a, k) => map[a] = lettered ? (letter(a) === "A" ? "above" : letter(a) === "B" ? "below" : "none") : (k === 0 ? "above" : k === 1 ? "below" : "none")); return map; };
+  const byOrder = () => { const map = {}; ants.forEach((a, k) => map[a] = k === 0 ? "above" : k === 1 ? "below" : "none"); return map; };
+  if (r && !r.user && JSON.stringify(r.map) === JSON.stringify(byOrder()) && JSON.stringify(byOrder()) !== JSON.stringify(defaults())) { r.map = defaults(); r.fixed = true; saveState(); diagEv("sdrconnect", { state: "antenna defaults corrected", map: JSON.stringify(r.map) }); }
+  if (!r) { r = all[dev] = { cross: 30, map: defaults() }; saveState(); }
+  for (const a of ants) if (!(a in r.map)) r.map[a] = "none";
+  return r; }
+function sdrcAntFor(fHz) { const r = sdrcAntRules(); if (!r) return null; const mhz = fHz / 1e6, ants = sdrcAntList();
+  for (const a of ants) { const v = r.map[a]; if (Array.isArray(v) && mhz >= +v[0] && mhz < +v[1]) return a; }
+  for (const a of ants) { const v = r.map[a]; if ((v === "below" && mhz < r.cross) || (v === "above" && mhz >= r.cross)) return a; }
+  return null; }
+// (from 2.3: after a retune, samples go on being discarded until the NEW band's gain range is known and the gain set for it:
+//  RSPs have different LNA ranges by band, and the gain set at once used the old band's, so for about a second after a
+//  band change the RSP ran far too hot: a big spike in the spectrum (a user's report). 0.8 s at most, if no range comes)
+function sdrcRangeWait() { sdrc.rangePending = true; for (const p of ["lna_state_min", "lna_state_max", "lna_state"]) sdrcSend("get_property", p);
+  clearTimeout(sdrc.rangeTo); sdrc.rangeTo = setTimeout(() => { if (sdrc.rangePending) sdrcRangeDone(); }, 800); }
+function sdrcRangeDone() { clearTimeout(sdrc.rangeTo); sdrc.rangePending = false; if (running) sdrcGain();
+  sdrc.waiting = false; sdrc.r = sdrc.w; diagEv("sdrconnect", { state: "retune done", lna: sdrc.lnaSent ?? sdrc.props.lna_state, range: `${sdrc.props.lna_state_min}-${sdrc.props.lna_state_max}` }); }
+// (an experimental IF AGC switch was tried during 2.3 and removed (no benefit: a user's random lines stayed either way). Anyone
+//  who switched the AGC off in that test gets it switched back on once, so no RSP is left with its IF gain frozen)
+function sdrcAgcRestore() { if (state.sdrcAgc !== false || !sdrc.ws || sdrc.status !== "connected") return;
+  sdrcSend("set_property", "agc_enable", "true"); delete state.sdrcAgc; saveState(); diagEv("sdrconnect", { state: "agc restored", on: "true" }); setTimeout(() => sdrcSend("get_property", "agc_enable"), 400); }
+function sdrConnectProvider() { return new RtlProvider(new window.SDRLIB.fakertl.FakeRtlDeviceProvider(sdrcGen)); }
+// (the network badge in the top bar: shown in SDRconnect mode, with the connection's state)
+// (the source badge's details: OFFgrid-SDR's own hover panel, open while the pointer is over the badge (or after a tap),
+//  its text updated in place each second; the browser's tooltip closed every time its text changed, so it flashed)
+function srcTip(text) { const b = el.srcBadge; b.dataset.tip = text; b.removeAttribute("title"); const pop = document.getElementById("srcPop"); if (pop && !pop.hidden && pop.textContent !== text) pop.textContent = text; }
+function srcPopShow(on) { let pop = document.getElementById("srcPop"); if (!pop) { pop = document.createElement("div"); pop.id = "srcPop"; pop.className = "srcpop"; pop.hidden = true; pop.setAttribute("role", "tooltip"); document.body.append(pop); }
+  if (!on) { pop.hidden = true; return; } pop.textContent = el.srcBadge.dataset.tip || ""; pop.hidden = false;
+  const r = el.srcBadge.getBoundingClientRect(), w = pop.offsetWidth; pop.style.left = Math.max(6, Math.min(window.innerWidth - w - 6, r.left)) + "px"; pop.style.top = (r.bottom + 6) + "px"; }
+setTimeout(() => { const b = el.srcBadge; if (!b) return; b.addEventListener("mouseenter", () => srcPopShow(true)); b.addEventListener("mouseleave", () => srcPopShow(false));
+  b.addEventListener("focus", () => srcPopShow(true)); b.addEventListener("blur", () => srcPopShow(false));
+  b.addEventListener("click", e => { e.stopPropagation(); const pop = document.getElementById("srcPop"); srcPopShow(!pop || pop.hidden); });
+  document.addEventListener("click", () => srcPopShow(false)); }, 0);
+function sdrcRender() {
+  const b = el.srcBadge; if (!b) return; const on = state.source === "sdrconnect" && !window.__sdrDemo; b.hidden = false;
+  document.body.classList.toggle("netmode", on);      // (the RTL-SDR's own badges (DS, HF, BIAS) mean nothing for an RSP: hidden, making room for NET)
+  // (from 2.3: the badge always says what OFFgrid-SDR is connected to: DEMO, RTL (a USB stick) or NET (SDRconnect))
+  // (from 2.3: in the frequency panel's top line, before the band name: what OFFgrid-SDR is listening with)
+  if (!on) { const demo = !!window.__sdrDemo; b.textContent = demo ? "DEMO" : "RTL"; b.className = "badge netbadge" + (running ? " on" + (demo ? "" : " rtl") : "");
+    srcTip(demo ? "Demo mode: no radio connected; the stations are simulated, for trying OFFgrid-SDR out" :
+      `RTL-SDR stick on USB${usb.info ? `: ${[usb.info.maker, usb.info.name].filter(Boolean).join(" ") || "VID " + usb.info.vid + " PID " + usb.info.pid}` : ""}${usb.info && typeof isV4 !== "undefined" && isV4 ? " (V4)" : ""}${running ? ` · ${(curRate() / 1e6).toFixed(3)} MHz sample rate` : " (switched off)"}${usb.errors ? ` · ${usb.errors} USB error${usb.errors === 1 ? "" : "s"} so far` : ""}` +
+      "\nSettings → Device: choose RTL-SDR or SDRconnect"); return; }
+  b.textContent = "NET";
+  const now = performance.now(); sdrc.dryTimes = (sdrc.dryTimes || []).filter(t => now - t < 60000);
+  const host = (sdrc.url || sdrcUrl(state.sdrcAddr)).replace(/^wss?:\/\//, "").replace(/:5454$/, ""), need = sdrc.needMBs || 0, got = sdrc.rateMBs || 0, pct = need ? Math.round(100 * got / need) : 0;
+  const behind = sdrc.status === "connected" && ((sdrc.lastDryAt && now - sdrc.lastDryAt < 5000) || (need && got < need * 0.95));
+  // (green: connected and keeping up; amber: connecting, or fallen behind in the last few seconds; red: lost)
+  const st = sdrc.status === "connected" ? (behind ? "wait" : "on") : sdrc.status === "connecting" ? "wait" : running ? "lost" : "";
+  b.className = "badge netbadge " + st;
+  const P = sdrc.props, lines = [`SDRconnect · ${host || "no address"}${P.active_device ? " · " + P.active_device : ""}`];
+  if (sdrc.status === "connected" && running) {
+    lines.push(`Network speed: ${got.toFixed(1)} of the ${need.toFixed(1)} MB/s needed (${pct}%)${behind ? ": falling behind" : ": keeping up"}`);
+    lines.push(`Buffer: ${Math.max(0, Math.round((sdrc.w - sdrc.r) / (sdrc.want.rate || 2048000) * 1000))} ms · Gaps in the last minute: ${sdrc.dryTimes.length}`);
+    lines.push(`Sample rate ${P.device_sample_rate ? (+P.device_sample_rate / 1e6).toFixed(3) + " MHz" : "?"} · LNA state ${P.lna_state ?? "?"} (${P.lna_state_min ?? "?"}–${P.lna_state_max ?? "?"})${P.active_antenna ? " · " + P.active_antenna : ""}`);
+  } else lines.push(sdrc.status === "connecting" ? "Connecting…" : running ? "Connection lost: trying again every few seconds" : sdrc.status === "connected" ? "Connected (the radio is off)" : "Not connected");
+  if (P.agc_enable !== undefined && P.agc_enable !== "") lines.push(`IF AGC: ${/^true$/i.test(String(P.agc_enable)) ? "on" : "off"}`);
+  if (P.api_version) lines.push(`SDRconnect API ${P.api_version}`); if (P.can_control === "false" && /^true$/i.test(String(P.started ?? ""))) lines.push("Another program is controlling this RSP: tuning may be refused");
+  lines.push("Green: keeping up · Amber: connecting or falling behind · Red: connection lost");
+  srcTip(lines.join("\n"));
+  if (el.gainSlider && P.lna_state !== undefined) { const t = `RF gain through SDRconnect: LNA state ${P.lna_state} (of ${P.lna_state_min ?? "?"} to ${P.lna_state_max ?? "?"}; SDRplay counts down: 0 is the most gain)${state.gainAuto ? ". Auto: the middle state for this band" : ". The slider's last tenth is the RSP's full gain, where strong signals can overload it"}`;
+    if (el.gainSlider.title !== t) el.gainSlider.title = t; }      // (only when it changes: rewriting a tooltip closes it)
+}
+// (the device chooser: built once, shown in the first-run setup and in Settings -> Device; both always agree)
+function devChooserBuild(box) {
+  if (!box || box.dataset.built) return; box.dataset.built = "1"; const id = box.id;
+  box.innerHTML = `<p><b>Select device to connect to</b></p>
+    <label><input type="radio" name="${id}Src" value="rtl"> <b>RTL-SDR</b> (a USB stick: the usual choice)</label>
+    <label><input type="radio" name="${id}Src" value="sdrconnect"> <b>SDRconnect</b> (an SDRplay RSP, on a computer on your network)</label>
+    <div class="sdrcrow" hidden><input type="text" list="sdrcHist" placeholder="PC name or IP address, e.g. shack-pc or 192.168.1.20" aria-label="The PC name or IP address of the computer running SDRconnect" autocomplete="off" spellcheck="false">
+      <button type="button" class="cwbtn" data-act="test" title="Check SDRconnect answers there, and which device it has">Test</button>
+</div>
+    <div class="sdrcrow sdrcprof" hidden><label>SDRconnect profile to apply when connecting (optional) <input type="text" data-in="profile" placeholder="e.g. my-settings" autocomplete="off" spellcheck="false" aria-label="An SDRconnect device profile to apply when connecting" title="A device profile saved in SDRconnect's ordinary program. OFFgrid-SDR applies it once the RSP is running, then its own tuning, gain and antenna. (It can't switch the bias-tee: SDRconnect's API has no control for it)"></label></div>
+    <div class="sdrcrow sdrcsel" hidden><label class="sdrcdevl" hidden>Device <select data-sel="device" aria-label="The SDRplay device to use"></select></label>
+      </div>
+    <div class="devhint antwait" hidden>An RSP with several antennas (RSPdx, RSPduo): the antenna settings appear here once the RSP is running (press Power on).</div>
+    <div class="sdrcants" hidden><p><b>Antennas</b> (switched by frequency)</p><div class="antrows"></div>
+      <label class="antx">Crossover <input type="number" min="0.1" max="2000" step="0.1" data-in="cross" aria-label="The crossover frequency, MHz"> MHz</label></div>
+    <div class="devres" aria-live="polite"></div>
+    <div class="devhint" hidden>SDRconnect 1.0.6 or later, with its WebSocket API switched on (port 5454, allowed through that computer's firewall). A name like "shack-pc" usually works on Windows networks, "shack-pc.local" on others; a fixed IP address is the most reliable.</div>`;
+  const radios = [...box.querySelectorAll('input[type=radio]')], row = box.querySelector(".sdrcrow"), addr = row.querySelector("input"), res = box.querySelector(".devres"), hint = box.querySelector(".devhint");
+  const say = (t, ok) => { res.textContent = t; res.className = "devres" + (ok === true ? " ok" : ok === false ? " bad" : ""); };
+  radios.forEach(r => r.onchange = () => { if (!r.checked) return; devSourceSet(r.value); });
+  addr.oninput = () => { state.sdrcAddr = addr.value.trim(); saveState(); devChooserSync(); };
+  row.querySelector('[data-act=test]').onclick = async () => {
+    say("Testing…"); const live = running && state.source === "sdrconnect" && sdrc.status === "connected";
+    if (live) { say(`Connected: ${sdrc.props.active_device || "SDRplay RSP"}, SDRconnect API ${sdrc.props.api_version}`, true); return; }
+    const r = await sdrcConnect(addr.value); if (r.ok) { say(`Found: ${r.device || "SDRplay RSP"}, SDRconnect API ${r.api}. Press Power on to use it.`, true); try { sdrc.ws.close(); } catch { } sdrc.status = "off"; }
+    else say(r.error, false); };
+  const selRow = box.querySelector(".sdrcsel"), devSel = box.querySelector("[data-sel=device]");
+  devSel.onchange = () => { sdrcSend("selected_device_name", "", devSel.value); diagEv("sdrconnect", { state: "device", name: devSel.value }); };
+  const antBox = box.querySelector(".sdrcants"), antRows = box.querySelector(".antrows"), crossIn = box.querySelector("[data-in=cross]");
+  const reapply = () => { saveState(); const a = sdrcAntFor(curFreq()); if (running && a && a !== sdrc.props.active_antenna) { sdrcSend("set_property", "active_antenna", a); diagEv("sdrconnect", { state: "antenna", name: a, freq: curFreq() }); } devChooserSync(); };
+  crossIn.onchange = () => { const r = sdrcAntRules(); if (!r) return; const v = +crossIn.value; if (v > 0) r.cross = v; r.user = true; reapply(); };
+  box.__ants = () => { const r = sdrcAntRules(), ants = sdrcAntList(); antBox.hidden = !(state.source === "sdrconnect" && r);
+    const wait = box.querySelector(".antwait"); if (wait) wait.hidden = !(state.source === "sdrconnect" && !r && !running);
+    if (antBox.hidden) return;
+    const key = ants.join("|") + "#" + JSON.stringify(r); if (antRows.dataset.k === key && antBox.contains(document.activeElement)) return; antRows.dataset.k = key; antRows.textContent = "";
+    if (document.activeElement !== crossIn) crossIn.value = r.cross;
+    for (const a of ants) { const v = r.map[a], row = document.createElement("div"); row.className = "antrow";
+      const lab = document.createElement("span"); lab.textContent = a + (a === sdrc.props.active_antenna ? " (in use)" : ""); const sel = document.createElement("select"); sel.setAttribute("aria-label", `When to use ${a}`);
+      for (const [k, t] of [["below", `Below ${r.cross} MHz`], ["above", `${r.cross} MHz and above`], ["custom", "A custom range"], ["none", "Not used"]]) { const o = document.createElement("option"); o.value = k; o.textContent = t; sel.append(o); }
+      sel.value = Array.isArray(v) ? "custom" : v; const fr = document.createElement("span"); fr.className = "antcust"; fr.hidden = !Array.isArray(v);
+      const f0 = Object.assign(document.createElement("input"), { type: "number", min: 0, step: 0.1, value: Array.isArray(v) ? v[0] : 0.1 }), f1 = Object.assign(document.createElement("input"), { type: "number", min: 0, step: 0.1, value: Array.isArray(v) ? v[1] : 2 });
+      f0.setAttribute("aria-label", `${a}: from, MHz`); f1.setAttribute("aria-label", `${a}: to, MHz`); fr.append(f0, " to ", f1, " MHz");
+      const setC = () => { r.map[a] = [+f0.value, +f1.value]; r.user = true; reapply(); };
+      sel.onchange = () => { r.map[a] = sel.value === "custom" ? [+f0.value, +f1.value] : sel.value; r.user = true; reapply(); }; f0.onchange = setC; f1.onchange = setC;
+      row.append(lab, sel, fr); antRows.append(row); } };
+  const fill = (sel, list, cur) => { const v = list.join("|"); if (sel.dataset.v !== v) { sel.dataset.v = v; sel.textContent = ""; for (const a of list) { const o = document.createElement("option"); o.value = o.textContent = a; sel.append(o); } } if (cur && document.activeElement !== sel) sel.value = cur; };
+  const profRow = box.querySelector(".sdrcprof"), profIn = box.querySelector("[data-in=profile]");
+  profIn.onchange = () => { state.sdrcProfile = profIn.value.trim(); saveState(); for (const o of [el.suDevice, el.setDevice]) if (o && o !== box && o.__sync) o.__sync(); };
+  box.__sync = () => { for (const r of radios) r.checked = r.value === (state.source || "rtl"); const net = state.source === "sdrconnect"; row.hidden = !net; hint.hidden = !net;
+    profRow.hidden = !net; if (document.activeElement !== profIn) profIn.value = state.sdrcProfile || "";
+    // (device and antenna: only when connected, and only a list with more than one)
+    const devs = String(sdrc.props.valid_devices || "").split(",").map(x => x.trim()).filter(Boolean), ants = String(sdrc.props.valid_antennas || "").split(",").map(x => x.trim()).filter(Boolean);
+    const con = net && sdrc.status === "connected"; box.querySelector(".sdrcdevl").hidden = !(con && devs.length > 1);
+    selRow.hidden = box.querySelector(".sdrcdevl").hidden;
+    if (con) fill(devSel, devs, sdrc.props.active_device); box.__ants();
+    if (document.activeElement !== addr) addr.value = state.sdrcAddr || ""; };
+}
+// ---- (from 2.3) a user's dropout every 4 s (a line across the waterfall; heard through SDRconnect): to catch its cause in
+// the diagnostics log, every page freeze of 80 ms or more ("stall"), and every gain, frequency or sample-rate change sent to
+// the radio ("radio call"), with their times. Cheap: a browser observer, and a wrapper on three methods (rate-limited)
+(() => {
+  try { new PerformanceObserver(l => { for (const e of l.getEntries()) if (e.duration >= 80) diagEv("stall", { ms: Math.round(e.duration), running }); }).observe({ type: "longtask", buffered: false }); } catch { }
+  let wrapped = null, calls = 0, callsSince = performance.now();
+  setInterval(() => {
+    if (!radio || wrapped === radio) return; wrapped = radio;
+    for (const m of ["setGain", "setFrequency", "setSampleRate"]) { const o = radio[m]; if (typeof o !== "function" || o.__logged) continue;
+      const w = function (...a) { const now = performance.now(); if (now - callsSince > 10000) { calls = 0; callsSince = now; }
+        if (++calls <= 40) diagEv("radio call", { m, a: JSON.stringify(a).slice(0, 40) }); return o.apply(this, a); }; w.__logged = true; radio[m] = w; }
+  }, 1000);
+})();
+function devChooserSync() { for (const b of [el.suDevice, el.setDevice]) if (b && b.__sync) b.__sync(); sdrcRender(); if (typeof panAvail === "function" && el.panBtn) panAvail(); }
+// (a change of source: saved; if the radio is on, it's switched off; the radio object is made afresh for the new source)
+async function devSourceSet(v) {
+  if ((state.source || "rtl") === v) { devChooserSync(); return; }
+  if (running) await powerToggle(); state.source = v; radio = null; if (v !== "sdrconnect") { try { sdrc.ws && sdrc.ws.close(); } catch { } sdrc.status = "off"; }
+  saveStateNow(); diagEv("source", { source: v }); devChooserSync(); renderBias();
+  setStatus(v === "sdrconnect" ? "SDRconnect selected: enter its address, then Test or Connect" : "RTL-SDR selected: press Power on to use the USB stick");
+}
+setTimeout(() => { for (const b of [el.suDevice, el.setDevice]) devChooserBuild(b); sdrcHistRender(); devChooserSync(); // (the noise filter panel dimmed, with a note, where the filters aren't applied: DAB, DRM, wideband FM and the digital modes)
+function noiseBoxRender() { if (!el.noiseBox) return; const part = !noiseFiltersOn() && cleanFiltersOn(), off = !noiseFiltersOn() && !part; const m = state.modes[state.band];
+  for (const r of el.noiseBox.querySelectorAll(".nrow")) { const lab = (r.querySelector(".nlab") || {}).textContent || ""; const dim = part && !/^(Hum|Blanker)/.test(lab.trim());
+    r.style.opacity = dim ? 0.4 : ""; r.style.pointerEvents = dim ? "none" : ""; }
+  const why = part ? "· in this mode, only the hum filter and blanker" : !off ? "" : m === "DAB" || m === "DRM" || m === "WBFM" ? "· not used in DAB, DRM or wideband FM" : "· not used in this mode or band (MW and SW only)";
+  if (el.noiseBox.classList.contains("filtersoff") !== off || el.noiseOff.textContent !== why) { el.noiseBox.classList.toggle("filtersoff", off); el.noiseOff.hidden = !why; el.noiseOff.textContent = why; } }
+setInterval(() => { noiseBoxRender(); if (state.source !== "sdrconnect" || window.__sdrDemo) { sdrcRender(); return; }      // (DEMO / RTL: the badge kept current too)
+  if (state.source === "sdrconnect") { const now = performance.now();
+  sdrc.rateMBs = sdrc._b0 !== undefined ? (sdrc.bytes - sdrc._b0) / 1e6 / ((now - sdrc._t0) / 1000) : 0; sdrc._b0 = sdrc.bytes; sdrc._t0 = now; sdrcRender();
+  if (running && sdrc.status === "connected") { (sdrc.hist ||= []).push(sdrc.rateMBs || 0); if (sdrc.hist.length > 5) sdrc.hist.shift();
+    const need = (+(sdrc.props.device_sample_rate || sdrc.want.rate || 2048000)) * 4 / 1e6, got = sdrc.hist.reduce((a, b) => a + b, 0) / sdrc.hist.length;
+    // (from 2.3: once the link keeps up again (5 s at 98% or better), the warning, which otherwise scrolled on, is replaced)
+    if (sdrc.shortShowing && sdrc.hist.length === 5 && got >= need * 0.98) { sdrc.shortShowing = false; if (/^The network is delivering/.test(el.statusText.title || el.statusText.textContent)) setStatus("The network is keeping up again"); }
+    sdrc.needMBs = need; if (sdrc.hist.length === 5 && got < need * 0.95 && (sdrc.shortSaid === undefined || now - sdrc.shortSaid > 30000)) { sdrc.shortSaid = now;      // (at most every 30 s, from the last time: not from the page opening)
+      diagEv("sdrconnect", { state: "network short", got: +got.toFixed(2), need: +need.toFixed(2) }); sdrc.shortShowing = true;
+      const keeps = +(sdrc.props.device_sample_rate || 0) > (sdrc.want.rate || 0) + 1;      // (SDRconnect keeping a higher rate than asked: a lower one can't help)
+      setStatus(`The network is delivering ${got.toFixed(1)} of the ${need.toFixed(1)} MB/s needed, so the display will stutter. ${keeps ? `SDRconnect keeps the RSP at ${(+sdrc.props.device_sample_rate / 1e6).toFixed(1)} MHz, so only a faster link will help: a wired connection, powerline adapters, or 5 GHz Wi-Fi` : "A wired connection, 5 GHz Wi-Fi, or Settings → Device → Sample rate 1.024 MHz (half the data) would help"}`, true); } }
+  if (running && typeof diag !== "undefined" && diag.ticks && diag.ticks.length) { const t = diag.ticks[diag.ticks.length - 1];      // (the link, each second, on the diagnostics tick)
+    if (!t.sdrc) t.sdrc = { st: sdrc.status, MBs: +(sdrc.rateMBs || 0).toFixed(2), bufMs: Math.round((sdrc.w - sdrc.r) / (sdrc.want.rate || 2048000) * 1000), dry: sdrc.dry || 0, dropped: sdrc.dropped || 0,
+      lna: sdrc.props.lna_state, ovl: sdrc.props.overload === "true" }; } } }, 1000); }, 0);
+// (the connection lost while the radio is on: the badge shows it, and every 3 s a new attempt; once back, the stream
+//  resumes and the tuning and gain are sent again. Powering off ends the attempts)
+function sdrcLost() {
+  if (!running || state.source !== "sdrconnect" || sdrc.retrying) return; sdrc.retrying = true; sdrc.status = "lost"; sdrcRender();
+  setStatus(`Lost the connection to SDRconnect at ${sdrc.url}: trying again every few seconds…`, true);
+  const again = async () => { if (!running || state.source !== "sdrconnect") { sdrc.retrying = false; return; }
+    const r = await sdrcConnect(state.sdrcAddr, 4000);
+    if (r.ok) { sdrc.retrying = false; sdrc.want = { center: null, rate: null }; sdrc.primed = false; await sdrcStart(); if (!state.gainAuto) setTimeout(sdrcGain, 400);
+      diagEv("sdrconnect", { state: "reconnected", url: sdrc.url }); setStatus(`Reconnected to SDRconnect at ${sdrc.url}`); sdrcRender(); return; }
+    sdrc.status = "lost"; sdrcRender(); setTimeout(again, 3000); };
+  setTimeout(again, 1000);
+}
 function demoProvider() {
   demoGen ??= makeDemoGenerator();
   // The simulated stick only buffers 0.1 s, so any page pause longer than that makes it skip
@@ -8099,7 +8626,7 @@ const HF_SWITCH = 28.8e6;          // V4 upconverter / V3 direct-sampling bounda
 // upconvert / passthrough switch is a physical one, so Auto can only remind you which way to set it.
 const CONV_TOP = 65e6;
 const convLO = () => (Number(state.convLo) || 125e6) + (Number(state.convFine) || 0);
-const convFor = f => state.conv === "on" ? convLO() : state.conv === "auto" && f < CONV_TOP ? convLO() : 0;
+const convFor = f => state.source === "sdrconnect" && !window.__sdrDemo ? 0 : state.conv === "on" ? convLO() : state.conv === "auto" && f < CONV_TOP ? convLO() : 0;      // (SDRconnect: RSPs cover shortwave themselves: no converter)
 let hwConv = 0;                        // the converter offset the stick's present tuning was made with
 const hwSeen = new Map();              // (stick frequency -> its offset: for samples still in flight from before a retune)
 const hwToDial = bf => { const o = hwSeen.get(bf); return bf - (o === undefined ? hwConv : o); };
@@ -8134,6 +8661,13 @@ const DOWNSAMPLER_TAPS = 401;           // side-signal boost for "wide"
 // ================================================================ state (localStorage)
 const STATE_KEY = "sdr_state_v2", MEM_KEY = "sdr_memories_v2";
 const state = {
+  sdrcAgc: true,            // (an experimental IF AGC switch, removed in 2.3: kept only so an "off" left from the test is undone)
+  sdrcProfile: "",          // SDRconnect: a device profile (saved in SDRconnect) to apply when connecting, e.g. one with the bias-tee on (from 2.3)
+  sdrcAntRules: {},         // SDRconnect: per device, each antenna's frequencies: { cross: MHz, map: { name: "below" | "above" | "none" | [fromMHz, toMHz] } } (from 2.3)
+  sdrcAnt: {},              // SDRconnect: the antenna chosen for each band (when the device has several)
+  sdrcHistory: [],          // SDRconnect: the last 5 addresses that connected, most recent first (offered in the address field)
+  source: "rtl",            // the radio: "rtl" (an RTL-SDR on USB, the default) or "sdrconnect" (SDRplay's SDRconnect on the network) (from 2.3)
+  sdrcAddr: "",             // SDRconnect's address: a PC name or IP address, with :port if not 5454
   vdlOnly: false,           // VDL2: show only messages (ACARS and network data), hiding acknowledgements and link management (from 2.2)
   swHf: null, swHfMode: null,   // the last shortwave frequency and mode (the SW tab returns there from DAB or Air; from 2.2)
   lastChip: {},             // the last channel chosen in each band group (the DAB and Air tabs open yours; from 2.2)
@@ -8153,6 +8687,24 @@ const state = {
   rds: true, cwDecode: true, faxAutoSave: false, wheelReverse: false, wheelReverseChosen: false, rdsRegion: "auto", biasTee: false, retuneMute: 0.25, retuneMuteChosen: false, limiter: true, dcBlock: true, samSb: "both", sqDb: 0, meterMode: "dbfs", cal: { hf: -10, vhf: -10 }, calSet: { hf: false, vhf: false },
   stereoMode: "stereo", rate: 2048000, scanSel: [], wfRange: 45, wfFloor: 0, wfSpeed: 25, scroll: "mouse",
 };
+// ---- (from 2.3) safety for saved and imported data, raised by an outside review: a crafted backup could put HTML (and so
+// script) into the page through the log's id, its time, or a memory's station name. Now everything that becomes HTML is
+// escaped in full (escH: & < > " ' ), and saved or imported data is checked as it's loaded (types; each log entry and
+// memory individually, the malformed ones dropped)
+const escH = t => String(t ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const shortStr = (v, max) => typeof v === "string" ? v.slice(0, max) : v === undefined || v === null ? v : String(v).slice(0, max);
+function cleanLogEntry(e) {
+  if (!e || typeof e !== "object" || Array.isArray(e)) return null;
+  const id = String(e.id ?? ""); if (!/^[\w.:-]{1,64}$/.test(id)) return null;
+  if (typeof e.t !== "string" || !/^\d{4}-\d\d-\d\dT\d\d:\d\d/.test(e.t) || isNaN(Date.parse(e.t))) return null;
+  const f = Number(e.f); if (!Number.isFinite(f) || f <= 0 || f > 1e10) return null;
+  const num = v => v === null || v === undefined ? null : Number.isFinite(Number(v)) ? Number(v) : null;
+  return { ...e, id, t: e.t.slice(0, 40), f, mode: shortStr(e.mode, 24) ?? "", station: shortStr(e.station, 300) ?? "", notes: shortStr(e.notes, 2000) ?? "", by: shortStr(e.by, 40) ?? "", snrAvg: num(e.snrAvg), snrPeak: num(e.snrPeak) };
+}
+function cleanMemory(m) {
+  if (m === null) return null; if (!m || typeof m !== "object" || Array.isArray(m) || !BANDS[m.band] || !Number.isFinite(Number(m.freqHz))) return null;
+  return { ...m, freqHz: Number(m.freqHz), mode: shortStr(m.mode, 16), sb: shortStr(m.sb, 8), ps: shortStr(m.ps, 16) };
+}
 function loadState() {
   try {
     const s = JSON.parse(localStorage.getItem(STATE_KEY) || "null");
@@ -8164,8 +8716,14 @@ function loadState() {
         if (Array.isArray(state[k])) {
           const v = s[k];
           state[k] = Array.isArray(v) ? v : (v && typeof v === "object" && Object.keys(v).every(x => /^\d+$/.test(x))) ? Object.keys(v).sort((a, b) => a - b).map(x => v[x]) : state[k];
-        } else state[k] = (typeof state[k] === "object" && state[k] !== null) ? { ...state[k], ...s[k] } : s[k];
+        } else {
+          // (the right type, or the default kept: a number stays a number, an object an object, and so on)
+          const def = state[k], v = s[k];
+          if (def !== null && def !== undefined && (typeof v !== typeof def || (typeof def === "object" && (v === null || Array.isArray(v))))) continue;
+          state[k] = (typeof def === "object" && def !== null) ? { ...def, ...v } : v;
+        }
       }
+      if (Array.isArray(state.log)) state.log = state.log.map(cleanLogEntry).filter(Boolean);     // (each log entry checked; the malformed dropped)
       if (s.stereo === false && !s.stereoMode) state.stereoMode = "mono"; // previous version
       if (s.setupDone === undefined) state.setupDone = true;            // (settings from before 1.9: not a first run, so no setup window)
     }
@@ -8190,12 +8748,24 @@ let suppressSave = false;          // set while importing, so the page's own sav
 // one, so audio from a real stick carries on when you switch to another tab. Released on power off.
 let releaseAwakeLock = null;
 function holdAwakeLock() {
+  holdScreenOn();
   if (releaseAwakeLock || !navigator.locks) return;
   try {
     navigator.locks.request("offgrid-sdr-receiving", () => new Promise(res => { releaseAwakeLock = res; })).catch(() => {});
   } catch {}
 }
-function dropAwakeLock() { if (releaseAwakeLock) { releaseAwakeLock(); releaseAwakeLock = null; } }
+function dropAwakeLock() { if (releaseAwakeLock) { releaseAwakeLock(); releaseAwakeLock = null; } dropScreenOn(); }
+// (from 2.3: and while powered on, the SCREEN kept on (a Screen Wake Lock), so a tablet used as a radio doesn't sleep.
+//  Only while powered on: released at power off. The browser drops it when the page is hidden; it's asked for again
+//  when the page is visible once more, if still powered on. Nothing happens where it isn't supported)
+let screenLock = null;
+async function holdScreenOn() {
+  if (screenLock || !navigator.wakeLock || document.visibilityState !== "visible") return;
+  try { const l = await navigator.wakeLock.request("screen"); if (!running) { l.release().catch(() => {}); return; }
+    screenLock = l; l.addEventListener("release", () => { if (screenLock === l) screenLock = null; }); } catch { }
+}
+function dropScreenOn() { const l = screenLock; screenLock = null; if (l) l.release().catch(() => {}); }
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && running) holdScreenOn(); });
 function isMacOS() {
   const p = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || "";
   return /mac/i.test(p);
@@ -8214,7 +8784,7 @@ let memRam = null;
 // the stick every 2 seconds (clearing the waterfall and cutting the sound), and left the S-meter and the zoomed
 // spectrum looking 125 MHz away. Everything that sets the samples' frequency against the dial's goes through this.
 const specFreq = () => { const c = spectrum?.frequency?.(); return c === undefined ? undefined : hwToDial(c); };
-function loadMems() { if (memRam) return memRam.slice(); try { const m = JSON.parse(localStorage.getItem(MEM_KEY) || "[]"); return Array.from({ length: MEM_SLOTS }, (_, i) => m[i] || null); } catch { return Array(MEM_SLOTS).fill(null); } }
+function loadMems() { if (memRam) return memRam.slice(); try { const m = JSON.parse(localStorage.getItem(MEM_KEY) || "[]"); return Array.from({ length: MEM_SLOTS }, (_, i) => (Array.isArray(m) && m[i] ? cleanMemory(m[i]) : null)); /* (each one checked, from 2.3) */ } catch { return Array(MEM_SLOTS).fill(null); } }
 function saveMems(m) { if (suppressSave) { memRam = m.slice(); memMarks = null; return; } try { localStorage.setItem(MEM_KEY, JSON.stringify(m)); } catch {} memMarks = null; }
 let memMarks = null;                        // the memories, read once for the markers (until they change)
 const memMarksGet = () => memMarks ??= loadMems();
@@ -8226,7 +8796,7 @@ const el = Object.fromEntries([
   "seekBadge","modeBadge","swChips","memGrid","memHint","storeBtn","clearBtn","scanBtn","memSum","bandSum","audioSum","hfBadge","freqShow","freqEdit","editHint","powerBtn","muteBtn","volSlider","volOut","sqSlider","sqOut",
   "gainSlider","gainOut","gainAuto","gainNote","lpChk","aiSeg","whineBtn","snField","snFindBtn","snClearBtn","snCanvas","wfFitBtn","logFold","tunedLabel","ctxMenu","lblBox","lblFreq","lblInput","lblSave","logNow","logCsv","logFile","logClear","logInfo","logList","logCsvAuto","peakInfoChk","peakCard","peakBtn","avgBtn","alertBtn","agcField","agcSeg","lpBadge","lpNoteBox","lpYes","lpNo","lpNever","modeSel","bwSel","bwField","stepSel","dsSel","ppmInput","fcalSel","fcalBtn","fcalOut","wfBufSel","wfBufNote","wfOverlay","autoBanner","autoBannerText","autoBannerBar","wfTools","wfEnableBtn","wfPauseBtn","wfLiveBtn","rpPop","rpHead","rpInfo","rpCanvas","rpAB","rpModes","rpFilters","rpFilterHead","rpShiftBox","rpShiftOut","rpShiftDn","rpShiftUp","rpNoiseBox","rpNoise","rpCw","rpPlay","rpSave","rpCancel","rateSel","modeBar","modeCap","stereoBar","moreMenu",
   "viewTitle","bwBadge","stepBadge","bandBanner","panBtn","panRow","panRange","panWidth","anfBtn","ssbShiftField","ssbShiftSlider","ssbShiftOut","zoomOut","zoomDef","zoomIn","faxBox","faxState","faxSavePrev","faxAutoChk","faxLpm","faxStart","faxSave","faxClear","faxCanvas","faxStation","faxHint","muteSel","limChk","modeMenu","wheelRevChk","cwZero","cwCopy","pskBox","pskInfo","pskCopy","pskClear","pskText","hellBox","hellInfo","hellClear","hellCanvas","dscBox","dscInfo","dscCopy","dscClear","dscList","sstvBox","sstvInfo","sstvPrev","sstvNext","sstvSave","sstvCanvas","navBox","navInfo","navCopy","navClear","navHead","navText","rttyBox","rttyInfo","rttyRev","rttyCopy","rttyClear","rttyText","cwClear","exportBtn","importBtn","importFile","cwBox","cwWpm","cwQ","cwText","cwChk","biasChk","biasBadge","idBtn","idSw","idSwSub","idWeb","idWebSub","idMenu","idAsk","idAskSub","demoFold","demoList","demoSum","rdsBox","rdsPs","rdsPty","rdsRt","rdsPi","rdsTp","rdsTa","rdsCt","rdsStat","rdsQ","rdsChk","rdsRegion","cpuVal","cpuBar","fpsVal","noiseBox","nrSeg","nbBtn","humSeg","swGroupSeg","chipsTitle","recBtn","recFmt","lockBadge","dcChk","meterScale","meterMode","meterVal","meterSnr","calRef","calBtn","calInfo","rangeSlider","rangeOut","floorSlider","floorOut","scrollSel","speedSlider","specCanvas","wfCanvas","specWrap","wfWrap","tuneLine",
-  "hoverTip","idleMsg","freqWrap","ovlBadge","clockBtn","kbdBtn","kbdPanel","drmBox","drmSlide","drmState","drmName","drmAudio","drmNow","drmSig","drmSound","dabBox","dabLogo","dabState","dabEns","dabList","dabInfo","dabNow","dabSound","aisBox","aisInfo","aisBig","aisCopy","aisClear","aisList","vdlBox","vdlInfo","vdlChips","vdlList","vdlCopy","vdlClear","vdlOnly","convSel","convLo","convFine","aprsBox","aprsFreq","aprsInfo","aprsBig","aprsCopy","aprsClear","aprsList","setupDlg","suCity","suGrid","suGeo","suWhere","suNeedPower","suPower","suGo","suLog","suFallback","suHand","suHandSet","suReport","suSkip","suBack","suNext","fmPlanSel","fmPlanNote","suWspr","suWspr3","suWsprRow","clockDlg","clockRep","clockCheck","clockClose","setupAgain","clockDetails","timeClockBtn","timeBox","timeStation","timeInfo","timeSig","timeRadio","timeOff","timeSrc","timeSet","timeFind","timeHandBtn","timeHand","timeHandIn","timeHandSet","ft8Tag","ft8Band","wsprCal","heardBtn","heardView","heardWin","heardNote","surveyBtn","heardBody","ft8Cq","ft8Big","ft8Deep","myCall","myGrid","myCity","cityList","geoBtn","ft8Box","ft8Info","ft8List","ft8Copy","ft8Clear","acarsBox","acarsInfo","acarsList","acarsCopy","acarsClear","ovlPop","ovlPopText","ovlUndo","panelsBtn","panelMenu",
+  "hoverTip","idleMsg","freqWrap","ovlBadge","clockBtn","kbdBtn","kbdPanel","drmBox","drmNews","jlPanel","jlTitle","jlBody","jlBack","jlClose","jlInfo","drmSlide","drmState","drmName","drmAudio","drmNow","drmSig","drmSound","dabBox","dabLogo","dabState","dabEns","dabList","dabInfo","dabNow","dabSound","aisBox","aisInfo","aisBig","aisCopy","aisClear","aisList","suDevice","setDevice","srcBadge","biasNet","noiseOff","noiseBox","vdlBox","vdlInfo","vdlChips","vdlList","vdlCopy","vdlClear","vdlOnly","convSel","convLo","convFine","aprsBox","aprsFreq","aprsInfo","aprsBig","aprsCopy","aprsClear","aprsList","setupDlg","suCity","suGrid","suGeo","suWhere","suNeedPower","suPower","suGo","suLog","suFallback","suHand","suHandSet","suReport","suSkip","suBack","suNext","fmPlanSel","fmPlanNote","suWspr","suWspr3","suWsprRow","clockDlg","clockRep","clockCheck","clockClose","setupAgain","clockDetails","timeClockBtn","timeBox","timeStation","timeInfo","timeSig","timeRadio","timeOff","timeSrc","timeSet","timeFind","timeHandBtn","timeHand","timeHandIn","timeHandSet","ft8Tag","ft8Band","wsprCal","heardBtn","heardView","heardWin","heardNote","surveyBtn","heardBody","ft8Cq","ft8Big","ft8Deep","myCall","myGrid","myCity","cityList","geoBtn","ft8Box","ft8Info","ft8List","ft8Copy","ft8Clear","acarsBox","acarsInfo","acarsList","acarsCopy","acarsClear","ovlPop","ovlPopText","ovlUndo","panelsBtn","panelMenu",
 ].map(id => [id, $(id)]));
 for (let i = 0; i < SEGMENTS; i++) el.segs.appendChild(document.createElement("i"));
 const segEls = [...el.segs.children];
@@ -8288,17 +8858,25 @@ const outStat = { sq: 0, n: 0, bad: 0 };
 // DRM's sound, from the worker's queue (stereo pairs at its own rate, 12, 24 or 48 kHz), in place of the demodulator's
 // output, resampled to the player's rate by stepping through it (linear between samples). Silence while it buffers.
 // decoded sound (DRM, DAB): queued in o.q as stereo pairs at its own rate (o.prate), played out at the speakers' rate
-function drmPlay(out) { pcmPlay(drm, out); }
+function drmPlay(out) { window.__drmObj = drm; pcmPlay(drm, out); }
 function pcmPlay(o, out) {
   const drm = o, rate = demodulator?.player?.sampleRate || 48000, L = out.left, R = out.right && out.right !== out.left ? out.right : null, step = (drm.prate || 48000) / rate;
   for (let i = 0; i < L.length; i++) {
-    if (!drm.playing || !drm.q.length) { L[i] = 0; if (R) R[i] = 0; continue; }
+    if (!drm.playing || !drm.q.length) { L[i] = 0; if (R) R[i] = 0; if (drm.playing && o === window.__drmObj) drm.bridge = (drm.bridge || 0) + 1; continue; }
+    // (from 2.3, DRM: after a bridged gap, the sound comes back with a 30 ms fade-in, not a click: noticed at the very
+    //  sample it returns, so the fade starts there)
+    if (drm.bridge > 0 && o === window.__drmObj) { if (drm.bridge > 0.05 * rate) { diagEv("drm sound gap", { seconds: +(drm.bridge / rate).toFixed(2), bridged: true }); drm.fadeIn = Math.round(0.03 * rate); } drm.bridge = 0; }
+    let g = 1; if (drm.fadeIn > 0) { g = 1 - drm.fadeIn / (0.03 * rate); drm.fadeIn--; }
     const c = drm.q[0], j = Math.floor(drm.pos), f = drm.pos - j, n = c.length / 2, j2 = j + 1 < n ? j + 1 : j;
     const l = c[2 * j] + (c[2 * j2] - c[2 * j]) * f, r2 = c[2 * j + 1] + (c[2 * j2 + 1] - c[2 * j + 1]) * f;
-    if (R) { L[i] = l; R[i] = r2; } else L[i] = 0.5 * (l + r2);
+    if (R) { L[i] = l * g; R[i] = r2 * g; } else L[i] = 0.5 * (l + r2) * g;
     drm.pos += step; if (drm.pos >= n) { drm.pos -= n; drm.q.shift(); drm.qn -= n; }
   }
-  if (drm.playing && !drm.q.length) { drm.playing = false; drm.under++;        // (ran dry: buffering again)
+  // (from 2.3, DRM: a fade leaves the queue empty; rather than stopping and rebuffering, playback carries on silently,
+  //  so the sound comes back the moment frames do, without the stop-start or a growing delay. Only after 8 s of nothing
+  //  (the station gone) does it stop and rebuffer, as before. Each bridged gap goes in the diagnostics log)
+  if (o === drm && drm.playing && !drm.q.length && (drm.bridge || 0) < 8 * rate) return;
+  if (drm.playing && !drm.q.length) { drm.playing = false; drm.under++; if (o === drm) { diagEv("drm sound gap", { seconds: +((drm.bridge || 0) / rate).toFixed(2), bridged: false }); drm.bridge = 0; }        // (ran dry: buffering again)
     if (o === dab) { dab.bufS = Math.min(3, (dab.bufS || 1) + 1); }
     if (o === dab) diagEv("dab sound ran dry", { times: drm.under, snr: dab.quality && Number.isFinite(dab.quality.snr) ? +dab.quality.snr.toFixed(1) : null, cpu: el.cpuVal.textContent, bufferNowS: dab.bufS }); }
 }
@@ -8356,7 +8934,7 @@ function onDemodOutput(out) {
   }
 
   // Hum filter (MW/SW, mono audio), before noise reduction
-  const humHz = noiseFiltersOn() && !out.stereo ? state.hum[state.band] : 0;
+  const humHz = cleanFiltersOn() && !out.stereo ? state.hum[state.band] : 0;
   if (humHz) {
     humProc.configure(humHz, demodulator?.player?.sampleRate || 48000);
     humProc.process(out.left);
@@ -8516,7 +9094,8 @@ function ovlFeed(b) {
 }
 function renderOvl() {
   const now = performance.now();
-  const st = !running ? "" : now - ovl.lastOver < OVL_HOLD_MS ? "over" : now - ovl.lastClip < OVL_HOLD_MS ? "hot" : "ok";
+  let st = !running ? "" : now - ovl.lastOver < OVL_HOLD_MS ? "over" : now - ovl.lastClip < OVL_HOLD_MS ? "hot" : "ok";
+  if (running && state.source === "sdrconnect" && sdrc.status === "connected") st = sdrc.props.overload === "true" ? "over" : "ok";     // (SDRconnect reports its own overload)
   if (st === ovl.shown) return;
   ovl.shown = st;
   el.ovlBadge.classList.toggle("on", st === "hot" || st === "over");
@@ -8694,8 +9273,17 @@ class DcBlocker {
 // channel filter smears it into an audible crackle. A sample whose power jumps well above the
 // running average is blanked, together with a few samples either side. The average is frozen
 // during a blank, so the impulse can't raise its own threshold.
-const noiseFiltersOn = () => (state.band === "MW" || state.band === "SW" || state.band === "GEN")
-  && !["FAX", "RTTY", "NAVTEX", "DSC", "SSTV", "PSK31", "HELL", "ACARS", "FT8", "FT4", "WSPR", "TIME", "APRS", "AIS", "VDL2", "DRM", "DAB", "WBFM"].includes(state.modes[state.band]);   // they'd distort fax tones; not for broadcast FM
+// (from 2.3: the audio filters (noise reduction, hum removal, the noise blanker, the notches and the AI voice cleaner) apply
+//  ONLY to listening to AM, SAM (upper and lower too) and SSB, on the bands those are used: a list of where they apply, not
+//  of where they don't, so FM (narrow and wide), CW, DAB, DRM, the data modes, and any mode added later, have none)
+const FILTER_MODES = ["AM", "SAM", "USB", "LSB"];
+const noiseFiltersOn = () => (state.band === "MW" || state.band === "SW" || state.band === "GEN") && FILTER_MODES.includes(state.modes[state.band]);
+// (from 2.3: the noise BLANKER and the HUM filter also in CW and the SSB-based digital modes: they only remove impulses and a
+//  50/60 Hz hum, which can only help those modes' tones; before, switching USB to FT8 on 40 m switched them off, so the
+//  spectrum grew noisier and the hum came back (a user's report). Noise reduction, the notch and the AI cleaner, which
+//  reshape the sound, stay voice-only)
+const DIGI_FILTER_MODES = ["CW", "FT8", "FT4", "WSPR", "PSK31", "RTTY", "HELL", "FAX", "SSTV", "NAVTEX", "DSC"];
+const cleanFiltersOn = () => noiseFiltersOn() || ((state.band === "MW" || state.band === "SW" || state.band === "GEN") && DIGI_FILTER_MODES.includes(state.modes[state.band]));
 class WideBlanker {
   // The reference level is the MEDIAN sample power of each block (50 ms), not a running average
   // that freezes while blanking. The old running average could lock up: after a jump to a
@@ -8711,7 +9299,7 @@ class WideBlanker {
     this.holdN = Math.max(2, Math.round(rate * 2e-6)); this.back = Math.max(1, Math.round(rate * 1e-6));
   }
   receiveSamples(block) {
-    if (!noiseFiltersOn() || !state.nb[state.band]) return;
+    if (!cleanFiltersOn() || !state.nb[state.band]) return;
     const I = block.I, Q = block.Q, n = I.length;
     // median power from ~2048 evenly spread samples (cheap, and robust to impulses)
     const m = Math.min(2048, n), stride = n / m;
@@ -8721,18 +9309,22 @@ class WideBlanker {
     // median of exponentially distributed noise power = mean x ln 2; threshold ~13 dB above mean
     const thr = 20 * this.pw[m >> 1] / Math.LN2;
     if (!(thr > 0)) return;
-    // count first: too much over threshold means a level change, not impulses
-    let over = 0;
-    for (let i = 0; i < n; i++) if (I[i] * I[i] + Q[i] * Q[i] > thr) over++;
-    if (over > n * 0.05) { nbStats.skipped++; return; }
-    let hold = this.hold, blanked = 0;
-    for (let i = 0; i < n; i++) {
-      if (I[i] * I[i] + Q[i] * Q[i] > thr) {
-        if (hold === 0) for (let j = Math.max(0, i - this.back); j < i; j++) { I[j] = 0; Q[j] = 0; }
-        hold = this.holdN;
-      }
-      if (hold > 0) { I[i] = 0; Q[i] = 0; hold--; blanked++; }
-    }
+    // (from 2.3: ONE pass notes where the impulses are (and counts them all: more than 5% is a level change, skipped as
+    //  before); the blanking then visits only those places, instead of testing every sample again. The same samples are
+    //  blanked: each impulse starts or extends a stretch of holdN, a new stretch after a gap also blanks the back samples
+    //  before it, and a stretch running past the block's end carries into the next)
+    const lim = n * 0.05, cap = Math.floor(lim) + 1; if (!this.pos || this.pos.length < cap) this.pos = new Int32Array(cap);
+    const pos = this.pos; let over = 0;
+    for (let i = 0; i < n; i++) if (I[i] * I[i] + Q[i] * Q[i] > thr) { if (over < cap) pos[over] = i; over++; }
+    if (over > lim) { nbStats.skipped++; return; }
+    let rs = 0, re = this.hold, blanked = 0; const hN = this.holdN, bk = this.back;
+    const zero = (a, b) => { for (let j = a; j < b; j++) { I[j] = 0; Q[j] = 0; } };
+    for (let q = 0; q < over; q++) { const p = pos[q];
+      if (p < re) { re = p + hN; continue; }                       // (a new impulse while blanking: the stretch goes on)
+      if (re > rs) { const e = Math.min(re, n); zero(rs, e); blanked += e - rs; }
+      zero(Math.max(0, p - bk), p); rs = p; re = p + hN; }
+    if (re > rs) { const e = Math.min(re, n); zero(rs, e); blanked += e - rs; }
+    const hold = Math.max(0, re - n);
     this.hold = hold; nbStats.blanked += blanked;
   }
 }
@@ -8750,11 +9342,12 @@ class ChannelBlanker {
   reset() {
     const L = this.L;
     this.b = new Float64Array(6 * L);                 // 3 stages x (re, im) ring buffers, one shared index
+    this.v0r = new Float64Array(L); this.v0i = new Float64Array(L); this.v1r = new Float64Array(L); this.v1i = new Float64Array(L); this.v2r = new Float64Array(L); this.v2i = new Float64Array(L);
     this.s = new Float64Array(6); this.k = 0; this.ph = 0; this.lastOff = null; this.hold = 0;
   }
   setSampleRate(rate) { this.rate = rate; this.holdN = Math.max(2, Math.round(rate * 2e-6)); }
   receiveSamples(block) {
-    if (!noiseFiltersOn() || !state.nb[state.band]) return;
+    if (!cleanFiltersOn() || !state.nb[state.band]) return;
     const I = block.I, Q = block.Q, n = I.length, L = this.L, iL = 1 / L;
     if (!this.cre || this.cre.length !== n) { this.cre = new Float32Array(n); this.cim = new Float32Array(n); this.det = new Float32Array(n); }
     const off = demodulator ? demodulator.getFrequencyOffset() : 0;
@@ -8763,16 +9356,17 @@ class ChannelBlanker {
     let cr = Math.cos(ph0), ci = Math.sin(ph0), k = this.k;
     const B = this.b, S = this.s, cre = this.cre, cim = this.cim, det = this.det;
     let s0r = S[0], s0i = S[1], s1r = S[2], s1i = S[3], s2r = S[4], s2i = S[5];
-    const o1 = 2 * L, o2 = 4 * L;
+    // (from 2.3: each stage's history in its own view of the ring, so no offsets are worked out per sample: the same sums,
+    //  in the same order, so the same results)
+    const B0r = this.v0r, B0i = this.v0i, B1r = this.v1r, B1i = this.v1i, B2r = this.v2r, B2i = this.v2i;
     for (let i = 0; i < n; i++) {
       const xr = I[i] * cr - Q[i] * ci, xi = I[i] * ci + Q[i] * cr;
       const t = cr * dr - ci * di; ci = cr * di + ci * dr; cr = t;
-      const k2 = 2 * k;
-      s0r += xr - B[k2]; s0i += xi - B[k2 + 1]; B[k2] = xr; B[k2 + 1] = xi;
+      s0r += xr - B0r[k]; s0i += xi - B0i[k]; B0r[k] = xr; B0i[k] = xi;
       const y1r = s0r * iL, y1i = s0i * iL;
-      s1r += y1r - B[o1 + k2]; s1i += y1i - B[o1 + k2 + 1]; B[o1 + k2] = y1r; B[o1 + k2 + 1] = y1i;
+      s1r += y1r - B1r[k]; s1i += y1i - B1i[k]; B1r[k] = y1r; B1i[k] = y1i;
       const y2r = s1r * iL, y2i = s1i * iL;
-      s2r += y2r - B[o2 + k2]; s2i += y2i - B[o2 + k2 + 1]; B[o2 + k2] = y2r; B[o2 + k2 + 1] = y2i;
+      s2r += y2r - B2r[k]; s2i += y2i - B2i[k]; B2r[k] = y2r; B2i[k] = y2i;
       const zr = s2r * iL, zi = s2i * iL;
       cre[i] = zr; cim[i] = zi; det[i] = zr * zr + zi * zi;
       k = k + 1 === L ? 0 : k + 1;
@@ -8785,22 +9379,20 @@ class ChannelBlanker {
     this.pw.sort();
     const thr = 10 * this.pw[m >> 1] / Math.LN2;
     if (!(thr > 0)) return;
-    let over = 0; for (let i = 0; i < n; i++) if (det[i] > thr) over++;
-    if (over > n * 0.05) { nbStats.skipped++; return; }
+    // (from 2.3: one pass notes the impulses, as in the wideband stage; then only their stretches are visited)
+    const lim = n * 0.05, cap = Math.floor(lim) + 1; if (!this.pos || this.pos.length < cap) this.pos = new Int32Array(cap);
+    const pos = this.pos; let over = 0;
+    for (let i = 0; i < n; i++) if (det[i] > thr) { if (over < cap) pos[over] = i; over++; }
+    if (over > lim) { nbStats.skipped++; return; }
     if (!over && !this.hold) return;
     const D = Math.round(3 * (L - 1) / 2);            // the slice lags the wideband signal by D samples
-    let hold = this.hold, touched = 0;
-    for (let i = 0; i < n; i++) {
-      if (det[i] > thr) hold = this.holdN;
-      if (hold > 0) {
-        hold--;
-        const j = i - D;
-        if (j >= 0) {                                  // re-mix the slice up to the station and subtract it
-          const a = ph0 + w * j, ur = Math.cos(a), ui = -Math.sin(a), re = cre[i], im = cim[i];
-          I[j] -= re * ur - im * ui; Q[j] -= re * ui + im * ur; touched++;
-        }
-      }
-    }
+    let rs = 0, re = this.hold, touched = 0; const hN = this.holdN;
+    const sub = (a, b) => { for (let i = Math.max(a, D); i < b; i++) { const j = i - D;     // re-mix the slice up to the station and subtract it
+        const ang = ph0 + w * j, ur = Math.cos(ang), ui = -Math.sin(ang), r2 = cre[i], i2 = cim[i];
+        I[j] -= r2 * ur - i2 * ui; Q[j] -= r2 * ui + i2 * ur; touched++; } };
+    for (let q = 0; q < over; q++) { const p = pos[q]; if (p < re) { re = p + hN; continue; } if (re > rs) sub(rs, Math.min(re, n)); rs = p; re = p + hN; }
+    if (re > rs) sub(rs, Math.min(re, n));
+    const hold = Math.max(0, re - n);
     this.hold = hold; nbStats.blanked += touched;
   }
 }
@@ -8808,7 +9400,7 @@ class NoiseBlanker {                                    // wideband first, then 
   constructor() { this.w = new WideBlanker(); this.c = new ChannelBlanker(); }
   setSampleRate(r) { this.w.setSampleRate(r); this.c.setSampleRate(r); }
   receiveSamples(b) {
-    if (!noiseFiltersOn() || !state.nb[state.band]) return;
+    if (!cleanFiltersOn() || !state.nb[state.band]) return;
     this.w.receiveSamples(b); this.c.receiveSamples(b); nbStats.total += b.I.length;
   }
 }
@@ -9553,12 +10145,14 @@ class AiVoiceCleaner {
 }
 const AI_MIX = { full: 1, strong: 0.9, medium: 0.75, light: 0.5 };
 const aiProc = new AiVoiceCleaner();
-const aiOk = () => { const m = state.modes[state.band]; return m === "AM" || m === "SAM" || m === "USB" || m === "LSB" || m === "NBFM"; };
+const aiOk = () => noiseFiltersOn();      // (from 2.3: the same rule as every other audio filter: AM, SAM and SSB only)
 async function aiApply() {
   renderAiSeg();
   if (!state.expAI) { aiProc.reset(); return; }
-  if (!aiProc.ready) { setStatus("Loading the AI voice cleaner…");
-    try { await aiProc.load(); setStatus(`AI voice cleaner: ${{ light: "Light", medium: "Medium", strong: "Strong", full: "Full" }[state.expAIMix] || "Medium"} (speech in AM, SAM, SSB and FM voice)`); }
+  // (from 2.3: its messages only where the audio filters apply; in DAB, DRM and wideband FM it loads quietly, ready for a
+  //  change of mode: a user saw "AI voice cleaner: Medium" while listening to DAB, where it isn't applied)
+  if (!aiProc.ready) { const say = aiOk(); if (say) setStatus("Loading the AI voice cleaner…");
+    try { await aiProc.load(); if (say) setStatus(`AI voice cleaner: ${{ light: "Light", medium: "Medium", strong: "Strong", full: "Full" }[state.expAIMix] || "Medium"} (speech in AM, SAM and SSB)`); }
     catch (e) { console.warn("AI voice cleaner failed to load:", e); state.expAI = false; saveState(); renderAiSeg(); setStatus("The AI voice cleaner couldn't start here: switched off", true); } }
 }
 // ==== AI voice cleaner end ====
@@ -10080,7 +10674,7 @@ function renderDsc(now) {
   el.dscInfo.textContent = !d.lock ? "searching for the two tones…" : d.sync < 0 ? "tones found, waiting for a call…" : "receiving a call…";
   if (d.calls.length !== dscShownN) {
     dscShownN = d.calls.length; const p2 = x => String(x).padStart(2, "0");
-    el.dscList.innerHTML = d.calls.length ? d.calls.slice(-5).reverse().map(c => `<div class="${c.cat === "Distress" ? "distress" : ""}">${p2(c.time.getHours())}:${p2(c.time.getMinutes())}  ${c.text.replace(/</g, "&lt;")}</div>`).join("")
+    el.dscList.innerHTML = d.calls.length ? d.calls.slice(-5).reverse().map(c => `<div class="${c.cat === "Distress" ? "distress" : ""}">${p2(c.time.getHours())}:${p2(c.time.getMinutes())}  ${escH(c.text)}</div>`).join("")
                                           : "<div>No calls yet. Ships call now and then: it can be quiet for a long time.</div>";
   }
 }
@@ -10411,7 +11005,14 @@ function renderPan() {
   el.panWidth.classList.toggle("off", pan.range !== "around");
   renderZoom();
 }
-el.panBtn.onclick = () => pan.on ? panExit() : panEnter();
+// (from 2.3: Panorama sweeps the radio from frequency to frequency in tens of milliseconds, which a network connection to
+//  SDRconnect can't keep up with (each retune is a round trip): disabled in SDRconnect mode, with the reason on hover;
+//  RTL-SDR sticks and the demo as before. A true wide view from the RSP itself is planned for 2.4)
+const PAN_NET_WHY = "Panorama sweeps the radio quickly from frequency to frequency, which a network connection to SDRconnect can't keep up with. It works with an RTL-SDR stick.";
+function panAvail() { const net = state.source === "sdrconnect" && !window.__sdrDemo; el.panBtn.disabled = net; el.panBtn.dataset.netwhy = net ? "1" : "";
+  if (net) { if (!el.panBtn.dataset.title0) el.panBtn.dataset.title0 = el.panBtn.title; el.panBtn.title = PAN_NET_WHY; if (pan.on) panExit(); }
+  else if (el.panBtn.dataset.title0) { el.panBtn.title = el.panBtn.dataset.title0; delete el.panBtn.dataset.title0; } }
+el.panBtn.onclick = () => { if (state.source === "sdrconnect" && !window.__sdrDemo) { setStatus(PAN_NET_WHY); return; } return pan.on ? panExit() : panEnter(); };
 // (read-only, for tests: the waterfall's current frequency range, and replay state)
 window.__view = () => ({ ...(wfb.paused && wfb.view ? wfb.view : displayView()), rows: wfb.rows.length, paused: wfb.paused, buffered: wfb.ring ? Math.round(wfb.total / (wfb.rate || 1)) : 0, sel: rp.sel ? { fa: rp.sel.fa, fb: rp.sel.fb, secs: (rp.sel.s1 - rp.sel.s0) / rp.sel.rate } : null, replay: { playing: rp.playing, dur: rp.dur, fTune: rp.fTune } });
 // (read-only summary for tests: the range, hops, sweep time and the strongest peaks found)
@@ -11405,7 +12006,9 @@ function drawOverlay() {
   const g = o.getContext("2d"); g.clearRect(0, 0, W, H);
   const rows = wfVis(), d = dpr || 1;
   if (wfb.ring && rows.length) {
-    const now = wfb.paused ? wfb.pauseAt : performance.now(), minS = wfb.total - wfb.cap;
+    // (the rows' ages: measured from the pause, or, with the radio off, from the newest row (the moment the data stopped):
+    //  before, "now" kept moving after power-off, and the −10 s, −20 s marks crept up the screen: a user's report, 2.3)
+    const now = wfb.paused ? wfb.pauseAt : !running && wfb.rows.length ? wfb.rows[0].t : performance.now(), minS = wfb.total - wfb.cap;
     g.font = `${11 * d}px "Share Tech Mono", monospace`; g.textBaseline = "middle";
     let lim = rows.findIndex(r => r.s - wfb.rate * 0.05 < minS);
     if (lim >= 0) {                                     // older than the buffer: dimmed, not selectable
@@ -11971,7 +12574,10 @@ function createRadio() {
       const n = buf.length, a = Math.floor(n * 0.2), z = Math.floor(n * 0.8); let e = 0; for (let i = a; i < z; i++) e += Math.pow(10, buf[i] / 10);
       const lv = 10 * Math.log10(e / (z - a));
       if (lv === h.lv) { if (h.held && h.last) buf.set(h.last); return r; }       // (the same line again)
-      h.lv = lv; h.held = h.ref !== null && lv < h.ref - 3 && h.run < 2 && !!h.last;
+      // (from 2.3: from 1 dB down, not 3: a slice only PARTLY in a null symbol dims the line 1-3 dB, still a visible line on
+      //  DAB's even block, recurring as the timing drifts (a user saw one every 4 s, on 12B through an RTL stick and
+      //  SDRconnect alike). Measured on 12B, rows 40 ms apart: lines of 1 dB+ shown 5 per 1000 rows -> 1; rows held 1.8%)
+      h.lv = lv; h.held = h.ref !== null && lv < h.ref - 1 && h.run < 2 && !!h.last;
       if (h.held) { h.run++; buf.set(h.last); return r; }
       h.run = 0; h.last = Float32Array.from(buf); h.ref = h.ref === null ? lv : 0.8 * h.ref + 0.2 * lv; return r; }; }
   // Spectrum first: the demodulator frequency-shifts the sample block in place.
@@ -11987,7 +12593,9 @@ function createRadio() {
       if (wfb.paused) { perf.busy += performance.now() - t; return; }          // paused: frozen (no audio, buffer kept)
       ovlFeed(b);                                 // raw samples, before the DC blocker changes them
       if (pan.on) panFeed(b);
-      else { aisFeed(b); vdlFeed(b); drmFeed(b); dabFeed(b);  // (AIS, DRM and DAB work on the raw samples too: the demodulator shifts them in place)
+      else { { const I = b.I; let z = 0, n = 0; for (let i = 0; i < I.length; i += 64) { n++; if (I[i] === 0 && b.Q[i] === 0) z++; }      // (from 2.3: a mostly-zero block, logged)
+          if (n && z > n * 0.5 && (window.__zeroBlocks = (window.__zeroBlocks || 0) + 1) <= 30) diagEv("zero block", { zeros: Math.round(100 * z / n) + "%", n: I.length, f: Math.round(hwToDial(b.frequency)) }); }
+        aisFeed(b); vdlFeed(b); drmFeed(b); dabFeed(b);  // (AIS, DRM and DAB work on the raw samples too: the demodulator shifts them in place)
         if (Number(state.wfBufSecs) > 0 && !scan.quiet) wfbStore(b); chain.receiveSamples(b); if (document.hidden) hiddenRow(); }
       perf.busy += performance.now() - t; }),
   };
@@ -12001,7 +12609,7 @@ function createRadio() {
 // stick was lost (see radioLost): the old object can't be reused, so it's dropped and this makes a new one.
 let radioSink = null;
 function attachRadio() {
-  const me = radio = new Radio(window.__sdrTestProvider ?? new RtlProvider(), radioSink);
+  const me = radio = new Radio(window.__sdrTestProvider ?? (state.source === "sdrconnect" ? sdrConnectProvider() : new RtlProvider()), radioSink);
   me.addEventListener("radio", e => {
     if (me !== radio) return;                     // a dropped Radio (lost stick): ignore whatever it still says
     const d = e.detail;
@@ -12015,8 +12623,14 @@ function attachRadio() {
     else if (d.type === "error") { console.error(d.exception); usb.errors++;
       const dead = running && /Sample transfer was interrupted/i.test(String(d.exception?.message || ""));
       // a pulled plug or a reset also makes transfers fail: the disconnect message is the true one, so keep it
+      // (from 2.3: the stick couldn't tune while the HF upconverter setting is adding its offset: in the field, a user
+      //  with it switched on and no converter fitted had FM tuned 125 MHz too high, and the stick failed: said plainly)
+      const pll = /PLL not locked/i.test(String(d.exception?.message || "")), viaConv = pll && convFor(curFreq()) > 0;
+      if (viaConv) diagEv("tuning failed via converter", { freq: curFreq(), offset: convFor(curFreq()), setting: state.conv });
       if (performance.now() - usb.lostAt > 3000) setStatus(dead
         ? "The stick stopped sending (a USB error). Press Power on to start again; if it keeps happening, unplug the stick and plug it back in."
+        : viaConv ? 'The radio couldn\u2019t tune here. The \u201cHF upconverter\u201d setting is on, which is only for an upconverter box. No box? Set Settings \u2192 Device \u2192 HF upconverter to Off.'
+        : pll ? 'The radio couldn\u2019t tune to this frequency. Plug the stick straight into the computer (no USB hub) and press Power on. If it keeps happening, the stick may not reach it.'
         : friendlyError(d.exception), true);
       if (dead) radioLost("stream stopped"); }
     diagEv("radio " + d.type, d.type === "error" ? { msg: String(d.exception && d.exception.message || d.exception).slice(0, 200), name: String(d.exception?.name || "") } : d.type === "directSampling" ? { on: !!d.active } : {});
@@ -12061,7 +12675,25 @@ function applyMode() {
   demodulator.setMode(modeObject());                 // (fax: 3 kHz USB; SSB top edge here, bottom edge in ssbHp)
 }
 function applyVolume() { demodulator?.setVolume(muted ? 0 : state.volume / 100); }
-function applyGain() { radio?.setGain(state.gainAuto ? null : Number(state.gain)); }
+function applyGain() {
+  // (SDRconnect: the slider (0-49.6, higher = more gain) onto the device's LNA states, reversed (state 0 is the most
+  //  gain), over its own range for this band; Auto leaves SDRconnect's LNA state as it is)
+  if (state.source === "sdrconnect" && !window.__sdrDemo) { sdrcGain(); sdrcRender(); return; }
+  radio?.setGain(state.gainAuto ? null : Number(state.gain)); }
+// (from 2.3, SDRconnect only (an RTL stick's gain is unchanged): an RSP's front-end gain (the LNA state, 0 = most gain) at or
+//  near full overloads easily on a busy band with a good antenna: a user saw the floor rise into a mush round the signals,
+//  where OpenWebRX+, which runs a moderate LNA state with the IF AGC doing the rest, didn't. So the slider's first 90%
+//  covers the safe 70% of the range (the least gain up to SAFE), and only its last 10% the remaining states to full gain.
+//  Auto now picks the middle state for each band, the RSP's usual sweet spot (it left SDRconnect's state alone before))
+const SDRC_SAFE = 0.7, SDRC_KNEE = 0.9;
+function sdrcLnaFor(frac, lo, hi) { const safe = hi - SDRC_SAFE * (hi - lo);
+  return frac <= SDRC_KNEE ? hi - (frac / SDRC_KNEE) * (hi - safe) : safe - ((frac - SDRC_KNEE) / (1 - SDRC_KNEE)) * (safe - lo); }
+function sdrcGain() { const lo = +(sdrc.props.lna_state_min ?? 0), hi = +(sdrc.props.lna_state_max ?? 0); if (!(hi > lo)) return;
+  const lna = state.gainAuto ? Math.round(lo + (hi - lo) / 2) : Math.round(sdrcLnaFor(Math.max(0, Math.min(1, Number(state.gain) / 49.6)), lo, hi));
+  if (String(lna) === String(sdrc.props.lna_state) || String(lna) === String(sdrc.lnaSent)) return;     // (only a real change is sent)
+  // (after a gain change, the RSP takes a moment to settle: its samples for 250 ms are not drawn or played, rather than
+  //  showing a jump; seen in the field 1.5-2 s after a band change, when the gain followed the retune)
+  sdrc.lnaSent = lna; sdrc.settleUntil = performance.now() + 250; sdrcSend("set_property", "lna_state", lna); diagEv("sdrconnect", { state: "gain", lna, range: `${lo}-${hi}` }); }
 let restarting = false;
 async function applyRate() {
   hwCenter = null;
@@ -12316,10 +12948,13 @@ function memDescribe(m) {
   if ((m.mode === "AM" || m.mode === "SAM") && m.bw) parts.push(`${m.bw / 1e3} kHz filter`);
   if (m.mode === "CW" && m.cwbw) parts.push(`${m.cwbw} Hz filter`);
   if ((m.mode === "USB" || m.mode === "LSB") && m.ssbbw) parts.push(`${+(m.ssbbw / 1e3).toFixed(1)} kHz filter` + (m.ssbshift ? `, shift ${m.ssbshift > 0 ? "+" : ""}${m.ssbshift} Hz` : ""));
-  if (m.step) parts.push(`${stepTxt(m.step)} step`);
-  if (m.nr) parts.push(`noise reduction ${["", "low", "med", "high"][m.nr]}`);
-  if (m.nb) parts.push("noise blanker");
-  if (m.hum) parts.push(`${m.hum} Hz hum filter`);
+  // (from 2.3: the filters only where they apply (a DAB memory listed noise reduction, the blanker and the hum filter);
+  //  no tuning step for DAB, tuned by channel)
+  const hf = m.band === "MW" || m.band === "SW" || m.band === "GEN", voice = hf && FILTER_MODES.includes(m.mode), clean = voice || (hf && DIGI_FILTER_MODES.includes(m.mode));
+  if (m.step && m.mode !== "DAB") parts.push(`${stepTxt(m.step)} step`);
+  if (m.nr && voice) parts.push(`noise reduction ${["", "low", "med", "high"][m.nr]}`);
+  if (m.nb && clean) parts.push("noise blanker");
+  if (m.hum && clean) parts.push(`${m.hum} Hz hum filter`);
   return parts.join(", ");
 }
 function renderMems() {
@@ -12334,7 +12969,7 @@ function renderMems() {
     const on = m && m.band === state.band && m.freqHz === curFreq();
     if (on && !storing && !clearing && !scan.mode) b.classList.add("lit");
     const mt = m ? (m.mode === "SAM" ? { both: "SAM", upper: "SAM-U", lower: "SAM-L" }[m.sb || "both"] : m.mode === "WBFM" ? "" : m.mode) : "";
-    b.innerHTML = m ? `<b>M${i + 1}</b><span>${fmt(m.freqHz, BANDS[m.band])}</span><i>${memTag(m)}${mt ? " " + mt : ""}</i>`
+    b.innerHTML = m ? `<b>M${i + 1}</b><span>${escH(fmt(m.freqHz, BANDS[m.band]))}</span><i>${escH(memTag(m))}${mt ? " " + escH(mt) : ""}</i>`
                     : `<b>M${i + 1}</b><span>empty</span>`;
     b.title = m ? memDescribe(m) : "Empty memory";
     if (scan.mode && m) { b.classList.add(state.scanSel.includes(i) ? "scansel" : "scanpick"); if (scan.cur === i) b.classList.add("scanat"); b.style.setProperty("--i", i % 12); }
@@ -12580,7 +13215,7 @@ function setStatus(t, bad = false) {
   // short version (first sentence) is shown and the whole message is on hover
   const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
   el.statusText.textContent = still ? shortStatus(t) : String(t); el.statusText.title = String(t);
-  el.statusText.style.color = bad ? "var(--red)" : "";
+  el.statusText.style.color = bad ? "var(--warn)" : "";      // (from 2.3: a lighter warning colour: the red was hard to read)
   scrollStatus();
 }
 if (window.ResizeObserver) new ResizeObserver(() => scrollStatus()).observe(el.statusText.parentElement);
@@ -12885,7 +13520,7 @@ function chooseMode(key) {
   // VDL2 away from its channels: 136.975 MHz, the common channel worldwide (every channel in view is decoded)
   if (key === "VDL2:" && !(curFreq() >= 136.6e6 && curFreq() <= 137e6)) {
     if (jumpTo(136.975e6) && state.modes[state.band] !== "VDL2") selectMode("VDL2", "");
-    setStatus(`VDL2: tuned to 136.975 MHz, the common channel; decoding ${vdlChannels().length} channel${vdlChannels().length === 1 ? "" : "s"} at once. Messages come in short bursts, now and then`);
+    setStatus(`VDL2 on 136.975 MHz: decoding ${vdlChannels().length} channel${vdlChannels().length === 1 ? "" : "s"} at once; messages come in short bursts`);
     renderStereo(); return;
   }
   // AIS, when you're not on an AIS channel: channel A (both are decoded; the stick's view takes in both)
@@ -12961,7 +13596,7 @@ function renderSeek(dir) {
   if (running) setStatus(seeking ? "Seeking… press Seek again to stop" : "Receiving");
 }
 function renderNoise() {
-  const on = noiseFiltersOn();
+  const on = cleanFiltersOn();      // (from 2.3: shown in CW and the digital modes too, where the hum filter and blanker work)
   el.noiseBox.hidden = !on;
   if (!on) return;
   [...el.nrSeg.children].forEach(b => b.classList.toggle("lit", Number(b.dataset.nr) === state.nr[state.band]));
@@ -12975,7 +13610,8 @@ function renderNoise() {
 // tuner, so the tuner's gain (the RF gain slider) does nothing; the RTL chip's own AGC still works.
 var dsActive = false;
 function renderLevels() {
-  const nz = noiseFiltersOn() ? [state.nr[state.band] ? "NR " + ["", "low", "med", "high"][state.nr[state.band]] : "", state.nb[state.band] ? "NB" : "", state.anf[state.band] ? "Notch" : "", state.hum[state.band] ? "Hum " + state.hum[state.band] : ""].filter(Boolean).join(" ") : "";
+  const voiceF = noiseFiltersOn();      // (from 2.3: NR and the notch in voice modes; NB and hum wherever they work)
+  const nz = cleanFiltersOn() ? [voiceF && state.nr[state.band] ? "NR " + ["", "low", "med", "high"][state.nr[state.band]] : "", state.nb[state.band] ? "NB" : "", voiceF && state.anf[state.band] ? "Notch" : "", state.hum[state.band] ? "Hum " + state.hum[state.band] : ""].filter(Boolean).join(" ") : "";
   el.audioSum.textContent = `Vol ${state.volume} · Sq ${state.sqDb ? state.sqDb + " dB" : "open"}${nz ? " · " + nz : ""}`;
   el.volOut.textContent = state.volume;
   el.sqOut.textContent = state.sqDb > 0 ? `${state.sqDb} dB` : "Open";
@@ -13086,7 +13722,12 @@ function computePixels(v, W) {
   if (!running || !spectrum || spectrum.frequency() === undefined) return false;
   // pick an FFT big enough that the visible span has at least ~1 bin per pixel
   const rate = radio?.getSampleRate?.() || state.rate;
-  const want = Math.min(65536, Math.max(2048, 2 ** Math.ceil(Math.log2(W * rate / (v.hi - v.lo)))));   // up to ~31 Hz bins when zoomed
+  // (from 2.3: in DAB, at least 8192 samples (4 ms at 2.048 MHz). A wide waterfall chose 2048 (1 ms), which could fall WHOLLY
+  //  inside DAB's 1.3 ms null symbols: a near-black line across the band, recurring as the timing drifts, thicker through
+  //  SDRconnect (its samples come in bigger bursts, so a dark slice was reused for more lines). 4 ms always holds 2.7 ms of
+  //  signal: a null dims a line by 1.4 dB at most)
+  const minN = state.modes[state.band] === "DAB" ? 8192 : 2048;
+  const want = Math.min(65536, Math.max(minN, 2 ** Math.ceil(Math.log2(W * rate / (v.hi - v.lo)))));   // up to ~31 Hz bins when zoomed
   if (spectrum.size !== want) { spectrum.size = want; specBuf = new Float32Array(want); }
   if (specBuf.length !== spectrum.size) specBuf = new Float32Array(spectrum.size);
   spectrum.getSpectrum(specBuf);
@@ -13099,6 +13740,11 @@ function computePixels(v, W) {
     for (let j = Math.max(0, j0); j <= j1 && j < N; j++) { const val = specBuf[(j + N / 2) % N]; if (val > m) m = val; }
     pix[x] = m;
   }
+  // (from 2.3, to catch a user's regular black line across the waterfall (real DAB, an RTL stick and SDRconnect alike;
+  //  not seen in the demo): a row mostly without valid values is logged with what was used to draw it)
+  { let bad = 0; for (let x = 0; x < W; x++) if (!Number.isFinite(pix[x])) bad++;
+    if (bad > W * 0.5 && (computePixels.__logged = (computePixels.__logged || 0) + 1) <= 30) { let emp = 0; for (let i = 0; i < specBuf.length; i++) if (!Number.isFinite(specBuf[i])) emp++;
+      diagEv("black row", { bad, W, centre: Math.round(c), lo: Math.round(v.lo), hi: Math.round(v.hi), fft: N, emptyBins: emp, rate }); } }
   if (avgPix.length !== W) { avgPix = new Float32Array(W); avgPix.set(pix); }
   for (let x = 0; x < W; x++) if (Number.isFinite(pix[x])) avgPix[x] = Number.isFinite(avgPix[x]) ? avgPix[x] * 0.85 + pix[x] * 0.15 : pix[x];
   // noise-floor tracking (20th percentile), smoothed
@@ -13331,8 +13977,8 @@ function renderLog() {
   if (!el.logFold.open) { lg.dirty = true; return; }
   const rows = state.log.slice(-200).reverse(), esc = t => String(t ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;");
   el.logList.innerHTML = rows.length ? `<table><tr><th>UTC</th><th>Freq</th><th>Mode</th><th title="Signal-to-noise: average (peak)">S/N</th><th>Station</th><th>Notes</th><th></th></tr>` + rows.map(e =>
-    `<tr data-id="${e.id}"><td title="${e.t.slice(0, 10)} UTC, logged by: ${esc(e.by)}">${e.t.slice(5, 10)} ${e.t.slice(11, 16)}</td><td>${(e.f / 1e3).toFixed(e.f < 30e6 ? 1 : 0)}</td><td>${esc(e.mode)}</td>` +
-    `<td>${e.snrAvg != null ? `${e.snrAvg} (${e.snrPeak})` : ""}</td><td contenteditable="true" data-k="station">${esc(e.station)}</td><td contenteditable="true" data-k="notes">${esc(e.notes)}</td><td class="del" title="Delete this entry">✕</td></tr>`).join("") + "</table>"
+    `<tr data-id="${escH(e.id)}"><td title="${escH(String(e.t).slice(0, 10))} UTC, logged by: ${escH(e.by)}">${escH(String(e.t).slice(5, 10))} ${escH(String(e.t).slice(11, 16))}</td><td>${(Number(e.f) / 1e3).toFixed(Number(e.f) < 30e6 ? 1 : 0)}</td><td>${escH(e.mode)}</td>` +
+    `<td>${e.snrAvg != null ? `${escH(Number(e.snrAvg))} (${escH(Number(e.snrPeak))})` : ""}</td><td contenteditable="true" data-k="station">${escH(e.station)}</td><td contenteditable="true" data-k="notes">${escH(e.notes)}</td><td class="del" title="Delete this entry">✕</td></tr>`).join("") + "</table>"
     : `<div style="padding:8px; opacity:.7">No entries yet. Stations you stay on for 30 s with a signal, and decoder results, are logged by themselves; "Log now" adds one any time.</div>`;
   lg.dirty = false;
 }
@@ -13485,7 +14131,16 @@ function drawSpectrum(v, W, H, live) {
 }
 
 var lpFrame = false;
+// (from 2.3: the display RESTS while the radio is off: nothing on it changes then, yet it was redrawn ~60 times a second
+//  (a user's 2.2 log: 59-61 frames a second, powered off). Now one frame a second (the clock and status texts), unless
+//  something wakes it: the pointer, a touch, the wheel, a key, the window resizing, the page becoming visible. Power on,
+//  scanning, recording or a paused replay: full speed as before. The loop itself keeps ticking (free), for its watchdog)
+let idleWakeAt = 0, idleLast = 0;
+for (const ev of ["pointermove", "pointerdown", "wheel", "keydown", "touchstart"]) window.addEventListener(ev, () => { idleWakeAt = performance.now(); }, { passive: true, capture: true });
+window.addEventListener("resize", () => { idleWakeAt = performance.now(); }); document.addEventListener("visibilitychange", () => { idleWakeAt = performance.now(); });
 function frame(now) {
+  if (!running && !scan.mode && !pan.on && !rec.on && !wfb.paused && now - idleWakeAt > 1500 && now - idleLast < 1000) { diag.lastFrameAt = performance.now(); return; }   // (resting)
+  idleLast = now;
   diag.frames++; diag.lastFrameAt = performance.now();
   try { frameBody2(now); }
   catch (e) {                                   // one bad frame must not stop the display: note it, carry on
@@ -13532,7 +14187,7 @@ function frameBody(now) {
   const v = displayView(), W = el.wfCanvas.width, H = el.wfCanvas.height;
   if (pan.on) {                                         // panorama: one waterfall row per sweep
     const live = panPixels(W);
-    if (live && pan.rowReady) { pan.rowReady = false; drawWaterfallRow(v, W, H); }
+    if (running && live && pan.rowReady) { pan.rowReady = false; drawWaterfallRow(v, W, H); }
     drawSpectrum(v, el.specCanvas.width, el.specCanvas.height, live);
     tuneLineAt(v);
     renderPanBanner();
@@ -13540,7 +14195,9 @@ function frameBody(now) {
     return;
   }
   const live = computePixels(v, W);
-  if (live && !scan.quiet && now - lastRowAt >= 1000 / state.wfSpeed) { lastRowAt = now; drawWaterfallRow(v, W, H); }     // (no waterfall while the scan hops)
+  // (rows only while the radio runs: after power-off, the last spectrum was still there, and rows of it kept being added,
+  //  each stamped with the time, so the 10-second time marks kept appearing and scrolling: a user's report, from 2.3)
+  if (running && live && !scan.quiet && now - lastRowAt >= 1000 / state.wfSpeed) { lastRowAt = now; drawWaterfallRow(v, W, H); }     // (no waterfall while the scan hops)
   drawSpectrum(v, el.specCanvas.width, el.specCanvas.height, live);
   tuneLineAt(v);
 
@@ -14072,7 +14729,7 @@ document.getElementById("usbNoticeClose")?.addEventListener("click", () => { doc
 if (!hasWebUSB() && !window.__sdrDemo) setTimeout(showUsbNotice, 2100);    // after the splash
 el.powerBtn.onclick = async () => {
   if (!libOk) { setStatus("Library failed to load. Check the console.", true); return; }
-  if (!running && !hasWebUSB() && !window.__sdrDemo && !window.__sdrTestProvider) {
+  if (!running && !hasWebUSB() && !window.__sdrDemo && !window.__sdrTestProvider && state.source !== "sdrconnect") {      // (SDRconnect needs no USB: it works in any browser with WebSockets)
     showUsbNotice(); setStatus("This browser can't use USB sticks: use Chrome or Edge, or try demo mode", true); return;
   }
   // a press while Power is still switching (either way) is remembered and done as soon as it has finished: before,
@@ -14084,6 +14741,7 @@ el.powerBtn.onclick = async () => {
 };
 let powerBusy = null, powerQueued = false;
 async function powerToggle() {
+  if (running && state.source === "sdrconnect") { sdrc.want_on = false; sdrc.stopping = sdrcStop(); }      // (SDRconnect: an orderly stop at power off, below)
   if (running) {
     usb.resumeWanted = false;
     cancelSeek(); recStop(); rpClose(); logAtPowerOff();
@@ -14168,7 +14826,16 @@ let closing = null;                            // a stop still finishing in the 
 async function powerOn() {
   usb.resumeWanted = false;
   if (closing) { setStatus("Waiting for the stick to finish closing…"); await Promise.race([closing, new Promise(r => setTimeout(r, 5000))]); closing = null; }
+  idleWakeAt = performance.now();
   diagEv("power on", { radio: !!radio, freq: curFreq() });
+  // (network mode: SDRconnect connected first, and its IQ stream switched on: no USB permission step)
+  if (state.source === "sdrconnect" && !window.__sdrDemo) {
+    if (sdrc.stopping) { setStatus("Waiting for SDRconnect to finish stopping…"); await sdrc.stopping; sdrc.stopping = null; }
+    if (!sdrc.ws || sdrc.ws.readyState !== 1 || sdrc.status !== "connected") { setStatus(`Connecting to SDRconnect at ${sdrcUrl(state.sdrcAddr) || "(no address set)"}…`);
+      const r = await sdrcConnect(state.sdrcAddr); if (!r.ok) { setStatus(r.error, true); diagEv("sdrconnect", { state: "failed", error: r.error }); return; } }
+    sdrc.want = { center: null, rate: null }; sdrc.want_on = true;
+    if (!(await sdrcStart())) return;
+  }
   if (!radio) radioSink ? attachRadio() : createRadio();   // (a fresh Radio after a lost stick; the audio chain is kept)
   radio.setSampleRate(curRate()); rateInUse = curRate();     // the right rate for the band you're on now
   setStatus("Connecting…");
@@ -14706,7 +15373,7 @@ el.suGo.onclick = () => setupRun();
 const setupWspr = () => {                     // no time station needed: the WSPR stations themselves show how far off the stick is
   setupClose("wspr");
   chooseMode("WSPR:");
-  setStatus("WSPR calibration: leave it listening for 10 to 20 minutes (20 m is usually busiest, 40 m at night). When it has heard enough stations a Correct button appears. WSPR needs the clock right to a second or two");
+  setStatus("WSPR calibration: leave it listening for 10 to 20 minutes (20 m by day, 40 m at night); a Correct button appears when it has heard enough. The clock must be right to a second or two");
 };
 el.suWspr.onclick = setupWspr; el.suWspr3.onclick = setupWspr;
 el.suHandSet.onclick = () => {
@@ -14873,7 +15540,11 @@ function renderDab() {
   { const lg = dabLogoFor("small"), latest = dab.slide && dab.slide.sid === dab.selSid ? dab.slide : null, fresh = dab.slideNew && dab.slideNew.sid === dab.selSid ? dab.slideNew : null;
     // (with a logo: a new slide for 10 s, then the logo; without: the latest slide)
     const sl = lg ? (fresh && performance.now() - fresh.at < 10000 ? fresh : null) : latest;
-    const showSlide = !!sl, pic = showSlide ? sl.url : lg ? lg.url : null;
+    // (from 2.3: on a high-resolution screen the 72-pixel space is more screen pixels than the small logo has, so the stored
+    //  large logo is shown instead, scaled down: sharp, not stretched. Worked out on each draw, so moving the window to
+    //  another monitor picks the right one)
+    const big = lg && 72 * (window.devicePixelRatio || 1) > lg.w * 1.05 ? dabLogoFor("large") : null, lgPic = big && big.w > lg.w ? big.url : lg ? lg.url : null;
+    const showSlide = !!sl, pic = showSlide ? sl.url : lgPic;
     if (lg && showSlide) setTimeout(renderDab, 10100 - (performance.now() - sl.at));        // (back to the logo after 10 s)
     const k = pic ? pic.length + ":" + dab.selSid + ":" + showSlide : ""; if (k !== dab.logoKey) { dab.logoKey = k;
       if (pic) { el.dabLogo.src = pic; el.dabLogo.hidden = false;
@@ -15362,7 +16033,10 @@ el.ft8Deep.onchange = e => { state.ft8Deep = e.target.checked; ft8.totNew = 0; f
   setStatus(state.ft8Deep ? "Deeper FT8/FT4 decoding on: stations it finds are marked ◆ (counts restarted)" : "Deeper FT8/FT4 decoding off: the plain decoder, for comparison (counts restarted)"); };
 el.biasChk.checked = !!state.biasTee;
 function renderBias() {
-  el.biasBadge.classList.toggle("on", !!state.biasTee);
+  // (SDRconnect mode: the stick's bias-tee control means nothing for an RSP: disabled, with a note, so it can't mislead)
+  const net = state.source === "sdrconnect" && !window.__sdrDemo; if (el.biasChk) { el.biasChk.disabled = net; el.biasChk.closest("label").style.opacity = net ? 0.5 : ""; }
+  if (el.biasNet) el.biasNet.hidden = !net;
+  el.biasBadge.classList.toggle("on", !!state.biasTee && !net);
   el.biasBadge.title = state.biasTee ? (running ? "Bias-tee ON: DC power on the antenna port" : "Bias-tee will switch on when you press Power on") : "Bias-tee off";
 }
 // Read the bias-tee pin (GPIO 0) back from the stick's chip, to confirm the command took effect.
@@ -15376,6 +16050,7 @@ async function readBiasPin() {
   } catch { return null; }
 }
 async function confirmBias() {
+  if (state.source === "sdrconnect" && !window.__sdrDemo) return;      // (an RSP: its bias-tee is SDRconnect's; nothing claimed here)
   if (!running) return;
   const pin = await readBiasPin();
   if (pin === null) { setStatus(state.biasTee ? "Bias-tee ON: DC power on the antenna port" : "Bias-tee off"); return; }
@@ -15520,7 +16195,9 @@ function checkBackup(d) {
   if (typeof d.version !== "number" || d.version > BACKUP_VERSION) return "made by a newer version of OFFgrid-SDR";
   if (!d.state || typeof d.state !== "object" || Array.isArray(d.state)) return "the settings part is missing";
   if (!Array.isArray(d.memories) || d.memories.length > MEM_SLOTS) return "the memories part is missing or too long";
-  for (const m of d.memories) if (m !== null && (typeof m !== "object" || !BANDS[m.band] || !Number.isFinite(m.freqHz))) return "a memory in it is damaged";
+  for (const m of d.memories) if (m !== null && !cleanMemory(m)) return "a memory in it is damaged";
+  if (d.state.log !== undefined && !Array.isArray(d.state.log)) return "the log in it is damaged";
+  d.memories = d.memories.map(cleanMemory); if (Array.isArray(d.state.log)) d.state.log = d.state.log.map(cleanLogEntry).filter(Boolean);     // (checked one by one)
   if (d.state.band && !BANDS[d.state.band]) return "the settings part is damaged";
   return null;
 }
@@ -15589,7 +16266,7 @@ if (navigator.usb) {
     if (running || restarting || radio?.isPlaying?.()) {
       usb.lostAt = performance.now(); usb.back = false;
       radioLost("unplugged");
-      setStatus("The stick was unplugged or reset. Plug it back in and the radio starts again by itself. If you didn't unplug it: check the plug and cable, avoid unpowered hubs, try another USB port.", true);
+      setStatus("The stick was unplugged or reset: plug it back in and the radio restarts by itself. If you didn't unplug it, check the cable, avoid unpowered hubs, or try another port.", true);
     }
   });
   navigator.usb.addEventListener("connect", e => {
@@ -15617,7 +16294,7 @@ function usbTick(snap, now) {
     radioLost("no data");                          // a hung stream can't be stopped either: start over
     usb.resumeWanted = false;
     setStatus(window.__sdrDemo ? "No data from the demo stick for 3 seconds: the radio was switched off. Press Power on to start again."
-      : "No data from the stick for 3 seconds, so the radio was switched off. Press Power on to start again; if that doesn't work, unplug the stick and plug it back in.", true);
+      : "No data from the stick for 3 seconds, so the radio was switched off. Press Power on; if that fails, unplug the stick and plug it back in.", true);
     return;
   }
   // samples lost (not while sweeping, hidden, or just after a start or rate change)
