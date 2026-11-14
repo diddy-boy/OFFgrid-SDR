@@ -28,6 +28,8 @@ The humble RTL-SDR stick needs some love. It has always been treated as an add-o
 
 ![RSP Config](screenshots/RSP-Config.png)
 
+![RSP Config](screenshots/Net-Stat.png)
+
 - **SDRplay RSPs, through SDRconnect** (requested feature): as well as an RTL-SDR stick (still the default), OFFgrid-SDR can now use an **SDRplay RSP** running on SDRplay's **SDRconnect**, on the same computer or another on your network. Antennas switch by frequency on the RSPdx, the gain is tuned for RSPs, and a **NET** badge shows the connection's health. See [Using an SDRplay RSP](#using-an-sdrplay-rsp-through-sdrconnect), and the full guide, [SDRconnect.md](SDRconnect.md).
 - **What you're listening with** shows before the band name: **RTL** (a USB stick), **NET** (SDRconnect: green, amber or red for the connection) or **DEMO**. Hover over it, or tap it, for the details, including the network speed against what's needed.
 - **Plain messages when the stick can't tune,** including when the HF upconverter setting is on without an upconverter fitted.
