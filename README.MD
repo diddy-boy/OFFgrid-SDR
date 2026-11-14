@@ -24,34 +24,34 @@ The humble RTL-SDR stick needs some love. It has always been treated as an add-o
 
 ---
 
-## What's new in 2.2
+## What's new in 2.3
 
 ![DAB mode](screenshots/DAB.png)
 
-- **VDL2 decoding** (requested feature): aircraft datalink, VDL Mode 2, the digital successor to ACARS, at 136.6–137 MHz. Every VDL2 channel in view is decoded **at once**, chosen from your locator (in Europe 136.675, 136.725, 136.775, 136.825, 136.875 and 136.975 MHz). ACARS messages in full (registration, flight, label, text), the rest summarised; each aircraft's **country** from its address (built in, so it works offline); channel buttons with counts to filter the list, and **Messages only** to hide acknowledgements. Checked frame for frame against dumpvdl2 on a real recording. Under More → Aircraft, and recognised by AUTO.
-- **Full screen / kiosk mode** (requested feature): the button at the right of the top bar, or the **F** key. Should work for android devices.
-- **Five band tabs: FM · DAB · MW · SW · Air.** DAB and airband have their own tabs, each opening your last channel there; SW keeps Broadcast, Ham and Mystery. On a narrow panel (a laptop or a tablet held sideways), the tabs wrap onto two rows.
-- **DAB station text and programme types:** "now playing" and programme information under the playing station's details, with its programme type (News, Pop Music, Rock Music…).
-- **DAB station logos**, from the multiplex's own picture service (SPI), as the BBC sends them: shown top right of the DAB box, and **kept**, so they appear at once on later visits. A first visit collects every station's logo within a few minutes, whichever station is playing. Hover over the multiplex's name to see how many have arrived, or whether the multiplex sends any at all (many UK commercial multiplexes don't: their radios fetch logos online).
-- **DAB SlideShow:** pictures a station sends with its sound (common in mainland Europe) show in the logo's place: the latest one if there's no logo, or each new one for 10 seconds before the logo returns.
-- **DRM station text and pictures:** the station's text message, and its SlideShow picture.
-- **More DAB stations play.** A test matrix checked every combination the DAB standard allows: all 96 protection profiles, 51 kinds of MP2 (48 and 24 kHz, every bit rate and mode) and 16 kinds of DAB+ (AAC-LC, HE-AAC and HE-AAC v2, 32 and 48 kHz, 24 to 192 kbit/s). Now playing too: **24 kHz MP2 stations** (on Sound Digital, Times Radio, Fix Radio and both Premier stations were silent), **joint-stereo MP2** from encoders that switch modes frame by frame, the highest MP2 bit rates (320 and 384 kbit/s), and EEP 2-A at 8 kbit/s. Accented station names now show correctly ("RTS Première+").
-- **DAB fixes:** a DAB+ station could go silent until retuned (also in 2.1); the receiver now re-locks by itself if its lock goes stale and rides through brief dips; damaged MP2 frames are dropped rather than played; the audio filters no longer apply to DAB (as with DRM); the waterfall's regular dip on DAB is gone.
-- **Faster, especially on slower computers:** much less work in the DAB and DRM receivers (with no change to what they decode), no wasted demodulation in either mode, and a display that no longer makes the browser redo its layout every frame. On a five-year-old Lenovo Chromebook: AM from 38% to 24% of a processor core, DAB+ from about 60% to under 50%, and MP2 DAB's peaks from 110% to about 60%. **Hover over the CPU figure** to see where the time goes; the diagnostics log has the same breakdown.
-- **The More menu, grouped by kind:** Voice, Digital radio, Aircraft, Ships, Ham digital, Pictures and Time signals.
-- **Selecting further back in the paused waterfall:** drag a box towards the bottom edge and the waterfall scrolls back in time by itself; the box stays with the signal. **↑ ↓** move through the paused history, and a scroll bar on the right shows where you are.
-- **108–118 MHz** (aircraft navigation) now opens in AM, in 50 kHz steps.
-- **The demo:** station text, logos and a SlideShow on "OFFgrid DAB" (12A), text and the OFFgrid-SDR logo on both DRM stations, and VDL2 aircraft on three channels.
+- **SDRplay RSPs, through SDRconnect** (requested feature): as well as an RTL-SDR stick (still the default), OFFgrid-SDR can now use an **SDRplay RSP** running on SDRplay's **SDRconnect**, on the same computer or another on your network. Antennas switch by frequency on the RSPdx, the gain is tuned for RSPs, and a **NET** badge shows the connection's health. See [Using an SDRplay RSP](#using-an-sdrplay-rsp-through-sdrconnect), and the full guide, [SDRconnect.md](SDRconnect.md).
+- **What you're listening with** shows before the band name: **RTL** (a USB stick), **NET** (SDRconnect: green, amber or red for the connection) or **DEMO**. Hover over it, or tap it, for the details, including the network speed against what's needed.
+- **Plain messages when the stick can't tune,** including when the HF upconverter setting is on without an upconverter fitted.
+- **Resting when switched off:** the display stops redrawing while the radio is off, saving power on laptops and tablets, and the waterfall stays still.
+- **Journaline** news pages on **DRM**: when a station sends them (All India Radio does), a **News** button appears in the DRM box, with its menus, articles and lists. The demo's 11.700 MHz station has some to try.
+- **DRM through fades:** a fade is bridged silently instead of stopping the sound to rebuffer, and the sound fades back in the moment the signal returns. Frames caught in a fade are decoded again, the layers of error correction helping one another: on a fading recording of TDF on 5.990 MHz, **36% fewer dropouts**. A drifting signal (an upconverter warming up, say) is followed through each window.
+- **Sharper DAB logos** on high-resolution screens.
+- **The screen stays on** while the radio is powered on, for tablets used as a radio.
+- **A lighter noise blanker:** 40% less work, exactly the same result.
+- **The noise blanker and hum filter in CW and the digital modes** (FT8, FT4, WSPR, RTTY and the rest) on MW and SW: switching from USB to FT8 no longer brings the clicks and hum back. Noise reduction, the notch and the AI cleaner stay with voice.
+- **A clean DAB waterfall:** no more dark lines across it every few seconds.
+- **Backups checked as they're loaded:** a damaged or tampered backup can no longer upset the page; anything malformed is simply left out.
 
 ![DRM mode](screenshots/DRM.png)
 
-Right mouse click to watch a DRM demo in a new page
-[![OFFgrid-SDR DRM video](https://img.youtube.com/vi/fl4mmtktke4/hqdefault.jpg)](https://youtu.be/fl4mmtktke4)
-
 ![DAB](screenshots/DAB.png)
+
+Right mouse click to watch a DRM demo in a new page
+
+[![OFFgrid-SDR DRM video](https://img.youtube.com/vi/fl4mmtktke4/hqdefault.jpg)](https://youtu.be/fl4mmtktke4)
 
 ### Earlier versions
 
+- **2.2:** **VDL2** aircraft datalink (every channel at once, with each aircraft's country) and a **full-screen** mode (which should work on Android devices too), both requested features; **DAB station text, logos and SlideShow**; **DRM station text and pictures**; every kind of DAB audio checked, with fixes for 24 kHz and joint-stereo MP2; five **band tabs**; the **More** menu grouped; selecting further back in the paused waterfall; and much lighter on slower computers.
 - **2.1:** **DAB and DAB+** digital radio with sound, its stations, formats and signal, recognised by AUTO; **DRM in xHE-AAC** with sound; a DAB multiplex and an xHE-AAC station in the demo.
 - **2.0:** **DRM** digital radio with sound (AAC, with SBR and parametric stereo), its name, settings and signal quality, recognised by AUTO; **6 m and 4 m**; a wider status line; fixes to the waterfall replay, RTTY's automatic reverse and noise reduction; and **OFFgrid-SDR became free software under the GNU GPL**.
 
@@ -86,7 +86,10 @@ Right mouse click to watch a DRM demo in a new page
 | **An RTL-SDR stick** | Tested with the **RTL-SDR Blog V4** (recommended: shortwave with no adapter, and a 4.5 V bias-tee), the Blog V3 and the **Nooelec NESDR SMArt v5**. Other sticks with an **R820T, R820T2 or R828D** tuner should work; older **E4000, FC0012, FC0013 and FC2580** sticks won't. |
 | **An antenna** | The telescopic one is fine for FM. For medium wave and shortwave, tested with the **AURSINC GA800** active loop and the **YouLoop**. For APRS and AIS, a VHF antenna mounted high. |
 | **An HF upconverter** (optional) | Not needed with the V4. For other sticks, a converter such as the Ham It Up (*Settings → Device → HF upconverter*). |
+| **Or: an SDRplay RSP** | Through **SDRconnect** (1.0.6 or later, with its WebSocket API on), on any computer on your network, or the same one: no USB stick or WebUSB needed (*Settings → Device*). |
 | **A browser with WebUSB** | Chrome, Edge, or another Chromium-based browser. Tested on Windows 11, macOS Tahoe and ChromeOS (including a budget Lenovo 300e Chromebook). Firefox and Safari can run demo mode only. |
+
+**Works on:** Windows, macOS, Linux and ChromeOS computers, and **Android tablets** (Chrome, with the stick on a USB-C OTG adapter; a powered hub if the tablet can't supply the bias-tee). Phones aren't supported: the screen is too small for the controls. iPhones and iPads can't use a stick (Safari has no WebUSB), but can use an RSP through SDRconnect.
 
 **Sending a kit somewhere without internet:** pack the stick, an antenna and a pen drive with `index.html`, `README.txt` (the offline guide), a settings backup with your memories and labels (*Settings → Backup*), [Zadig](https://zadig.akeo.ie) for Windows, and a browser installer if needed. Run the setup first (*Settings → Calibration → Run setup again*), so the kit arrives with its location, calibration and clock set.
 
@@ -118,6 +121,16 @@ OFFgrid-SDR is **one file**, `index.html`; everything else here is documentation
 Only one program can use the stick at a time, so close SDR#, SDR++, gqrx or rtl_tcp first.
 
 ---
+
+## Using an SDRplay RSP (through SDRconnect)
+
+OFFgrid-SDR works with an **RTL-SDR stick** by default, but it can also use an **SDRplay RSP** through SDRplay's **SDRconnect** software, on the same computer or another on your network (such as a Raspberry Pi in the shed). **SDRconnect must already be running** on the RSP's computer, with its WebSocket API on port 5454; then choose **SDRconnect** in *Settings → Device*, enter its address, press **Test**, then **Power on**.
+
+- **RSP1A and RSP1B** need nothing more; the **RSPdx**'s antennas switch by frequency (A from 30 MHz up, B below, by default); the **RSPduo** uses one tuner.
+- There's **no bias-tee control** through SDRconnect (use the antenna's own injector), and **Panorama** isn't available.
+- SDRconnect **1.0.6 or later**; 1.0.10 still reports its API as 1.0.3.
+
+**The full guide, [SDRconnect.md](SDRconnect.md),** covers installing SDRconnect, running the headless server as a service that starts at boot (with a Raspberry Pi example), the firewall, configuring OFFgrid-SDR, the RSP models, how the RSP's two gains are handled, and troubleshooting.
 
 ## What it can do
 
@@ -234,6 +247,8 @@ OFFgrid-SDR is built on the work of others:
 - The demo's DRM jingle is an original tune written for OFFgrid-SDR, encoded once with [**FAAC**](https://github.com/knik0/faac)'s DRM encoder, with four fixes made for it and offered back to the FAAC project; its xHE-AAC and DAB+ versions with libxaac's encoder, and its MP2 version with [FFmpeg](https://ffmpeg.org). None of these encoders is in OFFgrid-SDR: only what they made.
 - [**ft8_lib**](https://github.com/kgoba/ft8_lib) by Kārlis Goba: the FT8 and FT4 protocol tables, error correction, message formats and decoding method that OFFgrid-SDR's FT8 and FT4 decoders follow. MIT License. FT8 and FT4 themselves were created by **Joe Taylor, K1JT**, and **Steve Franke, K9AN** ([WSJT-X](https://wsjt.sourceforge.io)).
 - [**acarsdec**](https://github.com/TLeconte/acarsdec) by Thierry Leconte, whose method of demodulating ACARS (MSK) OFFgrid-SDR's own ACARS decoder follows.
+- **Fraunhofer IIS**'s reference Journaline decoder (in Dream's source, GPL 2 or later), which OFFgrid-SDR's own Journaline decoder follows.
+- **SDRplay**'s published *SDRconnect WebSocket API* specification, which OFFgrid-SDR's network input follows. No SDRplay code is used.
 - [**dumpvdl2**](https://github.com/szpajder/dumpvdl2) by Tomasz Lemiech, and its [**libacars**](https://github.com/szpajder/libacars): OFFgrid-SDR's own VDL2 decoder follows the VDL Mode 2 standard (ICAO Annex 10, ETSI EN 301 841), with dumpvdl2 as the reference it was checked against, frame for frame, on a real recording. No dumpvdl2 code is used.
 - Aircraft countries follow **ICAO's allocation of 24-bit aircraft addresses** (Annex 10, Volume III), as listed by [**tar1090**](https://github.com/wiedehopf/tar1090); the table is built in, so it works offline.
 - [**lamejs**](https://github.com/zhuker/lamejs), the JavaScript port of the LAME MP3 encoder. LGPL.
