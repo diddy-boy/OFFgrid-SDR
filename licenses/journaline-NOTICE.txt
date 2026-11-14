@@ -1,0 +1,13 @@
+Journaline news pages (DRM), from OFFgrid-SDR 2.3
+
+OFFgrid-SDR's Journaline decoder is its own code, written to the Journaline
+specification (ETSI TS 102 979). Its structure follows Fraunhofer IIS's
+reference Journaline decoder, as published in the source of the Dream DRM
+receiver, which is licensed under the GNU General Public License, version 2
+or (at your option) any later version.
+
+With thanks to Fraunhofer IIS for the reference decoder and the Journaline
+service, and to the Dream project for publishing it.
+
+For the GNU General Public License, see welle.io-COPYING.txt in this folder,
+or https://www.gnu.org/licenses/.
