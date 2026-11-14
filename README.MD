@@ -6,6 +6,9 @@ OFFgrid-SDR is a full software-defined radio receiver that runs entirely in your
 
 On a local network with a SDR Play RSP, the user can now network stream from a SDR connect server but the main goal is still a RTL SDR and the Index.html file.
 
+so if at home, the user could connect to the RSP Connect server and not have to plug anything in.
+when remote, plug in a RTL SDR card, change the device settings within OFFgrid-SDR to look at the RTL card and use
+
 ![Main UI](screenshots/main.png)
 
 ![Weather Fax](screenshots/weather-example.png)
