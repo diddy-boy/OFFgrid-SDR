@@ -233,7 +233,10 @@ Switch on the **waterfall buffer** (15, 30 or 60 seconds), press **⏸**, and dr
 
 ---
 
-![Visit count](https://hits.sh/github.com/diddy-boy/OFFgrid-SDR.svg) visits and counting!
+<p>
+  <img src="https://hits.sh/github.com/diddy-boy/OFFgrid-SDR.svg?style=for-the-badge" alt="Visit count" height="35">
+  visits and counting!
+</p>
 
 ## Support
 
