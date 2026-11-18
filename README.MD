@@ -218,7 +218,7 @@ Switch on the **waterfall buffer** (15, 30 or 60 seconds), press **⏸**, and dr
 
 ## Known limitations
 
-- **Browsers:** WebUSB is only in Chromium-based browsers (Chrome, Edge, Opera…); Firefox and Safari can run demo mode only. **One program at a time** can use the stick.
+- **Browsers:** WebUSB is only in Chromium-based browsers (Chrome, Edge, Opera…); Firefox and Safari can run demo mode or connect via SDR connect over the network to a RSP device from SDR play. **One program at a time** can use the stick.
 - **Tuners:** R820T, R820T2 or R828D sticks only; older E4000, FC0012, FC0013 and FC2580 sticks won't work.
 - **RSP Tuners:** RSP devices from SDR Play are supported across the local network but there are limitations. No Bias T control due to the current API version 1.0.3. Only the first tuner of the RSPduo is supported. RSP devices MUST be setup to run from a server running the 'SDR Connect headless' software and this has to be running for OFFgrid-SDR to connect to.
 - **DRM** needs a good signal (about 10 dB for 16-QAM, 16 dB for 64-QAM); below that, the settings are read but not the name or sound. The few stations using unequal protection or hierarchical modulation aren't decoded yet.
