@@ -220,7 +220,7 @@ Switch on the **waterfall buffer** (15, 30 or 60 seconds), press **⏸**, and dr
 
 - **Browsers:** WebUSB is only in Chromium-based browsers (Chrome, Edge, Opera…); Firefox and Safari can run demo mode only. **One program at a time** can use the stick.
 - **Tuners:** R820T, R820T2 or R828D sticks only; older E4000, FC0012, FC0013 and FC2580 sticks won't work.
-- **RSP Tuners:** RSP devices from SDR Play are supported across the local network but there are limitations. No Bias T control due to the current API version 1.0.3. Only the first tuner of the RSPduo is supported.
+- **RSP Tuners:** RSP devices from SDR Play are supported across the local network but there are limitations. No Bias T control due to the current API version 1.0.3. Only the first tuner of the RSPduo is supported. RSP devices MUST be setup to run from a server running the 'SDR Connect headless' software and this has to be running for OFFgrid-SDR to connect to.
 - **DRM** needs a good signal (about 10 dB for 16-QAM, 16 dB for 64-QAM); below that, the settings are read but not the name or sound. The few stations using unequal protection or hierarchical modulation aren't decoded yet.
 - **DAB** needs a good signal: about 8 dB for the sound, while the station list comes through down to about 3 dB. An outdoor or loft VHF aerial helps a great deal. DAB mode runs the stick at 2.048 MHz, centred on the multiplex; Station logos and SlideShow pictures appear only where the multiplex broadcasts them, and other DAB data services aren't shown.
 - **RTL-SDR Blog V4 near 28.8 MHz:** the stick's own 28.8 MHz clock shows as a strong spike there, so signals nearby (the top of 10 m, and CB around 27 MHz) can be affected. It stays with the antenna disconnected: it comes from the stick, not the band.
