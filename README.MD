@@ -6,10 +6,7 @@ One receiver. Two hardware platforms. Dozens of decoders. No installation.
 
 OFFgrid-SDR is a full software-defined radio receiver that runs entirely in your web browser from one file. Put `index.html` on a USB pen drive with an RTL-SDR stick and an antenna, and you have a working shortwave, FM, airband, VHF/UHF and **DRM and DAB digital radio** receiver on almost any computer: no software to install, no administrator rights, no drivers to download on site (on most systems), and no internet connection needed.
 
-On a local network with a SDR Play RSP, the user can now network stream from a SDR connect server but the main goal is still a RTL SDR and the Index.html file.
-
-so if at home, the user could connect to the RSP Connect server and not have to plug anything in.
-when remote, plug in a RTL SDR card, change the device settings within OFFgrid-SDR to look at the RTL card and use
+It can also use an **SDRplay RSP** across your network, through SDRplay's **SDRconnect**, though the heart of it is still an RTL-SDR stick and that one `index.html` file. At home, connect to the RSP on your network, with nothing to plug in (and on a slow network, **Lite mode** needs only about 0.2 MB/s); away from home, plug in an RTL-SDR stick and choose it in *Settings → Device*.
 
 ![Main UI](screenshots/main.png)
 
@@ -31,7 +28,29 @@ The humble RTL-SDR stick needs some love. It has always been treated as an add-o
 
 ---
 
-## What's new in 2.3
+## What's new in 2.4
+
+- **Signal Monitor** (new): watch up to **8 signals at once**, each a coloured, numbered band on the spectrum, measured all the time whatever you listen to: average and peak level, noise floor, S/N, bandwidth, occupancy, transmissions (how many, average and longest, active and silent time, and the interval between them, marked "Every" when regular), fades, and drift (now, in Hz a second; over 10 minutes; and the whole shift).
+  - **Follow** tracks a drifting signal, a satellite's Doppler shift or a wandering transmitter: the band, its speaker and (while tuned to it) the radio follow it.
+  - **Analyse** works out a signal's modulation in about 6 seconds, without retuning: Morse speed, FSK shift and baud rate, PSK rate, AM, FM or SSB, naming standard modes (RTTY, NAVTEX/DSC, PSK31/63, weather RTTY).
+  - **A speaker for each signal** (left to right, Solo, levelled), one heard at a time by default, following the radio; the one you're hearing glows. **⏺** records a clip of each transmission, to play or save as WAV.
+  - Drag the bands, name signals, **save the log as CSV**, and reset the figures.
+- **SDRplay RSPs through SDRconnect:**
+  - **Lite mode** for slow networks: SDRconnect sends its own sound and spectrum, about **0.2 MB/s** instead of 8 MB/s. Switch with **LITE** at any time while connected.
+  - **Wide views of 6, 8 and 10 MHz** straight from the RSP (up to 40 MB/s in full mode, no more in Lite mode), with a span switch (2M–10M) beside LITE, and **Panorama** as the RSP's own 10 MHz view.
+  - **Test** now measures the network, offering Lite mode if it can't carry the full stream, and finds every antenna port. The RSPdx's **Antenna C** is always in the antenna table.
+- **DAB:** a forgiving re-lock (a gap in the samples costs a blip at most, not a second or more of silence), and instant changes of multiplex, and from FM to DAB, through SDRconnect.
+- **New bands:** **LW** (long wave, 100–500 kHz), and **CB US** (AM), **CB Europe** (FM) and **CB UK** (its own band, FM), each with its channels, opening on channel 19.
+- **The waterfall replay** adds **SAM-U / SAM-L**, and NFM above 25 MHz (CB, 10 m FM).
+- **Fixes:** RTTY sets mark and space the right way round reliably; OVL's back-off leaves headroom; the Low-power suggestion waits for a real struggle; on the **RTL-SDR Blog V4**, the stick is kept clear of its 28.8 MHz spike where it can be (CB is now clean); unplugging a stick no longer stops an SDRconnect session; and more.
+- **Self-test and demo:** the self-test checks Safari's filter, DAB on single-frequency networks, the Signal Monitor (a satellite pass included), and says when its page was hidden; the demo gains long-wave stations, a navigation beacon and a **satellite with Doppler**, and its DAB multiplex a second transmitter.
+
+<!-- New screenshots for 2.4: add these files to the screenshots folder, then remove the comment marks around these lines.
+![Signal Monitor](screenshots/Signal-Monitor.png)
+![Lite mode](screenshots/Lite-mode.png)
+-->
+
+### What was new in 2.3
 
 ![RSP Config](screenshots/RSP-Config.png)
 
@@ -95,8 +114,8 @@ Right mouse click to watch a DRM demo in a new page
 | **An RTL-SDR stick** | Tested with the **RTL-SDR Blog V4** (recommended: shortwave with no adapter, and a 4.5 V bias-tee), the Blog V3 and the **Nooelec NESDR SMArt v5**. Other sticks with an **R820T, R820T2 or R828D** tuner should work; older **E4000, FC0012, FC0013 and FC2580** sticks won't. |
 | **An antenna** | The telescopic one is fine for FM. For medium wave and shortwave, tested with the **AURSINC GA800** active loop and the **YouLoop**. For APRS and AIS, a VHF antenna mounted high. |
 | **An HF upconverter** (optional) | Not needed with the V4. For other sticks, a converter such as the Ham It Up (*Settings → Device → HF upconverter*). |
-| **Or: an SDRplay RSP** | Through **SDRconnect** (1.0.6 or later, with its WebSocket API on), on any computer on your network, or the same one: no USB stick or WebUSB needed (*Settings → Device*). |
-| **A browser with WebUSB** | Chrome, Edge, or another Chromium-based browser. Tested on Windows 11, macOS Tahoe and ChromeOS (including a budget Lenovo 300e Chromebook). Firefox and Safari can run demo mode only. |
+| **Or: an SDRplay RSP** | Through **SDRconnect** (1.0.6 or later, with its WebSocket API on), on any computer on your network, or the same one: no USB stick or WebUSB needed (*Settings → Device*). The full stream needs about 8 MB/s at 2 MHz (up to 40 MB/s for the 10 MHz wide view: wired gigabit); **Lite mode** needs about 0.2 MB/s, for Wi-Fi and slower networks. |
+| **A browser with WebUSB** | Chrome, Edge, or another Chromium-based browser. Tested on Windows 11, macOS Tahoe and ChromeOS (including a budget Lenovo 300e Chromebook). Firefox and Safari can run demo mode, or use an RSP through SDRconnect. |
 
 **Works on:** Windows, macOS, Linux and ChromeOS computers, and **Android tablets** (Chrome, with the stick on a USB-C OTG adapter; a powered hub if the tablet can't supply the bias-tee). Phones aren't supported: the screen is too small for the controls. iPhones and iPads can't use a stick (Safari has no WebUSB), but can use an RSP through SDRconnect.
 
@@ -110,7 +129,7 @@ OFFgrid-SDR is **one file**, `index.html`; everything else here is documentation
 2. Open it in Chrome or Edge.
 3. Plug in the stick, press **Power on**, and choose the stick in the browser's USB chooser.
 
-**No stick yet?** Open `index.html?demo` for **demo mode**: simulated stations showing every feature, from FM stereo with RDS, fading shortwave, SSB and Morse to weather fax, RTTY, NAVTEX, DSC, SSTV, PSK, FT8, FT4, WSPR, time stations, ACARS, APRS, AIS ships, Hellschreiber, two DRM stations (AAC and xHE-AAC), a DAB multiplex with two stations, and "The Buzzer".
+**No stick yet?** Open `index.html?demo` for **demo mode**: simulated stations showing every feature, from FM stereo with RDS, fading shortwave, SSB and Morse to weather fax, RTTY, NAVTEX, DSC, SSTV, PSK, FT8, FT4, WSPR, time stations, ACARS, APRS, AIS ships, Hellschreiber, two DRM stations (AAC and xHE-AAC), a DAB multiplex with two stations (heard from two transmitters at once), long-wave broadcasters and a navigation beacon, a satellite beacon on 145.900 MHz whose frequency falls with the Doppler shift on each pass (for the Signal Monitor's Follow), and "The Buzzer".
 
 **Keeping up to date:** press **Check for updates** in the help panel (**?**). To update, put the new `index.html` in place of the old one: your settings and memories are kept (export a backup first, to be safe).
 
@@ -135,8 +154,12 @@ Only one program can use the stick at a time, so close SDR#, SDR++, gqrx or rtl_
 
 OFFgrid-SDR works with an **RTL-SDR stick** by default, but it can also use an **SDRplay RSP** through SDRplay's **SDRconnect** software, on the same computer or another on your network (such as a Raspberry Pi in the shed). **SDRconnect must already be running** on the RSP's computer, with its WebSocket API on port 5454; then choose **SDRconnect** in *Settings → Device*, enter its address, press **Test**, then **Power on**.
 
-- **RSP1A and RSP1B** need nothing more; the **RSPdx**'s antennas switch by frequency (A from 30 MHz up, B below, by default); the **RSPduo** uses one tuner.
-- There's **no bias-tee control** through SDRconnect (use the antenna's own injector), and **Panorama** isn't available.
+- **RSP1A and RSP1B** need nothing more; the **RSPdx**'s antennas switch by frequency (A from 30 MHz up, B below, by default; **Antenna C** works up to 200 MHz, and is always in the table); the **RSPduo** uses one tuner.
+- **Test** checks SDRconnect answers, lists the RSP's antenna ports, and measures your network: whether it **keeps up**, **only just**, or is **too slow** for the full stream, offering **Lite mode** when it isn't.
+- **Lite mode** (**LITE**, in the row of badges under the frequency, or *Settings → Device*): for a slow network, SDRconnect demodulates and sends its own sound and spectrum, about **0.2 MB/s** instead of about 8 MB/s at 2 MHz. Switch it either way at any time while connected. The speaker, the audio decoders (RTTY, CW, PSK, NAVTEX, DSC, fax, SSTV, FT8 and the rest), the spectrum, the waterfall and the Signal Monitor's measurements all carry on; DAB, DRM, AIS, VDL2, the waterfall replay, and the monitor's analysis, speakers and recording need the full stream.
+- **Wide views** of 6, 8 and 10 MHz, straight from the RSP: the **span switch** beside LITE (2M–10M), or *Settings → Device → Sample rate*. In full mode they need 24, 32 and 40 MB/s (wired gigabit for 10 MHz); in Lite mode, no more than usual. **Panorama** switches straight to the 10 MHz view, and back to your width when you click a signal.
+- There's **no bias-tee control** through SDRconnect (its API, 1.0.3, has none): switch it on in SDRconnect, or in an SDRconnect profile that OFFgrid-SDR applies when it connects, or use the antenna's own injector.
+- Open OFFgrid-SDR from a file or an `http://` address: a page served over `https://` can't connect to SDRconnect.
 - SDRconnect **1.0.6 or later**; 1.0.10 still reports its API as 1.0.3.
 
 **The full guide, [SDRconnect.md](SDRconnect.md),** covers installing SDRconnect, running the headless server as a service that starts at boot (with a Raspberry Pi example), the firewall, configuring OFFgrid-SDR, the RSP models, how the RSP's two gains are handled, and troubleshooting.
@@ -145,9 +168,9 @@ OFFgrid-SDR works with an **RTL-SDR stick** by default, but it can also use an *
 
 ### Bands
 
-- **FM broadcast** in stereo with RDS (the band follows your country); **medium wave**; and **shortwave** with a button for every broadcast band, 120 m to 11 m.
+- **FM broadcast** in stereo with RDS (the band follows your country); **long wave** (100–500 kHz: broadcasters, navigation beacons, the 136 and 472 kHz amateur bands and NAVTEX); **medium wave**; and **shortwave** with a button for every broadcast band, 120 m to 11 m.
 - **Amateur bands:** 160 m to 10 m, **6 m**, **4 m** (where allocated), **2 m** and **70 cm**.
-- **PMR446** channel by channel, and **airband** (its own **Air** tab) with 8.33 kHz channel steps and channel names.
+- **PMR446** channel by channel; **CB**, as each country uses it: **CB US** (AM, 26.965–27.405 MHz), **CB Europe** (FM, the same 40 channels) and **CB UK** (FM, its own 27.60125–27.99125 MHz), stepping a channel at a time and showing the channel number; and **airband** (its own **Air** tab) with 8.33 kHz channel steps and channel names.
 - **Mystery:** famous unexplained stations such as **The Buzzer (UVB-76)** and The Pip.
 - **DAB** (its own tab): every Band III channel, 5A to 13F, each opening in DAB mode on the multiplex.
 - **Any frequency** from 100 kHz to 1766 MHz: type it in (`198k`, `162.025`, `1090M`).
@@ -197,12 +220,22 @@ Switch **AUTO** on, and wherever you tune it listens for a couple of seconds, wo
 
 ![Main UI](screenshots/buffer.png)
 
-Switch on the **waterfall buffer** (15, 30 or 60 seconds), press **⏸**, and draw a box around any signal from the last few seconds: a **replay window** plays it on a loop, zoomed in. Give it its own mode and filters, retune within the box, decode Morse, read RDS or a **DRM** station's name, loop part of it with **A/B**, and **Save** it as MP3 plus a **raw IQ file** for SDR#, SDR++ and other SDR software.
+Switch on the **waterfall buffer** (15, 30 or 60 seconds), press **⏸**, and draw a box around any signal from the last few seconds: a **replay window** plays it on a loop, zoomed in. Give it its own mode (SAM-U and SAM-L included, and NFM above 25 MHz) and filters, retune within the box, decode Morse, read RDS or a **DRM** station's name, loop part of it with **A/B**, and **Save** it as MP3 plus a **raw IQ file** for SDR#, SDR++ and other SDR software.
+
+### Signal Monitor
+
+Watch up to **8 signals at once**, while you listen to anything else in view. Tune to a signal and press **Watch tuned signal**: it becomes a coloured, numbered band on the spectrum, and the panel measures it all the time, in a fixed grid: **average and peak level**, **noise floor**, **S/N**, **bandwidth**, **occupancy**, **transmissions** (how many, average length, longest, active and silent time, and the interval between them, marked "Every" when regular, as a beacon's is), **fades**, **centre and present frequency**, and **drift** (now, in Hz a second; over 10 minutes; and the whole shift).
+
+- **Follow** keeps the band on a drifting signal, a satellite's Doppler shift on a pass or a wandering transmitter; its speaker follows it, and so does the radio while tuned to it.
+- **Analyse** works out a signal's modulation from about 6 seconds of it, without retuning: Morse speed, FSK shift and baud rate, PSK rate, AM, FM or SSB, and the standard mode it matches.
+- **Speakers:** each signal can have its own, placed left to right, levelled, with **Solo**. One is heard at a time by default, following the radio (click a band to move the sound there); the signal you're hearing is outlined in its colour and glows on the spectrum.
+- **⏺** records a clip of each transmission, from 1.5 s before it starts, to play or save as WAV.
+- Drag a band by its tag, or its edges; **name** a signal (✎); **Save log** as CSV (each transmission's start and end in UTC, length and peak S/N); **Reset stats**. The monitor pauses with the waterfall, and the paused time isn't counted.
 
 ### Listening tools
 
 - **Spectrum and waterfall:** click to tune, zoom up to 256×, memory markers, peak hold, averaging, new-signal alerts and a signal info popup.
-- **Panorama:** up to 10 MHz at once, around you or across HF.
+- **Panorama:** up to 10 MHz at once, around you or across HF; through SDRconnect, the RSP's own 10 MHz view, at once.
 - **OVL overload indicator**, with one-click gain back-off and Undo; **RF gain per band**.
 - **Noise reduction**, a **noise blanker**, a **mains-hum filter**, an **auto notch**, the **AI voice cleaner** (RNNoise) and the **smart notch** for whines.
 - **SSB filter widths and passband shift**, **AGC speed**, **squelch**, **Seek** and **Scan** through your memories.
@@ -218,18 +251,26 @@ Switch on the **waterfall buffer** (15, 30 or 60 seconds), press **⏸**, and dr
 
 ## Known limitations
 
-- **Browsers:** WebUSB is only in Chromium-based browsers (Chrome, Edge, Opera…); Firefox and Safari can run demo mode or connect via SDR connect over the network to a RSP device from SDR play. **One program at a time** can use the stick.
+- **Browsers:** WebUSB is only in Chromium-based browsers (Chrome, Edge, Opera…); Firefox and Safari can run demo mode, or use an SDRplay RSP over the network through SDRconnect. **One program at a time** can use the stick.
 - **Tuners:** R820T, R820T2 or R828D sticks only; older E4000, FC0012, FC0013 and FC2580 sticks won't work.
-- **RSP Tuners:** RSP devices from SDR Play are supported across the local network but there are limitations. No Bias T control due to the current API version 1.0.3. Only the first tuner of the RSPduo is supported. RSP devices MUST be setup to run from a server running the 'SDR Connect headless' software and this has to be running for OFFgrid-SDR to connect to.
+- **SDRplay RSPs (through SDRconnect):** supported across the local network, with limits:
+  - RSPs **must** be set up on a computer running SDRconnect (the headless server, as in [SDRconnect.md](SDRconnect.md)), with its WebSocket API on (port 5454), and it has to be running for OFFgrid-SDR to connect to.
+  - **No bias-tee control:** SDRconnect's API (version 1.0.3) has none. Switch it on in SDRconnect, or in an SDRconnect profile that OFFgrid-SDR applies when connecting.
+  - Only the **first tuner** of the RSPduo is used.
+  - **Network:** the full stream needs about 8 MB/s at 2 MHz, rising to **40 MB/s** for the full **10 MHz** wide view (wired gigabit). On Wi-Fi or a slower network use **Lite mode**, about **0.2 MB/s** at any width. **Test** measures what your network can carry.
+  - **In Lite mode,** DAB, DRM, AIS, VDL2, the waterfall replay, and the Signal Monitor's analysis, speakers and recording need the full stream; the sound runs about 0.3 s behind, and the spectrum is coarser.
+  - Retuning goes over the network, so Seek, Scan and the band survey are slower than with a USB stick. The RSP's notch filters, HDR mode and AGC are left to SDRconnect; the RSPdx's Antenna C works up to 200 MHz.
+  - Open OFFgrid-SDR from a file or an `http://` address: a page served over `https://` can't connect to SDRconnect.
 - **DRM** needs a good signal (about 10 dB for 16-QAM, 16 dB for 64-QAM); below that, the settings are read but not the name or sound. The few stations using unequal protection or hierarchical modulation aren't decoded yet.
 - **DAB** needs a good signal: about 8 dB for the sound, while the station list comes through down to about 3 dB. An outdoor or loft VHF aerial helps a great deal. DAB mode runs the stick at 2.048 MHz, centred on the multiplex; Station logos and slideshow pictures are only available where the multiplex broadcasts them, and other DAB data services aren't shown.
-- **RTL-SDR Blog V4 near 28.8 MHz:** the stick's own 28.8 MHz clock shows as a strong spike there, so signals nearby (the top of 10 m, and CB around 27 MHz) can be affected. It stays with the antenna disconnected: it comes from the stick, not the band.
+- **RTL-SDR Blog V4 near 28.8 MHz:** the stick's own 28.8 MHz clock shows as a strong spike there (it stays with the antenna disconnected: it comes from the stick, not the band), raising the noise around it. Below 28.8 MHz, OFFgrid-SDR places the stick so the spike stays out of its view where it can, so **CB** around 27 MHz is clear of it; **10 m**, which crosses 28.8 MHz, can't avoid it.
+- **Signal Monitor** measures only what's in the radio's present view (2 MHz with a stick, up to 10 MHz with an RSP): signals out of view are paused, not watched. Its clips are kept in memory (40 MB at most) and are lost when the page closes, so save the ones to keep. **Analyse** is dependable from about 8–10 dB.
 - **Waterfall replay** uses memory (about 123 MB for 30 seconds), so it's off by default, and a selection can't cross a retune.
 - **AUTO** judges a couple of seconds of signal, so it can be wrong on very weak signals: choose the mode yourself if something sounds wrong.
 - **FT8 and FT4** reach slightly less deep than WSJT-X on a single weak station. **Time signals:** MSF and DCF77 are below the sticks' range, and a web page can't set the computer's own clock (**Clock details** shows how).
 - **Weather fax:** the US National Weather Service has proposed closing its HF radiofax stations towards the end of 2026; they're marked in the station list.
-- **Smaller points:** Morse may miss the first letter while locking on; the sound runs about 0.2 s behind the waterfall (Bluetooth adds more); reception is weaker below about 500 kHz; Panorama looks at one slice at a time; the AI voice cleaner is built for speech; DSC calls last only about 6 seconds; an HF upconverter's switch can only be reminded, not set; on direct-sampling sticks the RF gain has no effect on shortwave.
-- **Audio extensions** need *Allow access to file URLs* (in `chrome://extensions`) when OFFgrid-SDR is opened as a file. **Background tabs:** if Chrome's Memory Saver puts the tab to sleep, everything stops: add OFFgrid-SDR to "Always keep these sites active".
+- **Smaller points:** Morse may miss the first letter while locking on; the sound runs about 0.2 s behind the waterfall (Bluetooth adds more); reception is weaker below about 500 kHz; with a stick, Panorama looks at one slice at a time; the AI voice cleaner is built for speech; DSC calls last only about 6 seconds; an HF upconverter's switch can only be reminded, not set; on direct-sampling sticks the RF gain has no effect on shortwave.
+- **Audio extensions** need *Allow access to file URLs* (in `chrome://extensions`) when OFFgrid-SDR is opened as a file. **Background tabs:** if Chrome's Memory Saver puts the tab to sleep, everything stops: add OFFgrid-SDR to "Always keep these sites active". Run the **self-test** with its page in view: Chrome slows hidden pages, and it says so if its page was hidden.
 - **Slower computers:** use **Low-power mode**; a very old or cheap machine may still struggle.
 
 ---
