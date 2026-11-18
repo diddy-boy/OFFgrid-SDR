@@ -45,10 +45,9 @@ The humble RTL-SDR stick needs some love. It has always been treated as an add-o
 - **Fixes:** RTTY sets mark and space the right way round reliably; OVL's back-off leaves headroom; the Low-power suggestion waits for a real struggle; on the **RTL-SDR Blog V4**, the stick is kept clear of its 28.8 MHz spike where it can be (CB is now clean); unplugging a stick no longer stops an SDRconnect session; and more.
 - **Self-test and demo:** the self-test checks Safari's filter, DAB on single-frequency networks, the Signal Monitor (a satellite pass included), and says when its page was hidden; the demo gains long-wave stations, a navigation beacon and a **satellite with Doppler**, and its DAB multiplex a second transmitter.
 
-<!-- New screenshots for 2.4: add these files to the screenshots folder, then remove the comment marks around these lines.
 ![Signal Monitor](screenshots/Signal-Monitor.png)
+
 ![Lite mode](screenshots/Lite-mode.png)
--->
 
 ### What was new in 2.3
 
@@ -56,18 +55,10 @@ The humble RTL-SDR stick needs some love. It has always been treated as an add-o
 
 ![RSP Config](screenshots/Net-Stat.png)
 
-- **SDRplay RSPs, through SDRconnect** (requested feature): as well as an RTL-SDR stick (still the default), OFFgrid-SDR can now use an **SDRplay RSP** running on SDRplay's **SDRconnect**, on the same computer or another on your network. Antennas switch by frequency on the RSPdx, the gain is tuned for RSPs, and a **NET** badge shows the connection's health. See [Using an SDRplay RSP](#using-an-sdrplay-rsp-through-sdrconnect), and the full guide, [SDRconnect.md](SDRconnect.md).
-- **What you're listening with** shows before the band name: **RTL** (a USB stick), **NET** (SDRconnect: green, amber or red for the connection) or **DEMO**. Hover over it, or tap it, for the details, including the network speed against what's needed.
-- **Plain messages when the stick can't tune,** including when the HF upconverter setting is on without an upconverter fitted.
-- **Resting when switched off:** the display stops redrawing while the radio is off, saving power on laptops and tablets, and the waterfall stays still.
-- **Journaline** news pages on **DRM**: when a station sends them (All India Radio does), a **News** button appears in the DRM box, with its menus, articles and lists. The demo's 11.700 MHz station has some to try.
-- **DRM through fades:** a fade is bridged silently instead of stopping the sound to rebuffer, and the sound fades back in the moment the signal returns. Frames caught in a fade are decoded again, the layers of error correction helping one another: on a fading recording of TDF on 5.990 MHz, **36% fewer dropouts**. A drifting signal (an upconverter warming up, say) is followed through each window.
-- **Sharper DAB logos** on high-resolution screens.
-- **The screen stays on** while the radio is powered on, for tablets used as a radio.
-- **A lighter noise blanker:** 40% less work, exactly the same result.
-- **The noise blanker and hum filter in CW and the digital modes** (FT8, FT4, WSPR, RTTY and the rest) on MW and SW: switching from USB to FT8 no longer brings the clicks and hum back. Noise reduction, the notch and the AI cleaner stay with voice.
-- **A clean DAB waterfall:** no more dark lines across it every few seconds.
-- **Backups checked as they're loaded:** a damaged or tampered backup can no longer upset the page; anything malformed is simply left out.
+- **SDRplay RSPs, through SDRconnect** (requested feature): as well as an RTL-SDR stick, OFFgrid-SDR can use an **SDRplay RSP** running SDRplay's **SDRconnect**, on the same computer or another on your network. See [Using an SDRplay RSP](#using-an-sdrplay-rsp-through-sdrconnect), and the full guide, [SDRconnect.md](SDRconnect.md).
+- **What you're listening with** shows before the band name: **RTL**, **NET** (SDRconnect, coloured for the connection's health) or **DEMO**.
+- **Journaline** news pages on **DRM**, and **DRM through fades**: a fade bridged silently, with 36% fewer dropouts on a fading recording.
+- **Lighter and steadier:** a lighter noise blanker, a clean DAB waterfall, sharper DAB logos, rest when switched off, and backups checked as they're loaded.
 
 ![DRM mode](screenshots/DRM.png)
 
