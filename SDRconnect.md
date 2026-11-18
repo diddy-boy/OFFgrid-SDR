@@ -4,7 +4,7 @@ OFFgrid-SDR works with an **RTL-SDR stick** by default. If you own an **SDRplay 
 
 ## How it works
 
-OFFgrid-SDR doesn't drive the RSP itself. **SDRconnect** runs on the computer the RSP is plugged into (this one, or another on your network, such as a Raspberry Pi in the shed), and OFFgrid-SDR connects to SDRconnect's **WebSocket API** on **port 5454**. No USB is involved on OFFgrid-SDR's side, so it works in any modern browser, including on an iPad.
+OFFgrid-SDR doesn't drive the RSP itself. **SDRconnect** runs on the computer the RSP is plugged into (this one, or another on your network, such as a Raspberry Pi in the shed), and OFFgrid-SDR connects to SDRconnect's **WebSocket API** on **port 5454**. No USB is involved on OFFgrid-SDR's side, so it works in any modern browser, including on an iPad. (Open OFFgrid-SDR from a file or an `http://` address: a page served over `https://` isn't allowed to connect to SDRconnect's `ws://` API.)
 
 **SDRconnect must already be running** on the RSP's computer before you press **Power on** in OFFgrid-SDR. If it isn't, OFFgrid-SDR can't connect, and will keep retrying every few seconds. That's why it's worth starting SDRconnect automatically (see [Starting SDRconnect automatically](#starting-sdrconnect-automatically)).
 
@@ -13,7 +13,8 @@ OFFgrid-SDR doesn't drive the RSP itself. **SDRconnect** runs on the computer th
 - **SDRconnect 1.0.6 or later** (the WebSocket API arrived in 1.0.6). Tested with **1.0.9 and 1.0.10**.
 - Note that SDRconnect **1.0.10** still reports its WebSocket API as **version 1.0.3**: the API's version number is separate from the program's.
 - SDRconnect is 64-bit only: Windows 10 or 11, macOS (Intel 10.15 or later, Apple Silicon 13 or later), 64-bit Linux, and **64-bit Raspberry Pi OS** on a Pi 4B or better. See [SDRplay's SDRconnect page](https://www.sdrplay.com/sdrconnect) for the downloads.
-- A network fast enough for the stream: about **8 MB/s** (64 Mbit/s), so a wired connection or good Wi-Fi. a full IQ bandwidth of 10Mhz will use around 40mb/s data so a wired connection is a must at this data rate. 
+- A network fast enough for the stream: about **8 MB/s** (64 Mbit/s) at the usual 2 MHz, so a wired connection or good Wi-Fi. The full **10 MHz** wide view needs about **40 MB/s** (320 Mbit/s), so a wired gigabit connection is a must at that rate (6 MHz: 24 MB/s; 8 MHz: 32 MB/s).
+- **Or Lite mode,** for Wi-Fi and slower networks: SDRconnect sends its own sound and spectrum instead of the full stream, about **0.2 MB/s** at any width. See [Lite mode](#lite-mode).
 
 ## Installing SDRconnect
 
@@ -100,21 +101,37 @@ On the RSP's computer, allow incoming connections on **port 5454** (TCP). On Lin
 
 1. Open **Settings → Device** (or the first-run screen) and choose **SDRconnect**.
 2. Enter the RSP computer's **name or IP address** (`127.0.0.1` if SDRconnect runs on the same computer as OFFgrid-SDR). A fixed IP address is the most reliable; names like `shack-pc` (Windows networks) or `shack-pc.local` (most others) usually work too. The last five addresses that worked are offered.
-3. Press **Test**: it should name your RSP and the API version.
+3. Press **Test**: it should name your RSP and the API version, and list its antenna ports (tuning the RSP to medium wave for a moment, so SDRconnect lists them all, then putting it back). With the radio off, it also **measures your network**: whether it **keeps up**, **only just**, or is **too slow** for the full stream, and offers **Lite mode** when it isn't. Choose the width first (*Sample rate*) to test the network at that width.
 4. Press **Power on**.
 
+Once connected, the row of badges under the frequency shows **LITE** (Lite mode on or off) and the **span switch** (**2M**, **6M**, **8M**, **10M**: the width of the view, straight from the RSP). Both can be changed at any time while connected.
+
 The **NET** badge before the band name shows the connection: **green** when it's keeping up, **amber** when it's connecting or falling behind, **red** when it's lost (OFFgrid-SDR reconnects by itself). Hover over it, or tap it, for the network speed against what's needed, the buffer, the RSP and its settings.
+
+## Lite mode
+
+For a network too slow for the full stream (Wi-Fi, a long cable run, a busy network), click **LITE**, or tick **Lite mode** in **Settings → Device**. SDRconnect then demodulates and sends its own sound and its spectrum, about **0.2 MB/s**, a fortieth of the full stream, at any width, 10 MHz included. It can be switched either way at any time while connected; nothing restarts.
+
+- OFFgrid-SDR keeps SDRconnect's mode, frequency and filter in step with its own, brings SDRconnect's sound up to its usual loudness, and lines SDRconnect's spectrum up with the full stream's (measured when you switch, and remembered).
+- The speaker, the audio decoders (RTTY, CW, PSK, NAVTEX, DSC, fax, SSTV, FT8 and the rest), the spectrum, the waterfall, the meter and the Signal Monitor's measurements all carry on.
+- **DAB, DRM, AIS, VDL2**, the waterfall replay, and the Signal Monitor's analysis, speakers and recording need the full stream, and say so.
+- The sound runs about 0.3 s behind (a reserve against the network's unevenness), and the spectrum is a little coarser.
+
+## Wide views and Panorama
+
+The **span switch** (2M to 10M), or **Settings → Device → Sample rate**, sets how much the RSP sends: **2, 6, 8 or 10 MHz** at once, shown whole at the full view. **Panorama** switches straight to the 10 MHz view, and back to your width when you click a signal or press Panorama again. In full mode the wide views need the network speeds above; in Lite mode, no more than usual.
 
 ## The RSP models
 
 - **RSP1A and RSP1B:** the simplest: one antenna, nothing else to set up.
-- **RSPdx:** its antennas **switch automatically by frequency**. By default, **Antenna A** is used from **30 MHz** up, **Antenna B** below, and **Antenna C** not at all. Each can be changed in **Settings → Device** (the antenna settings appear once the RSP is running), including the **crossover frequency** and **custom ranges** (for example, a medium-wave loop on C from 0.1 to 2 MHz).
+- **RSPdx:** its antennas **switch automatically by frequency**. By default, **Antenna A** is used from **30 MHz** up, **Antenna B** below, and **Antenna C** not at all. Each can be changed in **Settings → Device** (the antenna settings appear once the RSP is running), including the **crossover frequency** and **custom ranges** (for example, a medium-wave loop on C from 0.1 to 2 MHz). **Antenna C works only up to 200 MHz:** SDRconnect lists it only when the RSP is tuned below that, so OFFgrid-SDR remembers it and always shows it, and never switches to it above 200 MHz (the antenna for the other side of the crossover is used there).
 - **RSPduo:** OFFgrid-SDR uses **one tuner**.
 
 ## Limits worth knowing
 
-- **No bias-tee control:** SDRconnect's WebSocket API has no bias-tee setting, and its headless server no bias-tee option. For a powered antenna (an active loop such as the MLA-30+), use the **antenna's own bias-tee injector**, or SDRconnect's ordinary program with the bias-tee switched on.
-- **Panorama** isn't available through SDRconnect: it sweeps the radio faster than a network connection can follow.
+- **No bias-tee control:** SDRconnect's WebSocket API (version 1.0.3) has no bias-tee setting, and its headless server no bias-tee option. For a powered antenna (an active loop such as the MLA-30+), use the **antenna's own bias-tee injector**, SDRconnect's ordinary program with the bias-tee switched on, or an **SDRconnect profile** with it on, which OFFgrid-SDR can apply when it connects (*Settings → Device → SDRconnect profile*).
+- **Panorama** through SDRconnect is the RSP's own 10 MHz view (see [Wide views and Panorama](#wide-views-and-panorama)), not the sweep it uses with a stick, which a network connection couldn't follow.
+- **Retuning** goes over the network, so Seek, Scan and the band survey are slower than with a USB stick.
 
 ## Technical note: how OFFgrid-SDR handles an RSP's gain
 
@@ -131,6 +148,7 @@ When you change band, OFFgrid-SDR waits for the new band's gain range from SDRco
 
 - **Test says it can't connect:** check SDRconnect is running (`systemctl status sdrconnect` on Linux), the address, and the firewall (port 5454). If SDRconnect is the ordinary program, check its WebSocket server is switched on.
 - **It connects, then disconnects at once:** you may be running `SDRconnect --server` (port 50000) rather than the headless server or the WebSocket API on port 5454.
-- **The display stutters, and the NET badge turns amber:** the network isn't delivering the 8 MB/s needed. Hover over NET for the figures; a wired connection or 5 GHz Wi-Fi helps.
+- **The display stutters, and the NET badge turns amber:** the network isn't delivering what the stream needs (8 MB/s at 2 MHz, more for the wide views). Hover over NET for the figures, or press **Test** with the radio off. Switch to **Lite mode** (about 0.2 MB/s), choose a narrower width, or use a wired connection or 5 GHz Wi-Fi.
+- **In Lite mode the sound is very quiet, or silent:** OFFgrid-SDR brings SDRconnect's sound up to its usual loudness, but if SDRconnect itself is muted, or its volume at nothing, it sends silence, and OFFgrid-SDR says so: check SDRconnect's own **Mute** and **volume**. Hover over NET for what's arriving.
 - **DAB cuts out, but FM and shortwave are fine:** DAB is the most sensitive to samples going missing on the RSP's computer. On a Raspberry Pi, check it isn't swapping (`free -h`), use Pi OS Lite on a 1 GB Pi, and check `vcgencmd get_throttled` shows `throttled=0x0` (anything else means low voltage or overheating).
 - **When reporting a problem,** save a **diagnostics log** (Settings → Backup → Save diagnostics log): it records the connection, the RSP's settings and the network figures.
