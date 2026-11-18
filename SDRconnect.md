@@ -13,7 +13,7 @@ OFFgrid-SDR doesn't drive the RSP itself. **SDRconnect** runs on the computer th
 - **SDRconnect 1.0.6 or later** (the WebSocket API arrived in 1.0.6). Tested with **1.0.9 and 1.0.10**.
 - Note that SDRconnect **1.0.10** still reports its WebSocket API as **version 1.0.3**: the API's version number is separate from the program's.
 - SDRconnect is 64-bit only: Windows 10 or 11, macOS (Intel 10.15 or later, Apple Silicon 13 or later), 64-bit Linux, and **64-bit Raspberry Pi OS** on a Pi 4B or better. See [SDRplay's SDRconnect page](https://www.sdrplay.com/sdrconnect) for the downloads.
-- A network fast enough for the stream: about **8 MB/s** (64 Mbit/s), so a wired connection or good Wi-Fi. a full IQ bandwidth of 10mb/s will use around 40mb/s data so a wired connection is a must at this data rate. 
+- A network fast enough for the stream: about **8 MB/s** (64 Mbit/s), so a wired connection or good Wi-Fi. a full IQ bandwidth of 10Mhz will use around 40mb/s data so a wired connection is a must at this data rate. 
 
 ## Installing SDRconnect
 
