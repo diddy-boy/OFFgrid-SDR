@@ -49,16 +49,18 @@ The humble RTL-SDR stick needs some love. It has always been treated as an add-o
 
 ![Lite mode](screenshots/Lite-mode.png)
 
-### What was new in 2.3
+
+### Earlier versions
+
+- **SDRplay RSPs, through SDRconnect** (requested feature): as well as an RTL-SDR stick, OFFgrid-SDR can use an **SDRplay RSP** running SDRplay's **SDRconnect**, on the same computer or another on your network. See [Using an SDRplay RSP](#using-an-sdrplay-rsp-through-sdrconnect), and the full guide, [SDRconnect.md](SDRconnect.md).
 
 ![RSP Config](screenshots/RSP-Config.png)
 
 ![RSP Config](screenshots/Net-Stat.png)
 
-- **SDRplay RSPs, through SDRconnect** (requested feature): as well as an RTL-SDR stick, OFFgrid-SDR can use an **SDRplay RSP** running SDRplay's **SDRconnect**, on the same computer or another on your network. See [Using an SDRplay RSP](#using-an-sdrplay-rsp-through-sdrconnect), and the full guide, [SDRconnect.md](SDRconnect.md).
-- **What you're listening with** shows before the band name: **RTL**, **NET** (SDRconnect, coloured for the connection's health) or **DEMO**.
-- **Journaline** news pages on **DRM**, and **DRM through fades**: a fade bridged silently, with 36% fewer dropouts on a fading recording.
-- **Lighter and steadier:** a lighter noise blanker, a clean DAB waterfall, sharper DAB logos, rest when switched off, and backups checked as they're loaded.
+- **2.2:** **VDL2** aircraft datalink (every channel at once, with each aircraft's country) and a **full-screen** mode (which should work on Android devices too), both requested features; **DAB station text, logos and SlideShow**; **DRM station text and pictures**; every kind of DAB audio checked, with fixes for 24 kHz and joint-stereo MP2; five **band tabs**; the **More** menu grouped; selecting further back in the paused waterfall; and much lighter on slower computers.
+- **2.1:** **DAB and DAB+** digital radio with sound, its stations, formats and signal, recognised by AUTO; **DRM in xHE-AAC** with sound; a DAB multiplex and an xHE-AAC station in the demo.
+- **2.0:** **DRM** digital radio with sound (AAC, with SBR and parametric stereo), its name, settings and signal quality, recognised by AUTO; **6 m and 4 m**; a wider status line; fixes to the waterfall replay, RTTY's automatic reverse and noise reduction; and **OFFgrid-SDR became free software under the GNU GPL**.
 
 ![DRM mode](screenshots/DRM.png)
 
@@ -67,12 +69,6 @@ The humble RTL-SDR stick needs some love. It has always been treated as an add-o
 Right mouse click to watch a DRM demo in a new page
 
 [![OFFgrid-SDR DRM video](https://img.youtube.com/vi/fl4mmtktke4/hqdefault.jpg)](https://youtu.be/fl4mmtktke4)
-
-### Earlier versions
-
-- **2.2:** **VDL2** aircraft datalink (every channel at once, with each aircraft's country) and a **full-screen** mode (which should work on Android devices too), both requested features; **DAB station text, logos and SlideShow**; **DRM station text and pictures**; every kind of DAB audio checked, with fixes for 24 kHz and joint-stereo MP2; five **band tabs**; the **More** menu grouped; selecting further back in the paused waterfall; and much lighter on slower computers.
-- **2.1:** **DAB and DAB+** digital radio with sound, its stations, formats and signal, recognised by AUTO; **DRM in xHE-AAC** with sound; a DAB multiplex and an xHE-AAC station in the demo.
-- **2.0:** **DRM** digital radio with sound (AAC, with SBR and parametric stereo), its name, settings and signal quality, recognised by AUTO; **6 m and 4 m**; a wider status line; fixes to the waterfall replay, RTTY's automatic reverse and noise reduction; and **OFFgrid-SDR became free software under the GNU GPL**.
 
 - **1.9:** **APRS** and **AIS** (ships on both marine channels at once); a **first-time setup** that sets your location, calibrates the stick and sets the clock from a time station; **Clock details** and a clock that learns your computer's drift; WSPR that corrects a clock a minute out; **HF upconverters** such as the Nooelec [Ham It Up](https://www.nooelec.com/store/ham-it-up.html); each stick keeping its own correction; and the FM band for your country. **1.9.1** fixed the Ham It Up converter's offset not being applied correctly.
 - **1.8:** WSPR, **Time signal** (CHU, WWV, WWVH, RWM), deeper FT8/FT4 decoding, **Heard** and **Band survey**.
