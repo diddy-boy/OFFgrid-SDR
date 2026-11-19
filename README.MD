@@ -242,7 +242,7 @@ Watch up to **8 signals at once**, while you listen to anything else in view. Tu
 - **Tuners:** R820T, R820T2 or R828D sticks only; older E4000, FC0012, FC0013 and FC2580 sticks won't work.
 - **SDRplay RSPs (through SDRconnect):** supported across the local network, with limits:
   - RSPs **must** be set up on a computer running SDRconnect (the headless server, as in [SDRconnect.md](SDRconnect.md)), with its WebSocket API on (port 5454), and it has to be running for OFFgrid-SDR to connect to.
-  - **No bias-tee control:** SDRconnect's API (version 1.0.3) has none. Switch it on in SDRconnect, or in an SDRconnect profile that OFFgrid-SDR applies when connecting.
+  - **No bias-tee control on RSP Devices:** SDRconnect's API (version 1.0.3) has none. Switch it on in SDRconnect, or in an SDRconnect profile that OFFgrid-SDR applies when connecting. RTL devices work fine if Bias T is available for the RTL device model.
   - Only the **first tuner** of the RSPduo is used.
   - **Network:** the full stream needs about 8 MB/s at 2 MHz, rising to **40 MB/s** for the full **10 MHz** wide view (wired gigabit). On Wi-Fi or a slower network use **Lite mode**, about **0.2 MB/s** at any width. **Test** measures what your network can carry.
   - **In Lite mode,** DAB, DRM, AIS, VDL2, the waterfall replay, and the Signal Monitor's analysis, speakers and recording need the full stream; the sound runs about 0.3 s behind, and the spectrum is coarser.
