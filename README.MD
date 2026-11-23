@@ -6,7 +6,7 @@ One receiver. Two hardware platforms. Dozens of decoders. No installation.
 
 OFFgrid-SDR is a full software-defined radio receiver that runs entirely in your web browser from one file. Put `index.html` on a USB pen drive with an RTL-SDR stick and an antenna, and you have a working shortwave, FM, airband, VHF/UHF and **DRM and DAB digital radio** receiver on almost any computer: no software to install, no administrator rights, no drivers to download on site (on most systems), and no internet connection needed.
 
-It can also use an **SDRplay RSP** across your network, through SDRplay's **SDRconnect**, though the heart of it is still an RTL-SDR stick and that one `index.html` file. At home, connect to the RSP on your network, with nothing to plug in (and on a slow network, **Lite mode** needs only about 0.2 MB/s); away from home, plug in an RTL-SDR stick and choose it in *Settings → Device*.
+It can also use an **SDRplay RSP** across your network, through SDRplay's **SDRconnect**, though the heart of it is still an RTL-SDR stick and that one `index.html` file. At home, connect to the RSP on your network, with nothing to plug in (and on a slow network, **Lite mode** needs only about 0.2 MB/s); away from home, plug in an RTL-SDR stick: if SDRconnect doesn't answer at Power on, the stick is used instead (or choose it in *Settings → Device*).
 
 ![Main UI](screenshots/main.png)
 
@@ -28,29 +28,45 @@ The humble RTL-SDR stick needs some love. It has always been treated as an add-o
 
 ---
 
-## What's new in 2.4
+## What's new in 2.5
 
-- **Signal Monitor** (new): watch up to **8 signals at once**, each a coloured, numbered band on the spectrum, measured all the time whatever you listen to: average and peak level, noise floor, S/N, bandwidth, occupancy, transmissions (how many, average and longest, active and silent time, and the interval between them, marked "Every" when regular), fades, and drift (now, in Hz a second; over 10 minutes; and the whole shift).
-  - **Follow** tracks a drifting signal, a satellite's Doppler shift or a wandering transmitter: the band, its speaker and (while tuned to it) the radio follow it.
-  - **Analyse** works out a signal's modulation in about 6 seconds, without retuning: Morse speed, FSK shift and baud rate, PSK rate, AM, FM or SSB, naming standard modes (RTTY, NAVTEX/DSC, PSK31/63, weather RTTY).
-  - **A speaker for each signal** (left to right, Solo, levelled), one heard at a time by default, following the radio; the one you're hearing glows. **⏺** records a clip of each transmission, to play or save as WAV.
-  - Drag the bands, name signals, **save the log as CSV**, and reset the figures.
-- **SDRplay RSPs through SDRconnect:**
-  - **Lite mode** for slow networks: SDRconnect sends its own sound and spectrum, about **0.2 MB/s** instead of 8 MB/s. Switch with **LITE** at any time while connected.
-  - **Wide views of 6, 8 and 10 MHz** straight from the RSP (up to 40 MB/s in full mode, no more in Lite mode), with a span switch (2M–10M) beside LITE, and **Panorama** as the RSP's own 10 MHz view.
-  - **Test** now measures the network, offering Lite mode if it can't carry the full stream, and finds every antenna port. The RSPdx's **Antenna C** is always in the antenna table.
-- **DAB:** a forgiving re-lock (a gap in the samples costs a blip at most, not a second or more of silence), and instant changes of multiplex, and from FM to DAB, through SDRconnect.
-- **New bands:** **LW** (long wave, 100–500 kHz), and **CB US** (AM), **CB Europe** (FM) and **CB UK** (its own band, FM), each with its channels, opening on channel 19.
-- **The waterfall replay** adds **SAM-U / SAM-L**, and NFM above 25 MHz (CB, 10 m FM).
-- **Fixes:** RTTY sets mark and space the right way round reliably; OVL's back-off leaves headroom; the Low-power suggestion waits for a real struggle; on the **RTL-SDR Blog V4**, the stick is kept clear of its 28.8 MHz spike where it can be (CB is now clean); unplugging a stick no longer stops an SDRconnect session; and more.
-- **Self-test and demo:** the self-test checks Safari's filter, DAB on single-frequency networks, the Signal Monitor (a satellite pass included), and says when its page was hidden; the demo gains long-wave stations, a navigation beacon and a **satellite with Doppler**, and its DAB multiplex a second transmitter.
+Smoother and steadier, tested on a five-year-old Chromebook, with a few new things to make OFFgrid-SDR your own.
+
+- **Steadier sound on slower computers:** if the sound ever runs dry, OFFgrid-SDR keeps a little more queued (up to 0.15 s) and returns to normal after a quiet minute. A fast computer never notices.
+- **No lost samples from an RTL-SDR stick:** the stick's data is collected with more room to spare, so a busy moment on the computer no longer loses a slice of samples (the main cause of the occasional dropout).
+- **Low-power mode is lighter on FM:** wideband FM takes about a quarter less of the computer in Low-power mode, with the same sound, stereo and RDS.
+- **Automatic device choice at Power on:** if your chosen device isn't there (no stick plugged in, or SDRconnect not answering when you're away from home), the other one is used for that session. Your choice stays as it is and is tried first at the next Power on; there's no delay when your device is there. Off with *Settings → Device → Use the other device if mine isn't there*.
+- **Display colours:** *Settings → Display*: **Amber** (still the default), **Orange**, **Lime**, **Green**, **Cyan**, **VFD** (the glowing blue-green of an 80s vacuum-fluorescent display, behind tinted glass), **Blue**, **Violet** or **Rose**. Tick **Glow** to give any of them the VFD's glow.
+- **Waterfall colours:** **Classic**, **Turbo**, **Inferno**, **Ice**, **Greyscale**, **Matching** the display colour, or **Colour-blind friendly**.
+- **More room for the waterfall:** the **Panel** button folds the side panel away, so the spectrum and waterfall use the full width. The waterfall's Range, Floor and Speed are now in a **Display ▾** pop-up, and lit status lights are filled, so on and off read at a glance.
+- **Likely bands open:** above the Ham and Broadcast band buttons, a guide to which shortwave bands are probably open now (a green or amber dot on each), and the next change at dusk or dawn. Worked out offline from your computer's clock and your locator: a guide, not a forecast.
+- **Picture:** saves the spectrum and waterfall as a PNG, with the frequency, mode, signal level and time along the top. *Save diagnostics* now includes a small copy too.
+- **RTL-SDR Blog V4 on 10 m (on trial):** a new setting tunes the V4 just above 28.8 MHz on 10 m, leaving out its HF upconverter and most of the spike its oscillator makes on the band.
+- **SDRconnect:** clearer advice when the network can't keep up, and an address the browser refuses now says so (and the stick can stand in).
+- **A finer CPU breakdown:** the CPU readout, the diagnostics log and the self-test (for each check) show where the time goes, including the Signal Monitor and wideband FM's stages.
+- **Fixes:** the span button steps in order (from 2.4 MHz to 6, not 8); the display draws less work each frame; small text is easier to read.
+
+### Earlier versions
+
+- **2.4:**
+  - **Signal Monitor** (new): watch up to **8 signals at once**, each a coloured, numbered band on the spectrum, measured all the time whatever you listen to: average and peak level, noise floor, S/N, bandwidth, occupancy, transmissions (how many, average and longest, active and silent time, and the interval between them, marked "Every" when regular), fades, and drift (now, in Hz a second; over 10 minutes; and the whole shift).
+    - **Follow** tracks a drifting signal, a satellite's Doppler shift or a wandering transmitter: the band, its speaker and (while tuned to it) the radio follow it.
+    - **Analyse** works out a signal's modulation in about 6 seconds, without retuning: Morse speed, FSK shift and baud rate, PSK rate, AM, FM or SSB, naming standard modes (RTTY, NAVTEX/DSC, PSK31/63, weather RTTY).
+    - **A speaker for each signal** (left to right, Solo, levelled), one heard at a time by default, following the radio; the one you're hearing glows. **⏺** records a clip of each transmission, to play or save as WAV.
+    - Drag the bands, name signals, **save the log as CSV**, and reset the figures.
+  - **SDRplay RSPs through SDRconnect:**
+    - **Lite mode** for slow networks: SDRconnect sends its own sound and spectrum, about **0.2 MB/s** instead of 8 MB/s. Switch with **LITE** at any time while connected.
+    - **Wide views of 6, 8 and 10 MHz** straight from the RSP (up to 40 MB/s in full mode, no more in Lite mode), with a span switch (2M–10M) beside LITE, and **Panorama** as the RSP's own 10 MHz view.
+    - **Test** now measures the network, offering Lite mode if it can't carry the full stream, and finds every antenna port. The RSPdx's **Antenna C** is always in the antenna table.
+  - **DAB:** a forgiving re-lock (a gap in the samples costs a blip at most, not a second or more of silence), and instant changes of multiplex, and from FM to DAB, through SDRconnect.
+  - **New bands:** **LW** (long wave, 100–500 kHz), and **CB US** (AM), **CB Europe** (FM) and **CB UK** (its own band, FM), each with its channels, opening on channel 19.
+  - **The waterfall replay** adds **SAM-U / SAM-L**, and NFM above 25 MHz (CB, 10 m FM).
+  - **Fixes:** RTTY sets mark and space the right way round reliably; OVL's back-off leaves headroom; the Low-power suggestion waits for a real struggle; on the **RTL-SDR Blog V4**, the stick is kept clear of its 28.8 MHz spike where it can be (CB is now clean); unplugging a stick no longer stops an SDRconnect session; and more.
+  - **Self-test and demo:** the self-test checks Safari's filter, DAB on single-frequency networks, the Signal Monitor (a satellite pass included), and says when its page was hidden; the demo gains long-wave stations, a navigation beacon and a **satellite with Doppler**, and its DAB multiplex a second transmitter.
 
 ![Signal Monitor](screenshots/Signal-Monitor.png)
 
 ![Lite mode](screenshots/Lite-mode.png)
-
-
-### Earlier versions
 
 - **SDRplay RSPs, through SDRconnect** (requested feature): as well as an RTL-SDR stick, OFFgrid-SDR can use an **SDRplay RSP** running SDRplay's **SDRconnect**, on the same computer or another on your network. See [Using an SDRplay RSP](#using-an-sdrplay-rsp-through-sdrconnect), and the full guide, [SDRconnect.md](SDRconnect.md).
 
@@ -250,7 +266,7 @@ Watch up to **8 signals at once**, while you listen to anything else in view. Tu
   - Open OFFgrid-SDR from a file or an `http://` address: a page served over `https://` can't connect to SDRconnect.
 - **DRM** needs a good signal (about 10 dB for 16-QAM, 16 dB for 64-QAM); below that, the settings are read but not the name or sound. The few stations using unequal protection or hierarchical modulation aren't decoded yet.
 - **DAB** needs a good signal: about 8 dB for the sound, while the station list comes through down to about 3 dB. An outdoor or loft VHF aerial helps a great deal. DAB mode runs the stick at 2.048 MHz, centred on the multiplex; Station logos and slideshow pictures are only available where the multiplex broadcasts them, and other DAB data services aren't shown.
-- **RTL-SDR Blog V4 near 28.8 MHz:** the stick's own 28.8 MHz clock shows as a strong spike there (it stays with the antenna disconnected: it comes from the stick, not the band), raising the noise around it. Below 28.8 MHz, OFFgrid-SDR places the stick so the spike stays out of its view where it can, so **CB** around 27 MHz is clear of it; **10 m**, which crosses 28.8 MHz, can't avoid it.
+- **RTL-SDR Blog V4 near 28.8 MHz:** the stick's own 28.8 MHz clock shows as a strong spike there (it stays with the antenna disconnected: it comes from the stick, not the band), raising the noise around it. Below 28.8 MHz, OFFgrid-SDR places the stick so the spike stays out of its view where it can, so **CB** around 27 MHz is clear of it. On **10 m**, which crosses 28.8 MHz, the trial setting *Settings → Device → RTL-SDR Blog V4 on 10 m* tunes the stick just above 28.8 MHz instead, which leaves out most of the spike (a small one remains from the stick's own clock).
 - **Signal Monitor** measures only what's in the radio's present view (2 MHz with a stick, up to 10 MHz with an RSP): signals out of view are paused, not watched. Its clips are kept in memory (40 MB at most) and are lost when the page closes, so save the ones to keep. **Analyse** is dependable from about 8–10 dB.
 - **Waterfall replay** uses memory (about 123 MB for 30 seconds), so it's off by default, and a selection can't cross a retune.
 - **AUTO** judges a couple of seconds of signal, so it can be wrong on very weak signals: choose the mode yourself if something sounds wrong.
