@@ -6,6 +6,33 @@ OFFgrid-SDR is a software-defined radio receiver that runs entirely in your web 
 
 ![OFFgrid-SDR 3.0 on FM, with RDS and the tuning dial](screenshots/FM.png)
 
+## What's new in 3.0
+
+A complete redesign: OFFgrid-SDR now looks and works like a field radio.
+
+- **A new console layout.** The spectrum and waterfall fill the middle of the window. The mode keys run down a rail on the left. The frequency sits under the screen like a radio's dial. The panels run the full height on the right, so more fits without scrolling.
+- **A field-radio look.** An olive-drab case with keys that press in and stay in when on, an orange Power key with a green lamp, and sharper typefaces.
+- **A tuning dial.** Drag it to tune, click a mark to go there. Your memories show along it as tags: click one to recall it.
+- **Faders** for volume, squelch and gain.
+- **A taller spectrum,** with a grip to share the height with the waterfall.
+- **Laid out for Chromebooks** in laptop, tent and tablet modes, held either way up, and for short laptop windows.
+- **DRM stations with more than one service:** choose between them, as All India Radio's stations carry two programmes and a news service.
+- **More dependable device choice:** your chosen device (an RTL-SDR stick or SDRconnect) first, then the other, at every Power on, with a clear message when neither is there.
+- **SDRconnect improvements:**
+  - DAB cuts out far less.
+  - Lite mode pauses by itself on DAB, DRM, AIS and VDL2.
+  - The stick and the RSP each remember their own gain for each band.
+  - Firefox and Safari can use SDRconnect.
+- **New and fixed:**
+  - CB Brazil (all 80 channels).
+  - FM de-emphasis set from your location (75 µs in the Americas and South Korea).
+  - No more FM stereo flickering on an empty channel.
+  - Memories saved before 2.4 now show and recall the right band.
+  - A decoder that hits an error restarts by itself.
+- **The self-test** can run in a background tab.
+
+The full list is in the app's help panel (**?**).
+
 ---
 
 ## Quick start
