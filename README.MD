@@ -8,7 +8,7 @@ OFFgrid-SDR is a full software-defined radio receiver that runs entirely in your
 
 It can also use an **SDRplay RSP** across your network, through SDRplay's **SDRconnect**, though the heart of it is still an RTL-SDR stick and that one `index.html` file. At home, connect to the RSP on your network, with nothing to plug in (and on a slow network, **Lite mode** needs only about 0.2 MB/s); away from home, plug in an RTL-SDR stick: if SDRconnect doesn't answer at Power on, the stick is used instead (or choose it in *Settings → Device*).
 
-![Main UI](screenshots/main.png)
+![Main UI](screenshots/FM.png)
 
 ![Weather Fax](screenshots/weather-example.png)
 
