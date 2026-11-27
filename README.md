@@ -123,7 +123,7 @@ The other device stands in only until Power off; your choice never changes by it
 
 **DRM**, with a station's services to choose from:
 
-![DRM in OFFgrid-SDR](screenshots/DRM.png)
+
 
 ---
 
