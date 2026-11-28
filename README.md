@@ -123,7 +123,7 @@ The other device stands in only until Power off; your choice never changes by it
 
 **DRM**, 2 audio streams with a Journaline text service to choose from:
 
-![DRM in OFFgrid-SDR](screenshots/DRM.png)
+![DRM in OFFgrid-SDR](screenshots/MULTISTREAM-DRM.png)
 
 ---
 
